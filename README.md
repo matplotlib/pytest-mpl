@@ -5,7 +5,7 @@
 About
 -----
 
-A plugin to faciliate image comparison for [Matplotlib](http://www.matplotlib.org) figures in pytest (which
+This is a plugin to faciliate image comparison for [Matplotlib](http://www.matplotlib.org) figures in pytest (which
 uses some of the Matplotlib image comparison functions behind the scenes).
 
 Matplotlib includes a number of test utilities and decorators, but these are geared towards the [nose](http://nose.readthedocs.org/) testing framework. Pytest-mpl makes it easy to compare figures produced by tests to reference images when using [pytest](http://pytest.org).
