@@ -1,0 +1,49 @@
+# AppVeyor.com is a Continuous Integration service to build and run tests under
+# Windows
+
+environment:
+
+  global:
+      PYTHON: "C:\\conda"
+      MINICONDA_VERSION: "3.5.5"
+      CMD_IN_ENV: "cmd /E:ON /V:ON /C .\\.continuous-integration\\appveyor\\windows_sdk.cmd"
+      PYTHON_ARCH: "64" # needs to be set for CMD_IN_ENV to succeed. If a mix
+                        # of 32 bit and 64 bit builds are needed, move this
+                        # to the matrix section.
+
+  matrix:
+
+      - PYTHON_VERSION: "2.6"
+      - PYTHON_VERSION: "2.7"
+      - PYTHON_VERSION: "3.3"
+      - PYTHON_VERSION: "3.4"
+
+platform:
+    -x64
+
+install:
+    # Install miniconda using a powershell script.
+    - "powershell .continuous-integration/appveyor/install-miniconda.ps1"
+    - "SET PATH=%PYTHON%;%PYTHON%\\Scripts;%PATH%"
+
+    # Install the build and runtime dependencies of the project.
+    - "conda update --yes conda"
+
+    # Create a conda environment
+    - "conda create --yes -n test python=%PYTHON_VERSION%"
+    - "activate test"
+
+    # Check that we have the expected version of Python
+    - "python --version"
+
+    # Install  dependencies
+    - "conda install -q --yes pytest matplotlib nose"
+
+# Not a .NET project, we build SunPy in the install step instead
+build: false
+
+test_script:
+  - "%CMD_IN_ENV% python setup.py install"
+  - "%CMD_IN_ENV% cd tests"
+  - "%CMD_IN_ENV% py.test --mpl"
+
