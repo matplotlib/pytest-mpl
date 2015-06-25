@@ -26,5 +26,5 @@ install:
 script:
    - python setup.py install
    - cd tests
-   - py.test test
+   - py.test
 
