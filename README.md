@@ -8,6 +8,8 @@ About
 A plugin to faciliate image comparison for Matplotlib figures in pytest (which
 uses some of the Matplotlib image comparison functions behind the scenes).
 
+pytest-mpl is compatible with Python 2.6, 2.7, and 3.3 and later.
+
 Dependencies
 ------------
 
