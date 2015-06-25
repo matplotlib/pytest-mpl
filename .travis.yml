@@ -13,7 +13,7 @@ before_install:
     - source .continuous-integration/travis/setup_environment_$TRAVIS_OS_NAME.sh
 
     # Create environment
-    - conda create -n test python=$TRAVIS_PYTHON_VERSION
+    - conda create --yes -n test python=$TRAVIS_PYTHON_VERSION
     - source activate test
 
     # Make sure that interactive matplotlib backends work
