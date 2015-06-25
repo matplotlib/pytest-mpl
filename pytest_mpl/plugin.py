@@ -62,9 +62,9 @@ class ImageComparison(object):
 
         if compare is None:
             return
-            
-        tolerance = compare.kwargs.get('tolerance',10)
-        savefig_kwargs = compare.kwargs.get('savefig_kwargs',{})
+
+        tolerance = compare.kwargs.get('tolerance', 10)
+        savefig_kwargs = compare.kwargs.get('savefig_kwargs', {})
 
         original = item.function
 
@@ -97,11 +97,11 @@ class ImageComparison(object):
                                     Generated Image:
                                     \t{test}
                                     This is expected for new tests.""".format(
-                                        test=test_image))
+                        test=test_image))
 
                 # distutils may put the baseline images in non-accessible places,
                 # copy to our tmpdir to be sure to keep them in case of failure
-                baseline_image = os.path.abspath(os.path.join(result_dir, 'baseline-'+name))
+                baseline_image = os.path.abspath(os.path.join(result_dir, 'baseline-' + name))
                 shutil.copyfile(baseline_image_ref, baseline_image)
 
                 msg = compare_images(baseline_image, test_image, tol=tolerance)
