@@ -14,8 +14,8 @@ For each figure to test, the reference image is substracted from the generated i
 
 For more information on how to write tests to do this, see the **Using** section below.
 
-Install
--------
+Installing
+----------
 
 This plugin is compatible with Python 2.6, 2.7, and 3.3 and later, and requires [pytest](http://pytest.org), [matplotlib](http://www.matplotlib.org) and
 [nose](http://nose.readthedocs.org/) to be installed (nose is required by Matplotlib).
