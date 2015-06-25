@@ -9,7 +9,7 @@ uses some of the Matplotlib image comparison functions behind the scenes).
 Dependencies
 ============
 
-This plugin requires [matplotlib](http://www.matplotlib.org) and
+This plugin requires [pytest](http://pytest.org), [matplotlib](http://www.matplotlib.org) and
 [nose](http://nose.readthedocs.org/) to be installed, but in future we will
 remove these dependencies.
 
