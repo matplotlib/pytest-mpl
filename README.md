@@ -18,8 +18,7 @@ Install
 -------
 
 This plugin is compatible with Python 2.6, 2.7, and 3.3 and later, and requires [pytest](http://pytest.org), [matplotlib](http://www.matplotlib.org) and
-[nose](http://nose.readthedocs.org/) to be installed, but in future we will
-remove these dependencies.
+[nose](http://nose.readthedocs.org/) to be installed (nose is required by Matplotlib).
 
 For now, install this package using:
 
