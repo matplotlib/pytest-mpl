@@ -1,20 +1,20 @@
 [![Build Status](https://travis-ci.org/astrofrog/pytest-mpl.svg?branch=master)](https://travis-ci.org/astrofrog/pytest-mpl) 
 
 About
-=====
+-----
 
 A plugin to faciliate image comparison for Matplotlib figures in pytest (which
 uses some of the Matplotlib image comparison functions behind the scenes).
 
 Dependencies
-============
+------------
 
 This plugin requires [pytest](http://pytest.org), [matplotlib](http://www.matplotlib.org) and
 [nose](http://nose.readthedocs.org/) to be installed, but in future we will
 remove these dependencies.
 
 Install
-=======
+-------
 
 For now, install this package using:
 
@@ -65,7 +65,7 @@ RMS tolerance (which defaults to 10):
         ...
         
 Running the tests
-=================
+-----------------
 
 To run the tests, first install the plugin then do:
 
