@@ -36,17 +36,18 @@ using ``@pytest.mark.mpl_image_compare``, and make sure that the function
 returns a Matplotlib figure (or any figure object that has a ``savefig``
 method):
 
+```python
+import pytest
+import matplotlib.pyplot as plt
 
-    import pytest
-    import matplotlib.pyplot as plt
+@pytest.mark.mpl_image_compare
+def test_succeeds():
+    fig = plt.figure()
+    ax = fig.add_subplot(1,1,1)
+    ax.plot([1,2,3])
+    return fig
+```
 
-    @pytest.mark.mpl_image_compare
-    def test_succeeds():
-        fig = plt.figure()
-        ax = fig.add_subplot(1,1,1)
-        ax.plot([1,2,3])
-        return fig
-        
 To generate the baseline images, run the tests with:
 
     py.test --mpl-generate-path=images ...
@@ -64,10 +65,12 @@ checking the output images.
 The ``@pytest.mark.mpl_image_compare`` marker can take an argument which is the
 RMS tolerance (which defaults to 10):
 
-    @pytest.mark.mpl_image_compare(tolerance=20)
-    def test_image():
-        ...
-        
+```python
+@pytest.mark.mpl_image_compare(tolerance=20)
+def test_image():
+    ...
+```
+
 Running the tests
 -----------------
 
