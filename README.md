@@ -5,20 +5,21 @@
 About
 -----
 
-A plugin to faciliate image comparison for Matplotlib figures in pytest (which
+A plugin to faciliate image comparison for [Matplotlib](http://www.matplotlib.org) figures in pytest (which
 uses some of the Matplotlib image comparison functions behind the scenes).
 
-pytest-mpl is compatible with Python 2.6, 2.7, and 3.3 and later.
+Matplotlib includes a number of test utilities and decorators, but these are geared towards the [nose](http://nose.readthedocs.org/) testing framework. Pytest-mpl makes it easy to compare figures produced by tests to reference images when using [pytest](http://pytest.org).
 
-Dependencies
-------------
+For each figure to test, the reference image is substracted from the generated image, and the RMS of the residual is compared to a user-specified tolerance. If the residual is too large, the test will fail (this is implemented in Matplotlib).
 
-This plugin requires [pytest](http://pytest.org), [matplotlib](http://www.matplotlib.org) and
-[nose](http://nose.readthedocs.org/) to be installed, but in future we will
-remove these dependencies.
+For more information on how to write tests to do this, see the **Using** section below.
 
 Install
 -------
+
+This plugin is compatible with Python 2.6, 2.7, and 3.3 and later, and requires [pytest](http://pytest.org), [matplotlib](http://www.matplotlib.org) and
+[nose](http://nose.readthedocs.org/) to be installed, but in future we will
+remove these dependencies.
 
 For now, install this package using:
 
