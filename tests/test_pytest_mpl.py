@@ -1,8 +1,12 @@
 import os
+import sys
 import subprocess
 
 import pytest
 import matplotlib.pyplot as plt
+
+PY26 = sys.version_info[:2] == (2, 6)
+
 
 @pytest.mark.mpl_image_compare
 def test_succeeds():
@@ -48,6 +52,7 @@ def test_gen():
     return fig
 """
 
+@pytest.mark.skipif("PY26")
 def test_generate(tmpdir):
 
     test_file = tmpdir.join('test.py').strpath
