@@ -54,15 +54,19 @@ def test_succeeds():
     return fig
 ```
 
-To generate the baseline images, run the tests with:
+To generate the baseline images, run the tests with the ``--mpl-generate-path``
+option with the name of the directory where the generated images should be
+placed:
 
-    py.test --mpl-generate-path=images ...
-    
-Once you are happy with the baseline images, put them in a sub-directory called
-``baseline`` in the same directory as the tests. You can then run the tests
+    py.test --mpl-generate-path=baseline
+
+If the directory does not exist, it will be created. Once you are happy with
+the generated images, you should move them to a sub-directory called
+``baseline`` (this name is configurable, see below) in the same directory as
+the tests (or you can generate them there directly). You can then run the tests
 simply with:
 
-    py.test --mpl ...
+    py.test --mpl
 
 and the tests will pass if the images are the same. If you omit the ``--mpl``
 option, the tests will run but will only check that the code runs without
@@ -81,6 +85,17 @@ You can also pass keyword arguments to ``savefig`` by using ``savefig_kwargs``:
 
 ```python
 @pytest.mark.mpl_image_compare(savefig_kwargs={'dpi':300})
+def test_image():
+    ...
+```
+
+Other options include the name of the baseline directory (which defaults to
+``baseline`` ) and the filename of the plot (which defaults to the name of the
+test with a ``.png`` suffix):
+
+```python
+@pytest.mark.mpl_image_compare(baseline_dir='baseline_images',
+                               filename='other_name.png')
 def test_image():
     ...
 ```
