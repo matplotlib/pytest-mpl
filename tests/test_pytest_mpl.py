@@ -1,6 +1,7 @@
 import os
 import sys
 import subprocess
+import tempfile
 
 import pytest
 import matplotlib.pyplot as plt
@@ -26,9 +27,11 @@ def test_fail():
     return fig
 """
 
-def test_fails(tmpdir):
+def test_fails():
 
-    test_file = tmpdir.join('test.py').strpath
+    tmpdir = tempfile.mkdtemp()
+
+    test_file = os.path.join(tmpdir, 'test.py')
     with open(test_file, 'w') as f:
         f.write(TEST_FAILING)
 
@@ -53,14 +56,15 @@ def test_gen():
 """
 
 @pytest.mark.skipif("PY26")
-def test_generate(tmpdir):
+def test_generate():
+    
+    tmpdir = tempfile.mkdtemp()
 
-    test_file = tmpdir.join('test.py').strpath
+    test_file = os.path.join(tmpdir, 'test.py')
     with open(test_file, 'w') as f:
         f.write(TEST_GENERATE)
 
-    gen_dir = tmpdir.join('spam').join('egg').strpath
-    print(gen_dir)
+    gen_dir = os.path.join(tmpdir, 'spam', 'egg')
 
     # If we don't generate, the test will fail
     output = subprocess.check_output('py.test --mpl {0}; exit 0'.format(test_file), shell=True)
