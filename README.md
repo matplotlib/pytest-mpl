@@ -103,6 +103,10 @@ def test_image():
     ...
 ```
 
+Finally, you can also set a custom baseline directory globally when running tests by running ``py.test`` with:
+
+    py.test --mpl --mpl-baseline-dir=baseline_images
+
 Running the tests
 -----------------
 

@@ -31,7 +31,6 @@
 from functools import wraps
 
 import os
-import types
 import shutil
 import tempfile
 
@@ -46,9 +45,14 @@ def pytest_addoption(parser):
                     help="Enable comparison of matplotlib figures to reference files")
     group.addoption('--mpl-generate-path',
                     help="directory to generate reference images in", action='store')
+    group.addoption('--mpl-baseline-path', default='baseline',
+                    help="directory containing baseline images", action='store')
 
 
 def pytest_configure(config):
+    if config.getoption("--mpl-generate-path") is not None:
+         if config.getoption("--mpl-baseline-path") is not None:
+             raise ValueError("Can't set --mpl-baseline-path when generating reference images with --mpl-generate-path")
     if config.getoption("--mpl") or config.getoption("--mpl-generate-path") is not None:
         config.pluginmanager.register(ImageComparison(config))
 
@@ -67,7 +71,6 @@ class ImageComparison(object):
 
         tolerance = compare.kwargs.get('tolerance', 10)
         savefig_kwargs = compare.kwargs.get('savefig_kwargs', {})
-        baseline_dir = compare.kwargs.get('baseline_dir', 'baseline')
 
         original = item.function
 
@@ -75,6 +78,9 @@ class ImageComparison(object):
         def item_function_wrapper(*args, **kwargs):
 
             generate_path = self.config.getoption("--mpl-generate-path")
+
+            baseline_dir = compare.kwargs.get('baseline_dir',
+                                              self.config.getoption("--mpl-baseline-path"))
 
             # Run test and get figure object
             import inspect
