@@ -27,7 +27,7 @@ For now, install this package using:
 pytest-mpl will be on PyPI soon!    
 
 Using
-=====
+-----
 
 To use, you simply need to mark the function where you want to compare images
 using ``@pytest.mark.mpl_image_compare``, and make sure that the function
