@@ -4,7 +4,8 @@
 About
 =====
 
-A plugin to faciliate image comparison for Matplotlib figures in pytest (which uses some of the Matplotlib image comparison functions behind the scenes).
+A plugin to faciliate image comparison for Matplotlib figures in pytest (which
+uses some of the Matplotlib image comparison functions behind the scenes).
 
 Dependencies
 ============
@@ -28,7 +29,10 @@ Using
 =====
 
 To use, you simply need to mark the function where you want to compare images
-using ``@pytest.mark.mpl_image_compare``, and make sure that the function returns a Matplotlib figure (or any figure object that has a ``savefig`` method):
+using ``@pytest.mark.mpl_image_compare``, and make sure that the function
+returns a Matplotlib figure (or any figure object that has a ``savefig``
+method):
+
 
     import pytest
     import matplotlib.pyplot as plt
@@ -42,15 +46,20 @@ using ``@pytest.mark.mpl_image_compare``, and make sure that the function return
         
 To generate the baseline images, run the tests with:
 
-    py.test --generate-images-path=images ...
+    py.test --mpl-generate-path=images ...
     
-Once you are happy with the baseline images, put them in a sub-directory called ``baseline`` in the same directory as the tests. You can then run the tests simply with:
+Once you are happy with the baseline images, put them in a sub-directory called
+``baseline`` in the same directory as the tests. You can then run the tests
+simply with:
 
-    py.test ...
+    py.test --mpl ...
     
-and the tests will pass if the images are the same.
+and the tests will pass if the images are the same. If you omit the ``--mpl``
+option, the tests will run but will only check that the code runs without
+checking the output images.
 
-The ``@pytest.mark.mpl_image_compare`` marker can take an argument which is the RMS tolerance (which defaults to 10):
+The ``@pytest.mark.mpl_image_compare`` marker can take an argument which is the
+RMS tolerance (which defaults to 10):
 
     @pytest.mark.mpl_image_compare(tolerance=20)
     def test_image():

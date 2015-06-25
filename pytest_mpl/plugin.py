@@ -9,11 +9,16 @@ from matplotlib.testing.compare import compare_images
 
 
 def pytest_addoption(parser):
-    parser.addoption('--generate-images-path', help="directory to generate reference images in", action='store')
+    group = parser.getgroup("general")
+    group.addoption('--mpl', action='store_true',
+                    help="Enable comparison of matplotlib figures to reference files")
+    group.addoption('--mpl-generate-path',
+                    help="directory to generate reference images in", action='store')
 
 
 def pytest_configure(config):
-    config.pluginmanager.register(ImageComparison(config))
+    if config.getoption("--mpl") or config.getoption("--mpl-generate-path") is not None:
+        config.pluginmanager.register(ImageComparison(config))
 
 
 class ImageComparison(object):
@@ -35,7 +40,7 @@ class ImageComparison(object):
         @wraps(item.function)
         def item_function_wrapper(*args, **kwargs):
 
-            generate_path = self.config.getoption("--generate-images-path")
+            generate_path = self.config.getoption("--mpl-generate-path")
 
             # Run test and get figure object
             fig = original(*args, **kwargs)
