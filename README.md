@@ -60,11 +60,12 @@ placed:
 
     py.test --mpl-generate-path=baseline
 
-If the directory does not exist, it will be created. Once you are happy with
-the generated images, you should move them to a sub-directory called
-``baseline`` (this name is configurable, see below) in the same directory as
-the tests (or you can generate them there directly). You can then run the tests
-simply with:
+If the directory does not exist, it will be created. The directory will be
+interpreted as being relative to where you are running ``py.test``. Once you
+are happy with the generated images, you should move them to a sub-directory
+called ``baseline`` relative to the test files (this name is configurable, see
+below) in the same directory as the tests (or you can generate them there
+directly). You can then run the tests simply with:
 
     py.test --mpl
 
@@ -102,6 +103,19 @@ test with a ``.png`` suffix):
 def test_image():
     ...
 ```
+
+The baseline directory in the decorator above will be interpreted as being
+relative to the test file.
+
+Finally, you can also set a custom baseline directory globally when running
+tests by running ``py.test`` with:
+
+    py.test --mpl --mpl-baseline-dir=baseline_images
+
+This directory will be interpreted as being relative to where the tests are
+run. In addition, if both this option and the ``baseline_dir`` option in the
+``mpl_image_compare`` decorator are used, the one in the decorator takes
+precedence.
 
 Running the tests
 -----------------
