@@ -112,7 +112,7 @@ relative to the test file.
 Finally, you can also set a custom baseline directory globally when running
 tests by running ``py.test`` with:
 
-    py.test --mpl --mpl-baseline-dir=baseline_images
+    py.test --mpl --mpl-baseline-path=baseline_images
 
 This directory will be interpreted as being relative to where the tests are
 run. In addition, if both this option and the ``baseline_dir`` option in the
