@@ -20,13 +20,19 @@ Installing
 This plugin is compatible with Python 2.6, 2.7, and 3.3 and later, and requires [pytest](http://pytest.org), [matplotlib](http://www.matplotlib.org) and
 [nose](http://nose.readthedocs.org/) to be installed (nose is required by Matplotlib).
 
-For now, install this package using:
+To install, you can do:
 
-    git clone http://github.com/astrofrog/pytest-mpl
-    cd pytest-mpl
-    python setup.py install
+    pip install pytest-mpl
+
+You can check that the plugin is registered with pytest by doing:
+
+    py.test --version
     
-pytest-mpl will be on PyPI soon!    
+which will show a list of plugins:
+    
+    This is pytest version 2.7.1, imported from ...
+    setuptools registered plugins:
+      pytest-mpl-0.1 at ...
 
 Using
 -----
