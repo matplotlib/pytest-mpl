@@ -12,8 +12,16 @@ PY26 = sys.version_info[:2] == (2, 6)
 @pytest.mark.mpl_image_compare
 def test_succeeds():
     fig = plt.figure()
-    ax = fig.add_subplot(1,1,1)
-    ax.plot([1,2,3])
+    ax = fig.add_subplot(1, 1, 1)
+    ax.plot([1, 2, 3])
+    return fig
+
+
+@pytest.mark.mpl_image_compare(savefig_kwargs={'dpi': 30})
+def test_dpi():
+    fig = plt.figure()
+    ax = fig.add_subplot(1, 1, 1)
+    ax.plot([1, 2, 3])
     return fig
 
 TEST_FAILING = """
@@ -26,6 +34,7 @@ def test_fail():
     ax.plot([1,2,2])
     return fig
 """
+
 
 def test_fails():
 
@@ -55,9 +64,10 @@ def test_gen():
     return fig
 """
 
+
 @pytest.mark.skipif("PY26")
 def test_generate():
-    
+
     tmpdir = tempfile.mkdtemp()
 
     test_file = os.path.join(tmpdir, 'test.py')
@@ -81,9 +91,10 @@ def test_generate():
 @pytest.mark.mpl_image_compare(tolerance=20)
 def test_tolerance():
     fig = plt.figure()
-    ax = fig.add_subplot(1,1,1)
-    ax.plot([1,2,2])
+    ax = fig.add_subplot(1, 1, 1)
+    ax.plot([1, 2, 2])
     return fig
+
 
 def test_nofigure():
     pass

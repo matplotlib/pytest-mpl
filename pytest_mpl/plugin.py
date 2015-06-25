@@ -62,8 +62,9 @@ class ImageComparison(object):
 
         if compare is None:
             return
-            
-        tolerance = compare.kwargs.get('tolerance',10)
+
+        tolerance = compare.kwargs.get('tolerance', 10)
+        savefig_kwargs = compare.kwargs.get('savefig_kwargs', {})
 
         original = item.function
 
@@ -86,7 +87,7 @@ class ImageComparison(object):
                 result_dir = tempfile.mkdtemp()
                 test_image = os.path.abspath(os.path.join(result_dir, name))
 
-                fig.savefig(test_image)
+                fig.savefig(test_image, **savefig_kwargs)
 
                 # Find path to baseline image
                 baseline_image_ref = os.path.abspath(os.path.join(os.path.dirname(item.fspath.strpath), 'baseline', name))
@@ -96,11 +97,11 @@ class ImageComparison(object):
                                     Generated Image:
                                     \t{test}
                                     This is expected for new tests.""".format(
-                                        test=test_image))
+                        test=test_image))
 
                 # distutils may put the baseline images in non-accessible places,
                 # copy to our tmpdir to be sure to keep them in case of failure
-                baseline_image = os.path.abspath(os.path.join(result_dir, 'baseline-'+name))
+                baseline_image = os.path.abspath(os.path.join(result_dir, 'baseline-' + name))
                 shutil.copyfile(baseline_image_ref, baseline_image)
 
                 msg = compare_images(baseline_image, test_image, tol=tolerance)
@@ -115,7 +116,7 @@ class ImageComparison(object):
                 if not os.path.exists(generate_path):
                     os.makedirs(generate_path)
 
-                fig.savefig(os.path.abspath(os.path.join(generate_path, name)))
+                fig.savefig(os.path.abspath(os.path.join(generate_path, name)), **savefig_kwargs)
                 pytest.skip("Skipping test, since generating data")
 
         if item.cls is not None:
