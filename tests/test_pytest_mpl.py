@@ -17,6 +17,16 @@ def test_succeeds():
     return fig
 
 
+class TestClass(object):
+
+    @pytest.mark.mpl_image_compare
+    def test_succeeds(self):
+        fig = plt.figure()
+        ax = fig.add_subplot(1, 1, 1)
+        ax.plot([1, 2, 3])
+        return fig
+
+
 @pytest.mark.mpl_image_compare(savefig_kwargs={'dpi': 30})
 def test_dpi():
     fig = plt.figure()

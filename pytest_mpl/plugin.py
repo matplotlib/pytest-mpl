@@ -30,10 +30,12 @@
 
 from functools import wraps
 
-import pytest
 import os
+import types
 import shutil
 import tempfile
+
+import pytest
 
 from matplotlib.testing.compare import compare_images
 
@@ -65,6 +67,7 @@ class ImageComparison(object):
 
         tolerance = compare.kwargs.get('tolerance', 10)
         savefig_kwargs = compare.kwargs.get('savefig_kwargs', {})
+        baseline_dir = compare.kwargs.get('baseline_dir', 'baseline')
 
         original = item.function
 
@@ -74,10 +77,16 @@ class ImageComparison(object):
             generate_path = self.config.getoption("--mpl-generate-path")
 
             # Run test and get figure object
-            fig = original(*args, **kwargs)
+            import inspect
+            if inspect.ismethod(original):  # method
+                fig = original(*args[1:], **kwargs)
+            else:  # function
+                fig = original(*args, **kwargs)
 
             # Find test name to use as plot name
-            name = original.__name__ + '.png'
+            filename = compare.kwargs.get('filename', None)
+            if filename is None:
+                filename = original.__name__ + '.png'
 
             # What we do now depends on whether we are generating the reference
             # images or simply running the test.
@@ -85,12 +94,12 @@ class ImageComparison(object):
 
                 # Save the figure
                 result_dir = tempfile.mkdtemp()
-                test_image = os.path.abspath(os.path.join(result_dir, name))
+                test_image = os.path.abspath(os.path.join(result_dir, filename))
 
                 fig.savefig(test_image, **savefig_kwargs)
 
                 # Find path to baseline image
-                baseline_image_ref = os.path.abspath(os.path.join(os.path.dirname(item.fspath.strpath), 'baseline', name))
+                baseline_image_ref = os.path.abspath(os.path.join(os.path.dirname(item.fspath.strpath), baseline_dir, filename))
 
                 if not os.path.exists(baseline_image_ref):
                     raise Exception("""Image file not found for comparison test
@@ -101,7 +110,7 @@ class ImageComparison(object):
 
                 # distutils may put the baseline images in non-accessible places,
                 # copy to our tmpdir to be sure to keep them in case of failure
-                baseline_image = os.path.abspath(os.path.join(result_dir, 'baseline-' + name))
+                baseline_image = os.path.abspath(os.path.join(result_dir, 'baseline-' + filename))
                 shutil.copyfile(baseline_image_ref, baseline_image)
 
                 msg = compare_images(baseline_image, test_image, tol=tolerance)
@@ -116,11 +125,10 @@ class ImageComparison(object):
                 if not os.path.exists(generate_path):
                     os.makedirs(generate_path)
 
-                fig.savefig(os.path.abspath(os.path.join(generate_path, name)), **savefig_kwargs)
+                fig.savefig(os.path.abspath(os.path.join(generate_path, filename)), **savefig_kwargs)
                 pytest.skip("Skipping test, since generating data")
 
         if item.cls is not None:
             setattr(item.cls, item.function.__name__, item_function_wrapper)
-
         else:
             item.obj = item_function_wrapper
