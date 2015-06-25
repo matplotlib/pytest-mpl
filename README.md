@@ -64,3 +64,13 @@ RMS tolerance (which defaults to 10):
     def test_image():
         ...
         
+Running the tests
+=================
+
+To run the tests, first install the plugin then do:
+
+    cd tests
+    py.test --mpl
+
+The reason for having to install the plugin first is to ensure that the plugin
+is correctly loaded as part of the test suite.
