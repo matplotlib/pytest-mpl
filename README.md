@@ -1,5 +1,4 @@
-[![Build Status](https://travis-ci.org/astrofrog/pytest-mpl.svg?branch=master)](https://travis-ci.org/astrofrog/pytest-mpl) [![Coverage Status](https://coveralls.io/repos/astrofrog/pytest-mpl/badge.svg)](https://coveralls.io/r/astrofrog/pytest-mpl)
-
+[![Build Status](https://travis-ci.org/astrofrog/pytest-mpl.svg?branch=master)](https://travis-ci.org/astrofrog/pytest-mpl) 
 
 About
 =====
