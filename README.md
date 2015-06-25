@@ -65,8 +65,9 @@ If the directory does not exist, it will be created. The directory will be
 interpreted as being relative to where you are running ``py.test``. Once you
 are happy with the generated images, you should move them to a sub-directory
 called ``baseline`` relative to the test files (this name is configurable, see
-below) in the same directory as the tests (or you can generate them there
-directly). You can then run the tests simply with:
+below). You can also generate the baseline images directly in the right directory.
+
+You can then run the tests simply with:
 
     py.test --mpl
 
