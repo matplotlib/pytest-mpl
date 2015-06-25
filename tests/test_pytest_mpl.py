@@ -16,6 +16,13 @@ def test_succeeds():
     ax.plot([1,2,3])
     return fig
 
+@pytest.mark.mpl_image_compare(savefig_kwargs={'dpi':30})
+def test_dpi():
+    fig = plt.figure()
+    ax = fig.add_subplot(1,1,1)
+    ax.plot([1,2,3])
+    return fig
+
 TEST_FAILING = """
 import pytest
 import matplotlib.pyplot as plt

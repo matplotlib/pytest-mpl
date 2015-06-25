@@ -64,6 +64,7 @@ class ImageComparison(object):
             return
             
         tolerance = compare.kwargs.get('tolerance',10)
+        savefig_kwargs = compare.kwargs.get('savefig_kwargs',{})
 
         original = item.function
 
@@ -86,7 +87,7 @@ class ImageComparison(object):
                 result_dir = tempfile.mkdtemp()
                 test_image = os.path.abspath(os.path.join(result_dir, name))
 
-                fig.savefig(test_image)
+                fig.savefig(test_image, **savefig_kwargs)
 
                 # Find path to baseline image
                 baseline_image_ref = os.path.abspath(os.path.join(os.path.dirname(item.fspath.strpath), 'baseline', name))
@@ -115,7 +116,7 @@ class ImageComparison(object):
                 if not os.path.exists(generate_path):
                     os.makedirs(generate_path)
 
-                fig.savefig(os.path.abspath(os.path.join(generate_path, name)))
+                fig.savefig(os.path.abspath(os.path.join(generate_path, name)), **savefig_kwargs)
                 pytest.skip("Skipping test, since generating data")
 
         if item.cls is not None:
