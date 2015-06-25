@@ -44,23 +44,38 @@ def pytest_addoption(parser):
     group.addoption('--mpl', action='store_true',
                     help="Enable comparison of matplotlib figures to reference files")
     group.addoption('--mpl-generate-path',
-                    help="directory to generate reference images in", action='store')
-    group.addoption('--mpl-baseline-path', default='baseline',
-                    help="directory containing baseline images", action='store')
+                    help="directory to generate reference images in, relative to location where py.test is run", action='store')
+    group.addoption('--mpl-baseline-path',
+                    help="directory containing baseline images, relative to location where py.test is run", action='store')
 
 
 def pytest_configure(config):
+
     if config.getoption("--mpl-generate-path") is not None:
-         if config.getoption("--mpl-baseline-path") is not None:
-             raise ValueError("Can't set --mpl-baseline-path when generating reference images with --mpl-generate-path")
+        if config.getoption("--mpl-baseline-path") is not None:
+            raise ValueError("Can't set --mpl-baseline-path when generating reference images with --mpl-generate-path")
+
     if config.getoption("--mpl") or config.getoption("--mpl-generate-path") is not None:
-        config.pluginmanager.register(ImageComparison(config))
+
+        baseline_dir = config.getoption("--mpl-baseline-path")
+        generate_dir = config.getoption("--mpl-generate-path")
+
+        if baseline_dir is not None:
+            baseline_dir = os.path.abspath(baseline_dir)
+        if generate_dir is not None:
+            baseline_dir = os.path.abspath(generate_dir)
+
+        config.pluginmanager.register(ImageComparison(config,
+                                                      baseline_dir=baseline_dir,
+                                                      generate_dir=generate_dir))
 
 
 class ImageComparison(object):
 
-    def __init__(self, config):
+    def __init__(self, config, baseline_dir=None, generate_dir=None):
         self.config = config
+        self.baseline_dir = baseline_dir
+        self.generate_dir = generate_dir
 
     def pytest_runtest_setup(self, item):
 
@@ -77,10 +92,14 @@ class ImageComparison(object):
         @wraps(item.function)
         def item_function_wrapper(*args, **kwargs):
 
-            generate_path = self.config.getoption("--mpl-generate-path")
-
-            baseline_dir = compare.kwargs.get('baseline_dir',
-                                              self.config.getoption("--mpl-baseline-path"))
+            baseline_dir = compare.kwargs.get('baseline_dir', None)
+            if baseline_dir is None:
+                if self.baseline_dir is None:
+                    baseline_dir = os.path.join(os.path.dirname(item.fspath.strpath), 'baseline')
+                else:
+                    baseline_dir = self.baseline_dir
+            else:
+                baseline_dir = os.path.join(os.path.dirname(item.fspath.strpath), baseline_dir)
 
             # Run test and get figure object
             import inspect
@@ -96,7 +115,7 @@ class ImageComparison(object):
 
             # What we do now depends on whether we are generating the reference
             # images or simply running the test.
-            if generate_path is None:
+            if self.generate_dir is None:
 
                 # Save the figure
                 result_dir = tempfile.mkdtemp()
@@ -128,10 +147,10 @@ class ImageComparison(object):
 
             else:
 
-                if not os.path.exists(generate_path):
-                    os.makedirs(generate_path)
+                if not os.path.exists(self.generate_dir):
+                    os.makedirs(self.generate_dir)
 
-                fig.savefig(os.path.abspath(os.path.join(generate_path, filename)), **savefig_kwargs)
+                fig.savefig(os.path.abspath(os.path.join(self.generate_dir, filename)), **savefig_kwargs)
                 pytest.skip("Skipping test, since generating data")
 
         if item.cls is not None:
