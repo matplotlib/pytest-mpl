@@ -67,8 +67,10 @@ def test_generate():
     gen_dir = os.path.join(tmpdir, 'spam', 'egg')
 
     # If we don't generate, the test will fail
-    output = subprocess.check_output('py.test --mpl {0}; exit 0'.format(test_file), shell=True)
-    assert b'Image file not found for comparison test' in output
+    p = subprocess.Popen('py.test --mpl {0}'.format(test_file), shell=True,
+                         stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    p.wait()
+    assert b'Image file not found for comparison test' in p.stdout.read()
 
     # If we do generate, the test should succeed and a new file will appear
     code = subprocess.call('py.test --mpl-generate-path={0} {1}'.format(gen_dir, test_file), shell=True)
