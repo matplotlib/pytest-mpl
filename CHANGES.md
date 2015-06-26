@@ -1,4 +1,9 @@
-0.3 (unreleased)
+0.4 (unreleased)
+----------------
+
+- No changes yet.
+
+0.3 (2015-06-26)
 ----------------
 
 - Changed default tolerance from 10 to 2. [#9]
