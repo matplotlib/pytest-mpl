@@ -1,7 +1,11 @@
 0.3 (unreleased)
 ----------------
 
-- No changes yet.
+- Changed default tolerance from 10 to 2. [#9]
+
+- Added ``tox.ini``.
+
+- Improvements to documentation
 
 0.2 (2015-06-25)
 ----------------
