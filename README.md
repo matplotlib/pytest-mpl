@@ -79,7 +79,7 @@ Options
 -------
 
 The ``@pytest.mark.mpl_image_compare`` marker can take an argument which is the
-RMS tolerance (which defaults to 10):
+RMS tolerance (which defaults to 2):
 
 ```python
 @pytest.mark.mpl_image_compare(tolerance=20)
@@ -146,6 +146,9 @@ The image paths included in the exception are then available for inspection:
 In this case, the differences are very clear, while in some cases it may be
 necessary to use the difference image, or blink the expected and actual images,
 in order to see what changed.
+
+The default tolerance is 2, which is very strict. In some cases, you may want
+to relax this to account for differences in fonts across different systems.
 
 Running the tests for pytest-mpl
 --------------------------------
