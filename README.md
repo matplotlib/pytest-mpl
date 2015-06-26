@@ -147,10 +147,10 @@ In this case, the differences are very clear, while in some cases it may be
 necessary to use the difference image, or blink the expected and actual images,
 in order to see what changed.
 
-Running the tests
------------------
+Running the tests for pytest-mpl
+--------------------------------
 
-To run the tests, first install the plugin then do:
+If you are contributing some changes and want to run the tests, first install the latest version of the plugin then do:
 
     cd tests
     py.test --mpl
