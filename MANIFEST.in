@@ -3,3 +3,4 @@ include README.md
 include CHANGES.md
 
 recursive-include tests *.py *.png
+recursive-include images *.png
