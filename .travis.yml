@@ -16,10 +16,6 @@ before_install:
     - conda create --yes -n test python=$PYTHON_VERSION
     - source activate test
 
-    # Make sure that interactive matplotlib backends work
-    - export DISPLAY=:99.0
-    - sh -e /etc/init.d/xvfb start
-
 install:
     - conda install --yes pip pytest matplotlib nose
 
