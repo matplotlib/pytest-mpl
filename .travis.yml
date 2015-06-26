@@ -1,10 +1,11 @@
-language: python
+language: c
 
-python:
-    - 2.6
-    - 2.7
-    - 3.3
-    - 3.4
+env:
+  matrix:
+    - PYTHON_VERSION=2.6
+    - PYTHON_VERSION=2.7
+    - PYTHON_VERSION=3.3
+    - PYTHON_VERSION=3.4
 
 before_install:
 
@@ -12,7 +13,7 @@ before_install:
     - source .continuous-integration/travis/setup_environment_$TRAVIS_OS_NAME.sh
 
     # Create environment
-    - conda create --yes -n test python=$TRAVIS_PYTHON_VERSION
+    - conda create --yes -n test python=$PYTHON_VERSION
     - source activate test
 
     # Make sure that interactive matplotlib backends work
@@ -26,4 +27,3 @@ script:
    - python setup.py install
    - cd tests
    - py.test --mpl
-
