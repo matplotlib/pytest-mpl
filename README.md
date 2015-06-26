@@ -1,4 +1,4 @@
-[![Travis Build Status](https://travis-ci.org/astrofrog/pytest-mpl.svg?branch=master)](https://travis-ci.org/astrofrog/pytest-mpl) 
+[![Travis Build Status](https://travis-ci.org/astrofrog/pytest-mpl.svg?branch=master)](https://travis-ci.org/astrofrog/pytest-mpl)
 [![AppVeyor Build status](https://ci.appveyor.com/api/projects/status/mf7hs44scg5mvcyo?svg=true)](https://ci.appveyor.com/project/astrofrog/pytest-mpl)
 
 
@@ -28,9 +28,9 @@ To install, you can do:
 You can check that the plugin is registered with pytest by doing:
 
     py.test --version
-    
+
 which will show a list of plugins:
-    
+
     This is pytest version 2.7.1, imported from ...
     setuptools registered plugins:
       pytest-mpl-0.1 at ...
@@ -118,6 +118,34 @@ This directory will be interpreted as being relative to where the tests are
 run. In addition, if both this option and the ``baseline_dir`` option in the
 ``mpl_image_compare`` decorator are used, the one in the decorator takes
 precedence.
+
+Test failure example
+--------------------
+
+If the images produced by the tests are correct, then the test will pass, but if they are not, the test will fail with a message similar to the following:
+
+```
+E               Exception: Error: Image files did not match.
+E                 RMS Value: 142.2287807767823
+E                 Expected:
+E                   /var/folders/zy/t1l3sx310d3d6p0kyxqzlrnr0000gr/T/tmp4h4oxr7y/baseline-coords_overlay_auto_coord_meta.png
+E                 Actual:
+E                   /var/folders/zy/t1l3sx310d3d6p0kyxqzlrnr0000gr/T/tmp4h4oxr7y/coords_overlay_auto_coord_meta.png
+E                 Difference:
+E                   /var/folders/zy/t1l3sx310d3d6p0kyxqzlrnr0000gr/T/tmp4h4oxr7y/coords_overlay_auto_coord_meta-failed-diff.png
+E                 Tolerance:
+E                   10
+```
+
+The image paths included in the exception are then available for inspection:
+
+| Expected      | Actual        | Difference |
+| ------------- | ------------- | ---------- |
+| ![expected](images/baseline-coords_overlay_auto_coord_meta.png) | ![actual](images/coords_overlay_auto_coord_meta.png)  | ![diff](images/coords_overlay_auto_coord_meta-failed-diff.png) |
+
+In this case, the differences are very clear, while in some cases it may be
+necessary to use the difference image, or blink the expected and actual images,
+in order to see what changed.
 
 Running the tests
 -----------------
