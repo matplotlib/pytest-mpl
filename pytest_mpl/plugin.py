@@ -84,7 +84,7 @@ class ImageComparison(object):
         if compare is None:
             return
 
-        tolerance = compare.kwargs.get('tolerance', 10)
+        tolerance = compare.kwargs.get('tolerance', 2)
         savefig_kwargs = compare.kwargs.get('savefig_kwargs', {})
 
         original = item.function
