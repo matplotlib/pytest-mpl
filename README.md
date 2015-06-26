@@ -1,4 +1,5 @@
-[![Travis Build Status](https://travis-ci.org/astrofrog/pytest-mpl.svg?branch=master)](https://travis-ci.org/astrofrog/pytest-mpl)
+**Linux**: [![Travis Build Status](https://travis-ci.org/astrofrog/pytest-mpl.svg?branch=master)](https://travis-ci.org/astrofrog/pytest-mpl)  --   **MacOS X**:
+[![Travis Build Status](https://travis-ci.org/astrofrog/pytest-mpl.svg?branch=travis-osx)](https://travis-ci.org/astrofrog/pytest-mpl)  --  **Windows**:
 [![AppVeyor Build status](https://ci.appveyor.com/api/projects/status/mf7hs44scg5mvcyo?svg=true)](https://ci.appveyor.com/project/astrofrog/pytest-mpl)
 
 
