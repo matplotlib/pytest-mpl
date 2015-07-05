@@ -11,6 +11,7 @@ except (IOError, ImportError):
 
 setup(
     version=__version__,
+    url="https://github.com/astrofrog/pytest-mpl",
     name="pytest-mpl",
     description='pytest plugin to help with testing figures output from Matplotlib',
     long_description=long_description,
