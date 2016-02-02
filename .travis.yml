@@ -7,7 +7,7 @@ os:
 env:
   global:
     - SETUP_XVFB=True
-    - CONDA_DEPENDENCIES="pytest matplotlib nose"
+    - CONDA_DEPENDENCIES="pytest matplotlib=1.4 nose"
   matrix:
     - PYTHON_VERSION=2.6
     - PYTHON_VERSION=2.7
