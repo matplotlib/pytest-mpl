@@ -1,29 +1,28 @@
 language: c
 
+os:
+    - linux
+    - osx
+
 env:
+  global:
+    - SETUP_XVFB=True
+    - CONDA_DEPENDENCIES="pytest matplotlib=1.4 nose"
   matrix:
     - PYTHON_VERSION=2.6
     - PYTHON_VERSION=2.7
     - PYTHON_VERSION=3.3
     - PYTHON_VERSION=3.4
 
-before_install:
+install:  
 
-    # Install conda
-    - source .continuous-integration/travis/setup_environment_$TRAVIS_OS_NAME.sh
+    # We use the ci-helpers package from the Astropy project to set up conda 
+    # with any requested dependencies above.
+    - git clone git://github.com/astropy/ci-helpers.git
+    - source ci-helpers/travis/setup_conda_$TRAVIS_OS_NAME.sh
 
-    # Create environment
-    - conda create --yes -n test python=$PYTHON_VERSION
-    - source activate test
-
-    # Make sure that interactive matplotlib backends work
-    - export DISPLAY=:99.0
-    - sh -e /etc/init.d/xvfb start
-
-install:
-    - conda install --yes pip pytest matplotlib nose
+    - python setup.py install
 
 script:
-   - python setup.py install
    - cd tests
    - py.test --mpl
