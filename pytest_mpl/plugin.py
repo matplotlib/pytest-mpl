@@ -39,6 +39,12 @@ import pytest
 
 from matplotlib.testing.compare import compare_images
 
+import sys
+if sys.version_info[0] == 2:
+    string_types = basestring,
+else:
+    string_types = str,
+
 
 def pytest_addoption(parser):
     group = parser.getgroup("general")
@@ -93,14 +99,21 @@ class ImageComparison(object):
         @wraps(item.function)
         def item_function_wrapper(*args, **kwargs):
 
+            # Note that below we make baseline_dir into a list (if it isn't
+            # already one) and we'll then search for a baseline image starting
+            # from the first directory in baseline_dir and stopping once we find
+            # one. This then allows support for having different reference
+            # images for different versions of Matplotlib for example.
             baseline_dir = compare.kwargs.get('baseline_dir', None)
             if baseline_dir is None:
                 if self.baseline_dir is None:
-                    baseline_dir = os.path.join(os.path.dirname(item.fspath.strpath), 'baseline')
+                    baseline_dir = [os.path.join(os.path.dirname(item.fspath.strpath), 'baseline')]
                 else:
-                    baseline_dir = self.baseline_dir
+                    baseline_dir = [self.baseline_dir]
             else:
-                baseline_dir = os.path.join(os.path.dirname(item.fspath.strpath), baseline_dir)
+                if isinstance(baseline_dir, string_types):
+                    baseline_dir = [baseline_dir]
+                baseline_dir = [os.path.join(os.path.dirname(item.fspath.strpath), x) for x in baseline_dir]
 
             # Run test and get figure object
             import inspect
@@ -125,14 +138,15 @@ class ImageComparison(object):
                 fig.savefig(test_image, **savefig_kwargs)
 
                 # Find path to baseline image
-                baseline_image_ref = os.path.abspath(os.path.join(os.path.dirname(item.fspath.strpath), baseline_dir, filename))
-
-                if not os.path.exists(baseline_image_ref):
+                for directory in baseline_dir:
+                    baseline_image_ref = os.path.abspath(os.path.join(os.path.dirname(item.fspath.strpath), directory, filename))
+                    if os.path.exists(baseline_image_ref):
+                        break
+                else:
                     raise Exception("""Image file not found for comparison test
                                     Generated Image:
                                     \t{test}
-                                    This is expected for new tests.""".format(
-                        test=test_image))
+                                    This is expected for new tests.""".format(test=test_image))
 
                 # distutils may put the baseline images in non-accessible places,
                 # copy to our tmpdir to be sure to keep them in case of failure
