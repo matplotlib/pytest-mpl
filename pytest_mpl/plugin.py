@@ -47,10 +47,11 @@ else:
 
 def _download_file(url):
     u = urlopen(url)
-    tmpfile = tempfile.NamedTemporaryFile()
-    tmpfile.write(u.read())
-    tmpfile.flush()
-    return tmpfile
+    result_dir = tempfile.mkdtemp()
+    filename = os.path.join(result_dir, 'downloaded')
+    with open(filename, 'wb') as tmpfile:
+        tmpfile.write(u.read())
+    return filename
 
 
 def pytest_addoption(parser):
@@ -142,8 +143,7 @@ class ImageComparison(object):
 
                 # Find path to baseline image
                 if baseline_remote:
-                    tmpfile = _download_file(baseline_dir + filename)
-                    baseline_image_ref = tmpfile.name
+                    baseline_image_ref = _download_file(baseline_dir + filename)
                 else:
                     baseline_image_ref = os.path.abspath(os.path.join(os.path.dirname(item.fspath.strpath), baseline_dir, filename))
 
@@ -158,9 +158,6 @@ class ImageComparison(object):
                 # copy to our tmpdir to be sure to keep them in case of failure
                 baseline_image = os.path.abspath(os.path.join(result_dir, 'baseline-' + filename))
                 shutil.copyfile(baseline_image_ref, baseline_image)
-
-                if baseline_remote:
-                    tmpfile.close()
 
                 msg = compare_images(baseline_image, test_image, tol=tolerance)
 
