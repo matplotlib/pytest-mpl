@@ -1,7 +1,7 @@
 0.4 (unreleased)
 ----------------
 
-- No changes yet.
+- Add support for remote baseline images.
 
 0.3 (2015-06-26)
 ----------------

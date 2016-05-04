@@ -31,12 +31,26 @@
 from functools import wraps
 
 import os
+import sys
 import shutil
 import tempfile
 
 import pytest
 
 from matplotlib.testing.compare import compare_images
+
+if sys.version_info[0] == 2:
+    from urllib import urlopen
+else:
+    from urllib.request import urlopen
+
+
+def _download_file(url):
+    u = urlopen(url)
+    tmpfile = tempfile.NamedTemporaryFile()
+    tmpfile.write(u.read())
+    tmpfile.flush()
+    return tmpfile
 
 
 def pytest_addoption(parser):
@@ -99,7 +113,10 @@ class ImageComparison(object):
                 else:
                     baseline_dir = self.baseline_dir
             else:
-                baseline_dir = os.path.join(os.path.dirname(item.fspath.strpath), baseline_dir)
+                if not baseline_dir.startswith('http'):
+                    baseline_dir = os.path.join(os.path.dirname(item.fspath.strpath), baseline_dir)
+
+            baseline_remote = baseline_dir.startswith('http')
 
             # Run test and get figure object
             import inspect
@@ -124,7 +141,11 @@ class ImageComparison(object):
                 fig.savefig(test_image, **savefig_kwargs)
 
                 # Find path to baseline image
-                baseline_image_ref = os.path.abspath(os.path.join(os.path.dirname(item.fspath.strpath), baseline_dir, filename))
+                if baseline_remote:
+                    tmpfile = _download_file(baseline_dir + filename)
+                    baseline_image_ref = tmpfile.name
+                else:
+                    baseline_image_ref = os.path.abspath(os.path.join(os.path.dirname(item.fspath.strpath), baseline_dir, filename))
 
                 if not os.path.exists(baseline_image_ref):
                     raise Exception("""Image file not found for comparison test
@@ -137,6 +158,9 @@ class ImageComparison(object):
                 # copy to our tmpdir to be sure to keep them in case of failure
                 baseline_image = os.path.abspath(os.path.join(result_dir, 'baseline-' + filename))
                 shutil.copyfile(baseline_image_ref, baseline_image)
+
+                if baseline_remote:
+                    tmpfile.close()
 
                 msg = compare_images(baseline_image, test_image, tol=tolerance)
 
