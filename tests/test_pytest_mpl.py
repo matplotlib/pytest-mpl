@@ -16,6 +16,13 @@ def test_succeeds():
     ax.plot([1, 2, 3])
     return fig
 
+@pytest.mark.mpl_image_compare(baseline_dir='http://astrofrog.github.io/pytest-mpl/')
+def test_succeeds_remote():
+    fig = plt.figure()
+    ax = fig.add_subplot(1, 1, 1)
+    ax.plot([1, 2, 3])
+    return fig
+
 
 class TestClass(object):
 
