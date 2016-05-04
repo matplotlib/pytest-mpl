@@ -1,7 +1,10 @@
 0.4 (unreleased)
 ----------------
 
-- Add support for remote baseline images.
+- Add support for remote baseline images. [#18]
+
+- When providing two conflicting options, warn instead of raising an
+  exception. [#19]
 
 0.3 (2015-06-26)
 ----------------

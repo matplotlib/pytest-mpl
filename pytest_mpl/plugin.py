@@ -34,6 +34,7 @@ import os
 import sys
 import shutil
 import tempfile
+import warnings
 
 import pytest
 
@@ -66,14 +67,13 @@ def pytest_addoption(parser):
 
 def pytest_configure(config):
 
-    if config.getoption("--mpl-generate-path") is not None:
-        if config.getoption("--mpl-baseline-path") is not None:
-            raise ValueError("Can't set --mpl-baseline-path when generating reference images with --mpl-generate-path")
-
     if config.getoption("--mpl") or config.getoption("--mpl-generate-path") is not None:
 
         baseline_dir = config.getoption("--mpl-baseline-path")
         generate_dir = config.getoption("--mpl-generate-path")
+
+        if baseline_dir is not None and generate_dir is not None:
+            warnings.warn("Ignoring --mpl-baseline-path since --mpl-generate-path is set")
 
         if baseline_dir is not None:
             baseline_dir = os.path.abspath(baseline_dir)
