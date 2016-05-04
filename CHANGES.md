@@ -1,4 +1,4 @@
-0.4 (unreleased)
+0.4 (2016-05-04)
 ----------------
 
 - Add support for remote baseline images. [#18]
