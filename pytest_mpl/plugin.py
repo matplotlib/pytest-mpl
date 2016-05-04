@@ -114,7 +114,7 @@ class ImageComparison(object):
                 else:
                     baseline_dir = self.baseline_dir
             else:
-                if not baseline_dir.startswith('http'):
+                if not baseline_dir.startswith(('http://', 'https://')):
                     baseline_dir = os.path.join(os.path.dirname(item.fspath.strpath), baseline_dir)
 
             baseline_remote = baseline_dir.startswith('http')
