@@ -2,21 +2,34 @@ import os
 import sys
 import subprocess
 import tempfile
+from distutils.version import LooseVersion
 
 import pytest
+import matplotlib
 import matplotlib.pyplot as plt
+
+MPL_VERSION = LooseVersion(matplotlib.__version__)
+
+baseline_dir = 'baseline'
+
+if MPL_VERSION >= LooseVersion('1.5.0'):
+    baseline_subdir = '1.5.x'
+else:
+    baseline_subdir = '1.4.x'
+
+baseline_dir_local = os.path.join(baseline_dir, baseline_subdir)
+baseline_dir_remote = 'http://astrofrog.github.io/pytest-mpl/' + baseline_subdir + '/'
 
 PY26 = sys.version_info[:2] == (2, 6)
 
-
-@pytest.mark.mpl_image_compare
+@pytest.mark.mpl_image_compare(baseline_dir=baseline_dir_local)
 def test_succeeds():
     fig = plt.figure()
     ax = fig.add_subplot(1, 1, 1)
     ax.plot([1, 2, 3])
     return fig
 
-@pytest.mark.mpl_image_compare(baseline_dir='http://astrofrog.github.io/pytest-mpl/')
+@pytest.mark.mpl_image_compare(baseline_dir=baseline_dir_remote)
 def test_succeeds_remote():
     fig = plt.figure()
     ax = fig.add_subplot(1, 1, 1)
@@ -26,7 +39,7 @@ def test_succeeds_remote():
 
 class TestClass(object):
 
-    @pytest.mark.mpl_image_compare
+    @pytest.mark.mpl_image_compare(baseline_dir=baseline_dir_local)
     def test_succeeds(self):
         fig = plt.figure()
         ax = fig.add_subplot(1, 1, 1)
@@ -34,7 +47,7 @@ class TestClass(object):
         return fig
 
 
-@pytest.mark.mpl_image_compare(savefig_kwargs={'dpi': 30})
+@pytest.mark.mpl_image_compare(baseline_dir=baseline_dir_local, savefig_kwargs={'dpi': 30})
 def test_dpi():
     fig = plt.figure()
     ax = fig.add_subplot(1, 1, 1)
@@ -105,7 +118,7 @@ def test_generate():
     assert os.path.exists(os.path.join(gen_dir, 'test_gen.png'))
 
 
-@pytest.mark.mpl_image_compare(tolerance=20)
+@pytest.mark.mpl_image_compare(baseline_dir=baseline_dir_local, tolerance=20)
 def test_tolerance():
     fig = plt.figure()
     ax = fig.add_subplot(1, 1, 1)
