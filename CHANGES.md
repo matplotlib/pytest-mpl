@@ -1,7 +1,9 @@
 0.5 (unreleased)
 ----------------
 
-- No changes yet
+- Minor fixes to detection of remote baseline directories.
+
+- Minor improvements to documentation.
 
 0.4 (2016-05-04)
 ----------------

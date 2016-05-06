@@ -10,7 +10,6 @@ Matplotlib includes a number of test utilities and decorators, but these are gea
 
 For each figure to test, the reference image is substracted from the generated image, and the RMS of the residual is compared to a user-specified tolerance. If the residual is too large, the test will fail (this is implemented using helper functions from ``matplotlib.testing``).
 
-
 For more information on how to write tests to do this, see the **Using** section below.
 
 Installing
