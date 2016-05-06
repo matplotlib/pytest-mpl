@@ -109,7 +109,7 @@ def test_image():
 
 The baseline directory in the decorator above will be interpreted as being
 relative to the test file. Note that the baseline directory can also be a
-URL (which should start with ``http`` and end in a slash).
+URL (which should start with ``http://`` or ``https://`` and end in a slash).
 
 Finally, you can also set a custom baseline directory globally when running
 tests by running ``py.test`` with:
