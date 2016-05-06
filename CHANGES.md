@@ -1,4 +1,4 @@
-0.5 (unreleased)
+0.5 (2016-05-06)
 ----------------
 
 - Minor fixes to detection of remote baseline directories.
