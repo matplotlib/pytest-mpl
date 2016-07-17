@@ -31,5 +31,6 @@ install:
     - python setup.py install
 
 script:
+   - python -c 'import pytest_mpl.plugin'
    - cd tests
    - py.test --mpl
