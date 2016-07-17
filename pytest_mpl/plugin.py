@@ -35,15 +35,23 @@ import sys
 import shutil
 import tempfile
 import warnings
+from distutils.version import LooseVersion
 
 import pytest
 
+import matplotlib
+import matplotlib.pyplot as plt
 from matplotlib.testing.compare import compare_images
+from matplotlib.testing.decorators import ImageComparisonTest as MplImageComparisonTest
+from matplotlib.testing.decorators import cleanup
 
 if sys.version_info[0] == 2:
     from urllib import urlopen
 else:
     from urllib.request import urlopen
+
+
+MPL_LT_15 = LooseVersion(matplotlib.__version__) < LooseVersion('1.5')
 
 
 def _download_file(url):
@@ -101,6 +109,11 @@ class ImageComparison(object):
 
         tolerance = compare.kwargs.get('tolerance', 2)
         savefig_kwargs = compare.kwargs.get('savefig_kwargs', {})
+        style = compare.kwargs.get('style', 'classic')
+        remove_text = compare.kwargs.get('remove_text', False)
+
+        if MPL_LT_15 and style == 'classic':
+            style = os.path.join(os.path.dirname(__file__), 'classic.mplstyle')
 
         original = item.function
 
@@ -119,60 +132,65 @@ class ImageComparison(object):
 
             baseline_remote = baseline_dir.startswith('http')
 
-            # Run test and get figure object
-            import inspect
-            if inspect.ismethod(original):  # method
-                fig = original(*args[1:], **kwargs)
-            else:  # function
-                fig = original(*args, **kwargs)
+            with plt.style.context(style):
 
-            # Find test name to use as plot name
-            filename = compare.kwargs.get('filename', None)
-            if filename is None:
-                filename = original.__name__ + '.png'
+                # Run test and get figure object
+                import inspect
+                if inspect.ismethod(original):  # method
+                    fig = original(*args[1:], **kwargs)
+                else:  # function
+                    fig = original(*args, **kwargs)
 
-            # What we do now depends on whether we are generating the reference
-            # images or simply running the test.
-            if self.generate_dir is None:
+                if remove_text:
+                    MplImageComparisonTest.remove_text(fig)
 
-                # Save the figure
-                result_dir = tempfile.mkdtemp()
-                test_image = os.path.abspath(os.path.join(result_dir, filename))
+                # Find test name to use as plot name
+                filename = compare.kwargs.get('filename', None)
+                if filename is None:
+                    filename = original.__name__ + '.png'
 
-                fig.savefig(test_image, **savefig_kwargs)
+                # What we do now depends on whether we are generating the
+                # reference images or simply running the test.
+                if self.generate_dir is None:
 
-                # Find path to baseline image
-                if baseline_remote:
-                    baseline_image_ref = _download_file(baseline_dir + filename)
+                    # Save the figure
+                    result_dir = tempfile.mkdtemp()
+                    test_image = os.path.abspath(os.path.join(result_dir, filename))
+
+                    fig.savefig(test_image, **savefig_kwargs)
+
+                    # Find path to baseline image
+                    if baseline_remote:
+                        baseline_image_ref = _download_file(baseline_dir + filename)
+                    else:
+                        baseline_image_ref = os.path.abspath(os.path.join(os.path.dirname(item.fspath.strpath), baseline_dir, filename))
+
+                    if not os.path.exists(baseline_image_ref):
+                        raise Exception("""Image file not found for comparison test
+                                        Generated Image:
+                                        \t{test}
+                                        This is expected for new tests.""".format(
+                            test=test_image))
+
+                    # distutils may put the baseline images in non-accessible places,
+                    # copy to our tmpdir to be sure to keep them in case of failure
+                    baseline_image = os.path.abspath(os.path.join(result_dir, 'baseline-' + filename))
+                    shutil.copyfile(baseline_image_ref, baseline_image)
+
+                    msg = compare_images(baseline_image, test_image, tol=tolerance)
+
+                    if msg is None:
+                        shutil.rmtree(result_dir)
+                    else:
+                        raise Exception(msg)
+
                 else:
-                    baseline_image_ref = os.path.abspath(os.path.join(os.path.dirname(item.fspath.strpath), baseline_dir, filename))
 
-                if not os.path.exists(baseline_image_ref):
-                    raise Exception("""Image file not found for comparison test
-                                    Generated Image:
-                                    \t{test}
-                                    This is expected for new tests.""".format(
-                        test=test_image))
+                    if not os.path.exists(self.generate_dir):
+                        os.makedirs(self.generate_dir)
 
-                # distutils may put the baseline images in non-accessible places,
-                # copy to our tmpdir to be sure to keep them in case of failure
-                baseline_image = os.path.abspath(os.path.join(result_dir, 'baseline-' + filename))
-                shutil.copyfile(baseline_image_ref, baseline_image)
-
-                msg = compare_images(baseline_image, test_image, tol=tolerance)
-
-                if msg is None:
-                    shutil.rmtree(result_dir)
-                else:
-                    raise Exception(msg)
-
-            else:
-
-                if not os.path.exists(self.generate_dir):
-                    os.makedirs(self.generate_dir)
-
-                fig.savefig(os.path.abspath(os.path.join(self.generate_dir, filename)), **savefig_kwargs)
-                pytest.skip("Skipping test, since generating data")
+                    fig.savefig(os.path.abspath(os.path.join(self.generate_dir, filename)), **savefig_kwargs)
+                    pytest.skip("Skipping test, since generating data")
 
         if item.cls is not None:
             setattr(item.cls, item.function.__name__, item_function_wrapper)

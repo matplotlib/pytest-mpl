@@ -9,18 +9,22 @@ import matplotlib
 import matplotlib.pyplot as plt
 
 MPL_VERSION = LooseVersion(matplotlib.__version__)
+MPL_LT_2 = LooseVersion(matplotlib.__version__) < LooseVersion("2.0")
 
 baseline_dir = 'baseline'
 
-if MPL_VERSION >= LooseVersion('1.5.0'):
+if MPL_VERSION >= LooseVersion('2'):
+    baseline_subdir = '2.0.x'
+elif MPL_VERSION >= LooseVersion('1.5'):
     baseline_subdir = '1.5.x'
 else:
     baseline_subdir = '1.4.x'
 
 baseline_dir_local = os.path.join(baseline_dir, baseline_subdir)
-baseline_dir_remote = 'http://astrofrog.github.io/pytest-mpl/' + baseline_subdir + '/'
+baseline_dir_remote = 'http://matplotlib.github.io/pytest-mpl/' + baseline_subdir + '/'
 
 PY26 = sys.version_info[:2] == (2, 6)
+
 
 @pytest.mark.mpl_image_compare(baseline_dir=baseline_dir_local)
 def test_succeeds():
@@ -28,6 +32,7 @@ def test_succeeds():
     ax = fig.add_subplot(1, 1, 1)
     ax.plot([1, 2, 3])
     return fig
+
 
 @pytest.mark.mpl_image_compare(baseline_dir=baseline_dir_remote)
 def test_succeeds_remote():
@@ -128,3 +133,22 @@ def test_tolerance():
 
 def test_nofigure():
     pass
+
+
+@pytest.mark.skipif(MPL_LT_2, reason="the fivethirtyeight style is only available in Matplotlib 2.0 and later")
+@pytest.mark.mpl_image_compare(baseline_dir=baseline_dir_local,
+                               style='fivethirtyeight')
+def test_base_style():
+    fig = plt.figure()
+    ax = fig.add_subplot(1, 1, 1)
+    ax.plot([1, 2, 3])
+    return fig
+
+
+@pytest.mark.mpl_image_compare(baseline_dir=baseline_dir_local,
+                               remove_text=True)
+def test_remove_text():
+    fig = plt.figure()
+    ax = fig.add_subplot(1, 1, 1)
+    ax.plot([1, 2, 3])
+    return fig

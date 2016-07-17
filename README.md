@@ -79,8 +79,12 @@ checking the output images.
 Options
 -------
 
-The ``@pytest.mark.mpl_image_compare`` marker can take an argument which is the
-RMS tolerance (which defaults to 2):
+Tolerance
+^^^^^^^^^
+
+The RMS tolerance for the image comparison (which defaults to 2) can be
+specified in the ``mpl_image_compare`` decorator with the ``tolerance``
+argument:
 
 ```python
 @pytest.mark.mpl_image_compare(tolerance=20)
@@ -88,7 +92,11 @@ def test_image():
     ...
 ```
 
-You can also pass keyword arguments to ``savefig`` by using ``savefig_kwargs``:
+Savefig options
+^^^^^^^^^^^^^^^
+
+You can pass keyword arguments to ``savefig`` by using ``savefig_kwargs`` in
+the ``mpl_image_compare`` decorator:
 
 ```python
 @pytest.mark.mpl_image_compare(savefig_kwargs={'dpi':300})
@@ -96,9 +104,13 @@ def test_image():
     ...
 ```
 
-Other options include the name of the baseline directory (which defaults to
-``baseline`` ) and the filename of the plot (which defaults to the name of the
-test with a ``.png`` suffix):
+Baseline images
+^^^^^^^^^^^^^^^
+
+The baseline directory (which defaults to ``baseline`` ) and the filename of
+the plot (which defaults to the name of the test with a ``.png`` suffix) can be
+customized with the ``baseline_dir`` and ``filename`` arguments in the
+``mpl_image_compare`` decorator:
 
 ```python
 @pytest.mark.mpl_image_compare(baseline_dir='baseline_images',
@@ -120,6 +132,32 @@ This directory will be interpreted as being relative to where the tests are
 run. In addition, if both this option and the ``baseline_dir`` option in the
 ``mpl_image_compare`` decorator are used, the one in the decorator takes
 precedence.
+
+Base style
+^^^^^^^^^^
+
+By default, tests will be run using the Matplotlib 'classic' style (ignoring
+any locally defined RC parameters). This can be overriden by using the
+``style`` argument:
+
+```python
+@pytest.mark.mpl_image_compare(style='fivethirtyeight')
+def test_image():
+    ...
+```
+
+Removing text
+^^^^^^^^^^^^^
+
+If you are running a test for which you are not interested in comparing the text labels, you can use the ``remove_text`` argument to the decorator:
+
+```python
+@pytest.mark.mpl_image_compare(remove_text=True)
+def test_image():
+    ...
+```
+
+This will make the test insensitive to changes in e.g. the freetype library.
 
 Test failure example
 --------------------
