@@ -18,26 +18,15 @@ env:
     - PYTHON_VERSION=3.4 MATPLOTLIB_VERSION=1.4
     - PYTHON_VERSION=2.7 MATPLOTLIB_VERSION=1.5
     - PYTHON_VERSION=3.5 MATPLOTLIB_VERSION=1.5
-    - PYTHON_VERSION=2.7 MATPLOTLIB_VERSION=2.0
-    - PYTHON_VERSION=3.5 MATPLOTLIB_VERSION=2.0
+    - PYTHON_VERSION=2.7 MATPLOTLIB_VERSION=2.0 CONDA_CHANNELS="conda-forge/label/rc conda-forge"
+    - PYTHON_VERSION=3.5 MATPLOTLIB_VERSION=2.0 CONDA_CHANNELS="conda-forge/label/rc conda-forge"
 
 install:
-
-    # TMP: until matplotlib 2.0 is in main conda channel
-    - if [[ $MATPLOTLIB_VERSION == 2.0 ]]; then
-        unset MATPLOTLIB_VERSION;
-        export INSTALL_MPL2=true;
-      else
-        export INSTALL_MPL2=false;
-      fi
 
     # We use the ci-helpers package from the Astropy project to set up conda
     # with any requested dependencies above.
     - git clone git://github.com/astropy/ci-helpers.git
     - source ci-helpers/travis/setup_conda_$TRAVIS_OS_NAME.sh
-
-    # TMP: until matplotlib 2.0 is in main conda channel
-    - if [[ $INSTALL_MPL2 == true ]]; then conda install -c conda-forge/label/rc -c conda-forge matplotlib libpng; fi
 
     - python setup.py install
 
