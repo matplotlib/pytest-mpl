@@ -100,7 +100,7 @@ Options
 Tolerance
 ^^^^^^^^^
 
-The RMS tolerance for the image comparison (which defaults to 2) can be
+The RMS tolerance for the image comparison (which defaults to 0) can be
 specified in the ``mpl_image_compare`` decorator with the ``tolerance``
 argument:
 
@@ -216,7 +216,7 @@ In this case, the differences are very clear, while in some cases it may
 be necessary to use the difference image, or blink the expected and
 actual images, in order to see what changed.
 
-The default tolerance is 2, which is very strict. In some cases, you may
+The default tolerance is 0, which is very strict. In some cases, you may
 want to relax this to account for differences in fonts across different
 systems.
 

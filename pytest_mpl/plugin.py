@@ -133,7 +133,7 @@ class ImageComparison(object):
         if compare is None:
             return
 
-        tolerance = compare.kwargs.get('tolerance', 2)
+        tolerance = compare.kwargs.get('tolerance', 0)
         savefig_kwargs = compare.kwargs.get('savefig_kwargs', {})
         style = compare.kwargs.get('style', 'classic')
         remove_text = compare.kwargs.get('remove_text', False)
