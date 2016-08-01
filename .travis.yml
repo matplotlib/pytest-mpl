@@ -10,7 +10,8 @@ os:
 env:
   global:
     - SETUP_XVFB=True
-    - CONDA_DEPENDENCIES="pytest matplotlib nose"
+    - CONDA_DEPENDENCIES="pytest matplotlib nose coverage"
+    - PIP_DEPENDENCIES="pytest-cov coveralls"
   matrix:
     - PYTHON_VERSION=2.6 MATPLOTLIB_VERSION=1.4 NUMPY_VERSION=1.9
     - PYTHON_VERSION=2.7 MATPLOTLIB_VERSION=1.4 NUMPY_VERSION=1.9
@@ -32,5 +33,7 @@ install:
 
 script:
    - python -c 'import pytest_mpl.plugin'
-   - cd tests
-   - py.test --mpl
+   - py.test --mpl --cov pytest_mpl tests
+
+after_success:
+   - coveralls
