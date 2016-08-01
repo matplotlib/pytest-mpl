@@ -16,6 +16,7 @@ setup(
     description='pytest plugin to help with testing figures output from Matplotlib',
     long_description=long_description,
     packages = ['pytest_mpl'],
+    package_data = {'pytest_mpl': ['classic.mplstyle']},
     license='BSD',
     author='Thomas Robitaille',
     author_email='thomas.robitaille@gmail.com',
