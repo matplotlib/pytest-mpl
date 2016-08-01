@@ -1,7 +1,6 @@
 import os
 import sys
 import subprocess
-import tempfile
 from distutils.version import LooseVersion
 
 import pytest
@@ -24,6 +23,7 @@ baseline_dir_local = os.path.join(baseline_dir, baseline_subdir)
 baseline_dir_remote = 'http://matplotlib.github.io/pytest-mpl/' + baseline_subdir + '/'
 
 PY26 = sys.version_info[:2] == (2, 6)
+WIN = sys.platform.startswith('win')
 
 
 @pytest.mark.mpl_image_compare(baseline_dir=baseline_dir_local)
@@ -71,11 +71,9 @@ def test_fail():
 """
 
 
-def test_fails():
+def test_fails(tmpdir):
 
-    tmpdir = tempfile.mkdtemp()
-
-    test_file = os.path.join(tmpdir, 'test.py')
+    test_file = tmpdir.join('test.py').strpath
     with open(test_file, 'w') as f:
         f.write(TEST_FAILING)
 
@@ -100,16 +98,19 @@ def test_gen():
 """
 
 
-@pytest.mark.skipif("PY26")
-def test_generate():
+# TODO: We skip the following test on Windows since the first subprocess calls.
+# This should be fixed in the long term, but is not critical since we already
+# test this on Linux.
 
-    tmpdir = tempfile.mkdtemp()
 
-    test_file = os.path.join(tmpdir, 'test.py')
+@pytest.mark.skipif("WIN")
+def test_generate(tmpdir):
+
+    test_file = tmpdir.join('test.py').strpath
     with open(test_file, 'w') as f:
         f.write(TEST_GENERATE)
 
-    gen_dir = os.path.join(tmpdir, 'spam', 'egg')
+    gen_dir = tmpdir.mkdir('spam').mkdir('egg').strpath
 
     # If we don't generate, the test will fail
     p = subprocess.Popen('py.test --mpl {0}'.format(test_file), shell=True,
