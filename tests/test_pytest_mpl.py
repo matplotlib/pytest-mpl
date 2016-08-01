@@ -153,3 +153,13 @@ def test_remove_text():
     ax = fig.add_subplot(1, 1, 1)
     ax.plot([1, 2, 3])
     return fig
+
+
+@pytest.mark.parametrize('s', [5, 50, 500])
+@pytest.mark.mpl_image_compare(baseline_dir=baseline_dir_local,
+                               remove_text=True)
+def test_parametrized(s):
+    fig = plt.figure()
+    ax = fig.add_subplot(1, 1, 1)
+    ax.scatter([1,3,4,3,2],[1,4,3,3,1], s=s)
+    return fig
