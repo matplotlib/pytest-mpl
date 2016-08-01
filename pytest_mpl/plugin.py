@@ -147,7 +147,9 @@ class ImageComparison(object):
                 # Find test name to use as plot name
                 filename = compare.kwargs.get('filename', None)
                 if filename is None:
-                    filename = original.__name__ + '.png'
+                    filename = item.name + '.png'
+                    filename = filename.replace('[', '_').replace(']', '_')
+                    filename = filename.replace('_.png', '.png')
 
                 # What we do now depends on whether we are generating the
                 # reference images or simply running the test.
