@@ -41,9 +41,36 @@ import pytest
 
 import matplotlib
 import matplotlib.pyplot as plt
-from matplotlib.testing.compare import compare_images
-from matplotlib.testing.decorators import ImageComparisonTest as MplImageComparisonTest
-from matplotlib.testing.decorators import cleanup
+
+# The following imports in Matplotlib may require nose even though the
+# functionality we import doesn't require it. Therefore, if nose isn't
+# installed, we mock the module temporarily to avoid requiring it as a
+# dependency. We could in principle use the mock module but that would
+# then add a dependency.
+
+try:
+    import nose
+except ImportError:
+    NOSE_INSTALLED = False
+else:
+    NOSE_INSTALLED = True
+
+try:
+
+    if not NOSE_INSTALLED:
+        import imp
+        sys.modules['nose'] = imp.new_module('nose')
+
+    from matplotlib.testing.compare import compare_images
+    from matplotlib.testing.decorators import ImageComparisonTest as MplImageComparisonTest
+    from matplotlib.testing.decorators import cleanup
+
+finally:
+
+    if not NOSE_INSTALLED:
+        sys.modules.pop('nose')
+
+# We don't use six in the following to avoid adding a dependency
 
 if sys.version_info[0] == 2:
     from urllib import urlopen
