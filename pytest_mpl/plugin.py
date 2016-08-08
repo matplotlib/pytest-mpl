@@ -60,6 +60,7 @@ try:
     if not NOSE_INSTALLED:
         import imp
         sys.modules['nose'] = imp.new_module('nose')
+        sys.modules['nose.plugins.errorclass'] = imp.new_module('nose.plugins.errorclass')
 
     from matplotlib.testing.compare import compare_images
     from matplotlib.testing.decorators import ImageComparisonTest as MplImageComparisonTest
@@ -69,6 +70,7 @@ finally:
 
     if not NOSE_INSTALLED:
         sys.modules.pop('nose')
+        sys.modules.pop('nose.plugins.errorclass')
 
 # We don't use six in the following to avoid adding a dependency
 
