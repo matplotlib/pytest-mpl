@@ -33,5 +33,5 @@ build: false
 
 test_script:
   - "%CMD_IN_ENV% cd tests"
+  - "%CMD_IN_ENV% python -c 'import pytest_mpl.plugin'"
   - "%CMD_IN_ENV% py.test --mpl -v"
-
