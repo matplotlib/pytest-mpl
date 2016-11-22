@@ -10,7 +10,7 @@ environment:
       PYTHON_ARCH: "64" # needs to be set for CMD_IN_ENV to succeed. If a mix
                         # of 32 bit and 64 bit builds are needed, move this
                         # to the matrix section.
-      CONDA_DEPENDENCIES: "pytest matplotlib nose"
+      CONDA_DEPENDENCIES: "pytest matplotlib"
 
   matrix:
       - PYTHON_VERSION: "2.6"
@@ -33,5 +33,5 @@ build: false
 
 test_script:
   - "%CMD_IN_ENV% cd tests"
+  - "%CMD_IN_ENV% python -c 'import pytest_mpl.plugin'"
   - "%CMD_IN_ENV% py.test --mpl -v"
-
