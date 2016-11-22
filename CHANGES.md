@@ -1,4 +1,11 @@
-0.5 (unreleased)
+0.6 (2016-11-22)
+----------------
+
+- Added ``style`` and ``remove_text`` options. [#20]
+
+- Properly support parametrized tests. [#24]
+
+0.5 (2016-05-06)
 ----------------
 
 - Minor fixes to detection of remote baseline directories.
