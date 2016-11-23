@@ -35,7 +35,7 @@ install:
 script:
    - python -c 'import pytest_mpl.plugin'
    - py.test --mpl --cov pytest_mpl tests
-   - python setup.py check --restructuredtext
+   - if [[ $PYTHON_VERSION != 2.6 ]]; then python setup.py check --restructuredtext; fi
 
 after_success:
    - coveralls
