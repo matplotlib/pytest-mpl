@@ -1,3 +1,4 @@
+import sys
 from setuptools import setup
 
 from pytest_mpl import __version__
@@ -6,8 +7,11 @@ try:
     import pypandoc
     long_description = pypandoc.convert('README.md', 'rst')
 except (IOError, ImportError):
-    with open('README.md') as infile:
-        long_description = infile.read()
+    if 'register' in sys.argv:
+        raise
+    else:
+        with open('README.md') as infile:
+            long_description = infile.read()
 
 setup(
     version=__version__,

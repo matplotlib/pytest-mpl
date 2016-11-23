@@ -32,6 +32,4 @@ install:
 build: false
 
 test_script:
-  - "%CMD_IN_ENV% cd tests"
-  - "%CMD_IN_ENV% py.test --mpl -v"
-
+  - "%CMD_IN_ENV% py.test tests --mpl -v"
