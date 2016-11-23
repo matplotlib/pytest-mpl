@@ -17,8 +17,10 @@ For more information on how to write tests to do this, see the **Using** section
 Installing
 ----------
 
-This plugin is compatible with Python 2.6, 2.7, and 3.3 and later, and requires [pytest](http://pytest.org), [matplotlib](http://www.matplotlib.org) and
-[nose](http://nose.readthedocs.org/) to be installed (nose is required by Matplotlib).
+This plugin is compatible with Python 2.6, 2.7, and 3.3 and later, and requires
+[pytest](http://pytest.org), [matplotlib](http://www.matplotlib.org). When using
+Matplotlib versions earlier than 2.0, [nose](http://nose.readthedocs.org/) is
+also required.
 
 To install, you can do:
 

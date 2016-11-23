@@ -29,6 +29,11 @@ install:
     - git clone git://github.com/astropy/ci-helpers.git
     - source ci-helpers/travis/setup_conda_$TRAVIS_OS_NAME.sh
 
+    # Remove nose if we are using Matplotlib 2.0. We force this here in case
+    # nose was installed as a conda dependency of matplotlib even if not
+    # specified explicitly.
+    - conda remove --no-pin --force nose || true
+
     # Need to use develop instead of install to make sure coverage works
     - python setup.py develop
 

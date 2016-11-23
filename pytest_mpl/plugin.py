@@ -43,7 +43,6 @@ import matplotlib
 import matplotlib.pyplot as plt
 from matplotlib.testing.compare import compare_images
 from matplotlib.testing.decorators import ImageComparisonTest as MplImageComparisonTest
-from matplotlib.testing.decorators import cleanup
 
 if sys.version_info[0] == 2:
     from urllib import urlopen
