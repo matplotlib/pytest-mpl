@@ -21,7 +21,7 @@ env:
     - PYTHON_VERSION=3.5 MATPLOTLIB_VERSION=1.5
     - PYTHON_VERSION=2.7 MATPLOTLIB_VERSION=2.0 CONDA_CHANNELS="conda-forge/label/rc conda-forge"
     - PYTHON_VERSION=3.5 MATPLOTLIB_VERSION=2.0 CONDA_CHANNELS="conda-forge/label/rc conda-forge"
-    - PYTHON_VERSION=3.5 CONDA_DEPENDENCIES="coverage"
+    - PYTHON_VERSION=3.5 CONDA_DEPENDENCIES="coverage freetype libpng"
 
 install:
 
