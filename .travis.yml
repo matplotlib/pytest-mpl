@@ -22,6 +22,10 @@ env:
     - PYTHON_VERSION=2.7 MATPLOTLIB_VERSION=2.0 CONDA_CHANNELS="conda-forge/label/rc conda-forge"
     - PYTHON_VERSION=3.5 MATPLOTLIB_VERSION=2.0 CONDA_CHANNELS="conda-forge/label/rc conda-forge"
 
+    # The following build is meant to check that dependencies get set up correctly, but currently
+    # the image tests fail, which should be investigated. 
+    # - PYTHON_VERSION=3.5 CONDA_DEPENDENCIES="coverage freetype libpng"
+
 install:
 
     # We use the ci-helpers package from the Astropy project to set up conda
