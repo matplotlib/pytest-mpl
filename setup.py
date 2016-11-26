@@ -3,15 +3,13 @@ from setuptools import setup
 
 from pytest_mpl import __version__
 
-try:
-    import pypandoc
-    long_description = pypandoc.convert('README.md', 'rst')
-except (IOError, ImportError):
-    if 'register' in sys.argv:
-        raise
-    else:
-        with open('README.md') as infile:
-            long_description = infile.read()
+# IMPORTANT: we deliberately use rst here instead of markdown because long_description
+# needs to be in rst, and requiring pandoc to be installed to convert markdown to rst
+# on-the-fly is over-complicated and sometimes the generated rst has warnings that
+# cause PyPI to not display it correctly.
+
+with open('README.rst') as infile:
+    long_description = infile.read()
 
 setup(
     version=__version__,
