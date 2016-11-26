@@ -1,7 +1,7 @@
-0.7 (unreleased)
+0.7 (2016-11-26)
 ----------------
 
-- No changes yet
+- Properly define dependencies in setup.py. [#32]
 
 0.6 (2016-11-22)
 ----------------
