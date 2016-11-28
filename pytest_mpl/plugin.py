@@ -26,7 +26,7 @@
 # The code below includes code adapted from WCSAxes, which is released
 # under a 3-clause BSD license and can be found here:
 #
-#   https://github.com/astrofrog/wcsaxes
+#   https://github.com/matplotlib/wcsaxes
 
 from functools import wraps
 
@@ -43,7 +43,6 @@ import matplotlib
 import matplotlib.pyplot as plt
 from matplotlib.testing.compare import compare_images
 from matplotlib.testing.decorators import ImageComparisonTest as MplImageComparisonTest
-from matplotlib.testing.decorators import cleanup
 
 if sys.version_info[0] == 2:
     from urllib import urlopen
