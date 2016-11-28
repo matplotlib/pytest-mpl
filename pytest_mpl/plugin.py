@@ -26,7 +26,7 @@
 # The code below includes code adapted from WCSAxes, which is released
 # under a 3-clause BSD license and can be found here:
 #
-#   https://github.com/matplotlib/wcsaxes
+#   https://github.com/astrofrog/wcsaxes
 
 from functools import wraps
 

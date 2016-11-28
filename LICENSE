@@ -25,4 +25,4 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 The code in this package includes code adapted from WCSAxes, which is released
 under a 3-clause BSD license and can be found here:
 
-  https://github.com/matplotlib/wcsaxes
+  https://github.com/astrofrog/wcsaxes
