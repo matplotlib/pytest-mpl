@@ -70,8 +70,10 @@ def pytest_addoption(parser):
                     help="directory to generate reference images in, relative to location where py.test is run", action='store')
     group.addoption('--mpl-baseline-path',
                     help="directory containing baseline images, relative to location where py.test is run", action='store')
-    group.addoption('--mpl-results-path',
-                    help="directory for test results, relative to location where py.test is run", action='store')
+
+    results_path_help = "directory for test results, relative to location where py.test is run"
+    group.addoption('--mpl-results-path', help=results_path_help, action='store')
+    parser.addini('mpl-results-path', help=results_path_help)
 
 
 def pytest_configure(config):
@@ -80,7 +82,7 @@ def pytest_configure(config):
 
         baseline_dir = config.getoption("--mpl-baseline-path")
         generate_dir = config.getoption("--mpl-generate-path")
-        results_dir = config.getoption("--mpl-results-path")
+        results_dir = config.getoption("--mpl-results-path") or config.getini("mpl-results-path")
 
         if generate_dir is not None:
             if baseline_dir is not None:
