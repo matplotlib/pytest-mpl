@@ -179,11 +179,9 @@ class ImageComparison(object):
                         baseline_image_ref = os.path.abspath(os.path.join(os.path.dirname(item.fspath.strpath), baseline_dir, filename))
 
                     if not os.path.exists(baseline_image_ref):
-                        raise Exception("""Image file not found for comparison test
-                                        Generated Image:
-                                        \t{test}
-                                        This is expected for new tests.""".format(
-                            test=test_image))
+                        pytest.fail("Image file not found for comparison test. "
+                                    "(This is expected for new tests.)\nGenerated Image: "
+                                    "\n\t{test}".format(test=test_image), pytrace=False)
 
                     # distutils may put the baseline images in non-accessible places,
                     # copy to our tmpdir to be sure to keep them in case of failure
@@ -195,7 +193,7 @@ class ImageComparison(object):
                     if msg is None:
                         shutil.rmtree(result_dir)
                     else:
-                        raise Exception(msg)
+                        pytest.fail(msg, pytrace=False)
 
                 else:
 
