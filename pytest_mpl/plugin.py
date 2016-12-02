@@ -70,6 +70,8 @@ def pytest_addoption(parser):
                     help="directory to generate reference images in, relative to location where py.test is run", action='store')
     group.addoption('--mpl-baseline-path',
                     help="directory containing baseline images, relative to location where py.test is run", action='store')
+    group.addoption('--mpl-results-path',
+                    help="directory for test results, relative to location where py.test is run", action='store')
 
 
 def pytest_configure(config):
@@ -78,26 +80,36 @@ def pytest_configure(config):
 
         baseline_dir = config.getoption("--mpl-baseline-path")
         generate_dir = config.getoption("--mpl-generate-path")
+        results_dir = config.getoption("--mpl-results-path")
 
-        if baseline_dir is not None and generate_dir is not None:
-            warnings.warn("Ignoring --mpl-baseline-path since --mpl-generate-path is set")
+        if generate_dir is not None:
+            if baseline_dir is not None:
+                warnings.warn("Ignoring --mpl-baseline-path since --mpl-generate-path is set")
+            if results_dir is not None and generate_dir is not None:
+                warnings.warn("Ignoring --mpl-result-path since --mpl-generate-path is set")
 
         if baseline_dir is not None:
             baseline_dir = os.path.abspath(baseline_dir)
         if generate_dir is not None:
             baseline_dir = os.path.abspath(generate_dir)
+        if results_dir is not None:
+            results_dir = os.path.abspath(results_dir)
 
         config.pluginmanager.register(ImageComparison(config,
                                                       baseline_dir=baseline_dir,
-                                                      generate_dir=generate_dir))
+                                                      generate_dir=generate_dir,
+                                                      results_dir=results_dir))
 
 
 class ImageComparison(object):
 
-    def __init__(self, config, baseline_dir=None, generate_dir=None):
+    def __init__(self, config, baseline_dir=None, generate_dir=None, results_dir=None):
         self.config = config
         self.baseline_dir = baseline_dir
         self.generate_dir = generate_dir
+        self.results_dir = results_dir
+        if self.results_dir and not os.path.exists(self.results_dir):
+            os.mkdir(self.results_dir)
 
     def pytest_runtest_setup(self, item):
 
@@ -155,7 +167,7 @@ class ImageComparison(object):
                 if self.generate_dir is None:
 
                     # Save the figure
-                    result_dir = tempfile.mkdtemp()
+                    result_dir = tempfile.mkdtemp(dir=self.results_dir)
                     test_image = os.path.abspath(os.path.join(result_dir, filename))
 
                     fig.savefig(test_image, **savefig_kwargs)
