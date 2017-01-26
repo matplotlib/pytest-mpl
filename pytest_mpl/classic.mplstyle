@@ -15,12 +15,6 @@ lines.dash_capstyle : butt          # butt|round|projecting
 lines.solid_joinstyle : round       # miter|round|bevel
 lines.solid_capstyle : projecting   # butt|round|projecting
 lines.antialiased : True         # render lines in antialiased (no jaggies)
-lines.dashed_pattern : 6, 6
-lines.dashdot_pattern : 3, 5, 1, 5
-lines.dotted_pattern : 1, 3
-
-### Marker props
-markers.fillstyle: full
 
 ### PATCHES
 # Patches are graphical objects that fill 2D space, like polygons or
@@ -31,10 +25,6 @@ patch.linewidth        : 1.0     # edge width in points
 patch.facecolor        : b
 patch.edgecolor        : k
 patch.antialiased      : True    # render patches in antialiased (no jaggies)
-
-hatch.linewidth        : 1.0
-
-hist.bins              : 10
 
 ### FONT
 #
@@ -177,12 +167,9 @@ axes.edgecolor      : k       # axes edge color
 axes.linewidth      : 1.0     # edge linewidth
 axes.grid           : False   # display grid or not
 axes.grid.which     : major
-axes.grid.axis      : both
 axes.titlesize      : large   # fontsize of the axes title
-axes.titlepad       : 5.0     # pad between axes and title in points
 axes.titleweight    : normal  # font weight for axes title
 axes.labelsize      : medium  # fontsize of the x any y labels
-axes.labelpad       : 5.0     # space between label and axis
 axes.labelweight    : normal  # weight of the x and y labels
 axes.labelcolor     : k
 axes.axisbelow      : False   # whether axis gridlines and ticks are below
@@ -206,36 +193,16 @@ axes.formatter.useoffset      : True    # If True, the tick label formatter
 axes.unicode_minus  : True    # use unicode for the minus symbol
                               # rather than hyphen.  See
                               # http://en.wikipedia.org/wiki/Plus_and_minus_signs#Character_codes
-axes.prop_cycle    : cycler('color', 'bgrcmyk')
-                                           # color cycle for plot lines
-                                           # as list of string colorspecs:
-                                           # single letter, long name, or
-                                           # web-style hex
-axes.autolimit_mode : round_numbers
 axes.xmargin        : 0  # x margin.  See `axes.Axes.margins`
 axes.ymargin        : 0  # y margin See `axes.Axes.margins`
-axes.spines.bottom  : True
-axes.spines.left    : True
-axes.spines.right   : True
-axes.spines.top     : True
 polaraxes.grid      : True    # display grid on polar axes
 axes3d.grid         : True    # display grid on 3d axes
-
-date.autoformatter.year   : %Y
-date.autoformatter.month  : %b %Y
-date.autoformatter.day    : %b %d %Y
-date.autoformatter.hour   : %H:%M:%S
-date.autoformatter.minute : %H:%M:%S.%f
-date.autoformatter.second : %H:%M:%S.%f
 
 ### TICKS
 # see http://matplotlib.org/api/axis_api.html#matplotlib.axis.Tick
 
-xtick.top            : True   # draw ticks on the top side
-xtick.bottom         : True   # draw ticks on the bottom side
 xtick.major.size     : 4      # major tick size in points
 xtick.minor.size     : 2      # minor tick size in points
-xtick.minor.visible  : False
 xtick.major.width    : 0.5    # major tick width in points
 xtick.minor.width    : 0.5    # minor tick width in points
 xtick.major.pad      : 4      # distance to major tick label in points
@@ -243,16 +210,9 @@ xtick.minor.pad      : 4      # distance to the minor tick label in points
 xtick.color          : k      # color of the tick labels
 xtick.labelsize      : medium # fontsize of the tick labels
 xtick.direction      : in     # direction: in, out, or inout
-xtick.major.top      : True   # draw x axis top major ticks
-xtick.major.bottom   : True   # draw x axis bottom major ticks
-xtick.minor.top      : True   # draw x axis top minor ticks
-xtick.minor.bottom   : True   # draw x axis bottom minor ticks
 
-ytick.left           : True   # draw ticks on the left side
-ytick.right          : True   # draw ticks on the right side
 ytick.major.size     : 4      # major tick size in points
 ytick.minor.size     : 2      # minor tick size in points
-ytick.minor.visible  : False
 ytick.major.width    : 0.5    # major tick width in points
 ytick.minor.width    : 0.5    # minor tick width in points
 ytick.major.pad      : 4      # distance to major tick label in points
@@ -260,10 +220,6 @@ ytick.minor.pad      : 4      # distance to the minor tick label in points
 ytick.color          : k      # color of the tick labels
 ytick.labelsize      : medium # fontsize of the tick labels
 ytick.direction      : in     # direction: in, out, or inout
-ytick.major.left     : True   # draw y axis left major ticks
-ytick.major.right    : True   # draw y axis right major ticks
-ytick.minor.left     : True   # draw y axis left minor ticks
-ytick.minor.right    : True   # draw y axis right minor ticks
 
 ### GRIDS
 grid.color       :   k       # grid color
@@ -288,17 +244,12 @@ legend.borderaxespad : 0.5   # the border between the axes and legend edge in fr
 legend.columnspacing : 2.    # the border between the axes and legend edge in fraction of fontsize
 legend.shadow        : False
 legend.frameon       : True   # whether or not to draw a frame around legend
-legend.framealpha    : None    # opacity of of legend frame
+legend.framealpha    : 1.0    # opacity of of legend frame
 legend.scatterpoints : 3 # number of scatter points
-legend.facecolor     : inherit   # legend background color (when None inherits from axes.facecolor)
-legend.edgecolor     : inherit   # legend edge color (when None inherits from axes.facecolor)
-
 
 
 ### FIGURE
 # See http://matplotlib.org/api/figure_api.html#matplotlib.figure.Figure
-figure.titlesize : medium     # size of the figure title
-figure.titleweight : normal   # weight of the figure title
 figure.figsize   : 8, 6    # figure size in inches
 figure.dpi       : 80      # figure dots per inch
 figure.facecolor : 0.75    # figure facecolor; 0.75 is scalar gray
@@ -323,55 +274,9 @@ image.cmap   : jet               # gray | jet etc...
 image.lut    : 256               # the size of the colormap lookup table
 image.origin : upper             # lower | upper
 image.resample  : False
-image.composite_image : True
 
 ### CONTOUR PLOTS
 contour.negative_linestyle :  dashed # dashed | solid
-contour.corner_mask : True
-
-# errorbar props
-errorbar.capsize: 3
-
-# scatter props
-scatter.marker: o
-
-### Boxplots
-boxplot.bootstrap: None
-boxplot.boxprops.color: b
-boxplot.boxprops.linestyle: -
-boxplot.boxprops.linewidth: 1.0
-boxplot.capprops.color: k
-boxplot.capprops.linestyle: -
-boxplot.capprops.linewidth: 1.0
-boxplot.flierprops.color: b
-boxplot.flierprops.linestyle: none
-boxplot.flierprops.linewidth: 1.0
-boxplot.flierprops.marker: +
-boxplot.flierprops.markeredgecolor: k
-boxplot.flierprops.markerfacecolor: auto
-boxplot.flierprops.markersize: 6.0
-boxplot.meanline: False
-boxplot.meanprops.color: r
-boxplot.meanprops.linestyle: -
-boxplot.meanprops.linewidth: 1.0
-boxplot.medianprops.color: r
-boxplot.meanprops.marker: s
-boxplot.meanprops.markerfacecolor: r
-boxplot.meanprops.markeredgecolor: k
-boxplot.meanprops.markersize: 6.0
-boxplot.medianprops.linestyle: -
-boxplot.medianprops.linewidth: 1.0
-boxplot.notch: False
-boxplot.patchartist: False
-boxplot.showbox: True
-boxplot.showcaps: True
-boxplot.showfliers: True
-boxplot.showmeans: False
-boxplot.vertical: True
-boxplot.whiskerprops.color: b
-boxplot.whiskerprops.linestyle: --
-boxplot.whiskerprops.linewidth: 1.0
-boxplot.whiskers: 1.5
 
 ### Agg rendering
 ### Warning: experimental, 2008/10/10
@@ -512,6 +417,3 @@ animation.convert_path: convert   # Path to ImageMagick's convert binary.
                                   # On Windows use the full path since convert
                                   # is also the name of a system tool.
 animation.convert_args:
-animation.html: none
-
-_internal.classic_mode: True
