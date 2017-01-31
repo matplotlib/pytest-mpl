@@ -16,8 +16,6 @@ if MPL_VERSION >= LooseVersion('2'):
     baseline_subdir = '2.0.x'
 elif MPL_VERSION >= LooseVersion('1.5'):
     baseline_subdir = '1.5.x'
-else:
-    baseline_subdir = '1.4.x'
 
 baseline_dir_local = os.path.join(baseline_dir, baseline_subdir)
 baseline_dir_remote = 'http://matplotlib.github.io/pytest-mpl/' + baseline_subdir + '/'
