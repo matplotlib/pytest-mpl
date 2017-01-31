@@ -13,9 +13,6 @@ environment:
       CONDA_DEPENDENCIES: "pytest matplotlib nose"
 
   matrix:
-      - PYTHON_VERSION: "2.6"
-        MATPLOTLIB_VERSION: "1.4"
-
       - PYTHON_VERSION: "2.7"
         MATPLOTLIB_VERSION: "1.5"
 

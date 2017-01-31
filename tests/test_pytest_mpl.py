@@ -22,7 +22,6 @@ else:
 baseline_dir_local = os.path.join(baseline_dir, baseline_subdir)
 baseline_dir_remote = 'http://matplotlib.github.io/pytest-mpl/' + baseline_subdir + '/'
 
-PY26 = sys.version_info[:2] == (2, 6)
 WIN = sys.platform.startswith('win')
 
 
