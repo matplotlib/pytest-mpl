@@ -176,6 +176,7 @@ class ImageComparison(object):
                 if filename is None:
                     filename = item.name + '.png'
                     filename = filename.replace('[', '_').replace(']', '_')
+                    filename = filename.replace('/', '_')
                     filename = filename.replace('_.png', '.png')
 
                 # What we do now depends on whether we are generating the
