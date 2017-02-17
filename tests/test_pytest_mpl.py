@@ -86,6 +86,35 @@ def test_fails(tmpdir):
     assert code == 0
 
 
+TEST_OUTPUT_DIR = """
+import pytest
+import matplotlib.pyplot as plt
+@pytest.mark.mpl_image_compare
+def test_output_dir():
+    fig = plt.figure()
+    ax = fig.add_subplot(1, 1, 1)
+    ax.plot([1, 2, 3])
+    return fig
+"""
+
+
+def test_output_dir(tmpdir):
+    test_file = tmpdir.join('test.py').strpath
+    with open(test_file, 'w') as f:
+        f.write(TEST_OUTPUT_DIR)
+
+    # When we run the test, we should get output images where we specify
+    output_dir = tmpdir.join('test_output_dir').strpath
+    code = subprocess.call('py.test --mpl-results-path={0} --mpl {1}'.format(output_dir, test_file),
+                           shell=True)
+
+    assert code != 0
+    assert os.path.exists(output_dir)
+
+    # Listdir() is to get the random name that the output for the one test is written into
+    assert os.path.exists(os.path.join(output_dir, os.listdir(output_dir)[0], 'test_output_dir.png'))
+
+
 TEST_GENERATE = """
 import pytest
 import matplotlib.pyplot as plt
