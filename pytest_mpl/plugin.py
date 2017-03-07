@@ -160,6 +160,7 @@ class ImageComparison(object):
                     test_image = os.path.abspath(os.path.join(result_dir, filename))
 
                     fig.savefig(test_image, **savefig_kwargs)
+                    plt.close(fig)
 
                     # Find path to baseline image
                     if baseline_remote:
@@ -192,6 +193,7 @@ class ImageComparison(object):
                         os.makedirs(self.generate_dir)
 
                     fig.savefig(os.path.abspath(os.path.join(self.generate_dir, filename)), **savefig_kwargs)
+                    plt.close(fig)
                     pytest.skip("Skipping test, since generating data")
 
         if item.cls is not None:
