@@ -39,18 +39,10 @@ from distutils.version import LooseVersion
 
 import pytest
 
-import matplotlib
-import matplotlib.pyplot as plt
-from matplotlib.testing.compare import compare_images
-from matplotlib.testing.decorators import ImageComparisonTest as MplImageComparisonTest
-
 if sys.version_info[0] == 2:
     from urllib import urlopen
 else:
     from urllib.request import urlopen
-
-
-MPL_LT_15 = LooseVersion(matplotlib.__version__) < LooseVersion('1.5')
 
 
 def _download_file(url):
@@ -114,6 +106,13 @@ class ImageComparison(object):
             os.mkdir(self.results_dir)
 
     def pytest_runtest_setup(self, item):
+
+        import matplotlib
+        import matplotlib.pyplot as plt
+        from matplotlib.testing.compare import compare_images
+        from matplotlib.testing.decorators import ImageComparisonTest as MplImageComparisonTest
+
+        MPL_LT_15 = LooseVersion(matplotlib.__version__) < LooseVersion('1.5')
 
         compare = item.keywords.get('mpl_image_compare')
 
