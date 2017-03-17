@@ -30,6 +30,7 @@
 
 from functools import wraps
 
+import contextlib
 import os
 import sys
 import shutil
@@ -95,6 +96,19 @@ def pytest_configure(config):
                                                       results_dir=results_dir))
 
 
+@contextlib.contextmanager
+def switch_backend(backend):
+    import matplotlib
+    import matplotlib.pyplot as plt
+    prev_backend = matplotlib.get_backend().lower()
+    if prev_backend != backend.lower():
+        plt.switch_backend(backend)
+        yield
+        plt.switch_backend(prev_backend)
+    else:
+        yield
+
+
 class ImageComparison(object):
 
     def __init__(self, config, baseline_dir=None, generate_dir=None, results_dir=None):
@@ -123,6 +137,7 @@ class ImageComparison(object):
         savefig_kwargs = compare.kwargs.get('savefig_kwargs', {})
         style = compare.kwargs.get('style', 'classic')
         remove_text = compare.kwargs.get('remove_text', False)
+        backend = compare.kwargs.get('backend', 'agg')
 
         if MPL_LT_15 and style == 'classic':
             style = os.path.join(os.path.dirname(__file__), 'classic.mplstyle')
@@ -144,7 +159,7 @@ class ImageComparison(object):
 
             baseline_remote = baseline_dir.startswith('http')
 
-            with plt.style.context(style):
+            with plt.style.context(style), switch_backend(backend):
 
                 # Run test and get figure object
                 import inspect

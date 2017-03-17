@@ -13,10 +13,7 @@ env:
     - CONDA_DEPENDENCIES="pytest matplotlib nose coverage"
     - PIP_DEPENDENCIES="pytest-cov coveralls"
   matrix:
-    - PYTHON_VERSION=2.6 MATPLOTLIB_VERSION=1.4 NUMPY_VERSION=1.9
-    - PYTHON_VERSION=2.7 MATPLOTLIB_VERSION=1.4 NUMPY_VERSION=1.9
-    - PYTHON_VERSION=3.3 MATPLOTLIB_VERSION=1.4 NUMPY_VERSION=1.9
-    - PYTHON_VERSION=3.4 MATPLOTLIB_VERSION=1.4 NUMPY_VERSION=1.9
+    - PYTHON_VERSION=3.4 MATPLOTLIB_VERSION=1.5
     - PYTHON_VERSION=2.7 MATPLOTLIB_VERSION=1.5
     - PYTHON_VERSION=3.5 MATPLOTLIB_VERSION=1.5
     - PYTHON_VERSION=2.7 MATPLOTLIB_VERSION=2.0
@@ -40,7 +37,7 @@ install:
 script:
    - python -c 'import pytest_mpl.plugin'
    - py.test --mpl --cov pytest_mpl tests
-   - if [[ $PYTHON_VERSION != 2.6 ]]; then python setup.py check --restructuredtext; fi
+   - python setup.py check --restructuredtext
 
 after_success:
    - coveralls
