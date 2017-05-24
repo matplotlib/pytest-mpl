@@ -36,9 +36,9 @@ install:
 
     # Generate a results directory name that is deterministic
     - if [[ $TRAVIS_EVENT_TYPE == pull_request ]]; then
-          ARTIFACTS_PATHS="pull_request_$TRAVIS_PULL_REQUEST";
+          ARTIFACTS_PATHS="pull-request-$TRAVIS_PULL_REQUEST";
       else
-          ARTIFACTS_PATHS="branch_$TRAVIS_BRANCH";
+          ARTIFACTS_PATHS="branch-$TRAVIS_BRANCH";
       fi
 
 script:
@@ -48,3 +48,7 @@ script:
 
 after_success:
    - coveralls
+
+after_script:
+  - curl -sL https://raw.githubusercontent.com/travis-ci/artifacts/master/install | bash
+  - artifacts upload
