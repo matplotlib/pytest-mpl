@@ -220,6 +220,22 @@ The default tolerance is 2, which is very strict. In some cases, you may
 want to relax this to account for differences in fonts across different
 systems.
 
+By default, the expected, actual and difference files are written to a
+temporary directory with a non-deterministic path. If you want to instead
+write them to a specific directory, you can use::
+
+    py.test --mpl --mpl-results-path=results
+
+The ``results`` directory will then contain one sub-directory per test, and each
+sub-directory will contain the three files mentioned above. If you are using a
+continuous integration service, you can then use the option to upload artifacts
+to upload these results to somewhere where you can view them. For more
+information, see:
+
+* `Uploading artifacts on Travis-CI <https://docs.travis-ci.com/user/uploading-artifacts/>`_
+* `Build Artifacts (CircleCI) <https://circleci.com/docs/1.0/build-artifacts/>`_
+* `Packaging Artifacts (AppVeyor) <https://www.appveyor.com/docs/packaging-artifacts/>`_
+
 Running the tests for pytest-mpl
 --------------------------------
 
