@@ -3,6 +3,12 @@ language: c
 # Setting sudo to false opts in to Travis-CI container-based builds.
 sudo: false
 
+# This causes the artifacts of the test run (specified by ARTIFACTS_PATHS lower
+# down) to be uploaded to S3. The S3 settings are set via the Travis web
+# interface.
+addons:
+  artifacts: true
+
 os:
     - linux
     - osx
@@ -34,9 +40,15 @@ install:
     # Need to use develop instead of install to make sure coverage works
     - python setup.py develop
 
+    # Generate a results directory name that is deterministic
+    - if [[ $TRAVIS_EVENT_TYPE == pull_request ]]; then
+          ARTIFACTS_PATHS="pull_request_$TRAVIS_PULL_REQUEST"
+      else
+          ARTIFACTS_PATHS="branch_$TRAVIS_BRANCH"
+
 script:
    - python -c 'import pytest_mpl.plugin'
-   - py.test --mpl --cov pytest_mpl tests
+   - py.test --mpl --cov pytest_mpl tests --mpl-results-path=$ARTIFACTS_PATHS
    - python setup.py check --restructuredtext
 
 after_success:
