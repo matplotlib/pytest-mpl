@@ -36,9 +36,10 @@ install:
 
     # Generate a results directory name that is deterministic
     - if [[ $TRAVIS_EVENT_TYPE == pull_request ]]; then
-          ARTIFACTS_PATHS="pull_request_$TRAVIS_PULL_REQUEST"
+          ARTIFACTS_PATHS="pull_request_$TRAVIS_PULL_REQUEST";
       else
-          ARTIFACTS_PATHS="branch_$TRAVIS_BRANCH"
+          ARTIFACTS_PATHS="branch_$TRAVIS_BRANCH";
+      fi
 
 script:
    - python -c 'import pytest_mpl.plugin'
