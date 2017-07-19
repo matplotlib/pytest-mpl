@@ -189,3 +189,19 @@ def test_parametrized(s):
     ax = fig.add_subplot(1, 1, 1)
     ax.scatter([1,3,4,3,2],[1,4,3,3,1], s=s)
     return fig
+
+
+class TestClassWithSetup(object):
+
+    # Regression test for a bug that occurred when using setup_method
+
+    def setup_method(self, method):
+        self.x = [1, 2, 3]
+
+    @pytest.mark.mpl_image_compare(baseline_dir=baseline_dir_local,
+                                   filename='test_succeeds.png')
+    def test_succeeds(self):
+        fig = plt.figure()
+        ax = fig.add_subplot(1, 1, 1)
+        ax.plot(self.x)
+        return fig

@@ -164,7 +164,12 @@ class ImageComparison(object):
                 # Run test and get figure object
                 import inspect
                 if inspect.ismethod(original):  # method
-                    fig = original(*args[1:], **kwargs)
+                    # In some cases, for example if setup_method is used,
+                    # original appears to belong to an instance of the test
+                    # class that is not the same as args[0], and args[0] is the
+                    # one that has the correct attributes set up from setup_method
+                    # so we ignore original.__self__ and use args[0] instead.
+                    fig = original.__func__(*args, **kwargs)
                 else:  # function
                     fig = original(*args, **kwargs)
 
