@@ -2,7 +2,19 @@
 ----------------
 
 - Fixed use of mpl_image_compare on methods of test classes that also
-  use setup_method. [#50]
+  use setup_method. [#51]
+
+- Make it possible to specify the directory in which to put the results
+  from the tests using --mpl-results-path. [#39]
+
+- Only import Matplotlib if the plugin is actually used. [#47]
+
+- Make sure figures are closed after saving. [#46]
+
+- Allow the backend to be set on a per-test basis. [#38]
+
+- If test name contains slashes (normally from parameters in
+  parametrized tests), replace with _. [#50]
 
 0.7 (2016-11-26)
 ----------------

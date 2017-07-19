@@ -77,6 +77,10 @@ def pytest_configure(config):
         generate_dir = config.getoption("--mpl-generate-path")
         results_dir = config.getoption("--mpl-results-path") or config.getini("mpl-results-path")
 
+        # Note that results_dir is an empty string if not specified
+        if not results_dir:
+            results_dir = None
+
         if generate_dir is not None:
             if baseline_dir is not None:
                 warnings.warn("Ignoring --mpl-baseline-path since --mpl-generate-path is set")
