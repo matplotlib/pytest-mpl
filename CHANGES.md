@@ -1,7 +1,8 @@
 0.8 (unreleased)
 ----------------
 
-- No changes yet.
+- Fixed use of mpl_image_compare on methods of test classes that also
+  use setup_method. [#50]
 
 0.7 (2016-11-26)
 ----------------
