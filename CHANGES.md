@@ -1,4 +1,4 @@
-0.8 (unreleased)
+0.8 (2017-07-19)
 ----------------
 
 - Fixed use of mpl_image_compare on methods of test classes that also
