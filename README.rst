@@ -3,7 +3,7 @@
 About
 -----
 
-This is a plugin to faciliate image comparison for
+This is a plugin to facilitate image comparison for
 `Matplotlib <http://www.matplotlib.org>`__ figures in pytest.
 
 Matplotlib includes a number of test utilities and decorators, but these
@@ -11,7 +11,7 @@ are geared towards the `nose <http://nose.readthedocs.org/>`__ testing
 framework. Pytest-mpl makes it easy to compare figures produced by tests
 to reference images when using `pytest <http://pytest.org>`__.
 
-For each figure to test, the reference image is substracted from the
+For each figure to test, the reference image is subtracted from the
 generated image, and the RMS of the residual is compared to a
 user-specified tolerance. If the residual is too large, the test will
 fail (this is implemented using helper functions from
