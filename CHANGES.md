@@ -1,7 +1,9 @@
 0.9 (unreleased)
 ----------------
 
-- No changes yet.
+- Changed so that style now doesn't default to 'classic' as some
+  packages might want to make sure their packages works well with
+  the default style (and it is easier to set a style than unset it).
 
 0.8 (2017-07-19)
 ----------------

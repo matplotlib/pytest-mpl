@@ -157,15 +157,19 @@ decorator takes precedence.
 Base style
 ^^^^^^^^^^
 
-By default, tests will be run using the Matplotlib 'classic' style
-(ignoring any locally defined RC parameters). This can be overriden by
-using the ``style`` argument:
+By default, tests will be run using the default Matplotlib style for the version
+you are using. (ignoring any locally defined RC parameters). If you want to use
+a constant style over time, this can be overriden by using the ``style``
+argument:
 
 .. code:: python
 
-    @pytest.mark.mpl_image_compare(style='fivethirtyeight')
+    @pytest.mark.mpl_image_compare(style='classic')
     def test_image():
         ...
+
+If you don't set a style, you will likely need to set a different baseline
+directory depending on the Matplotlib version being tested.
 
 Removing text
 ^^^^^^^^^^^^^
