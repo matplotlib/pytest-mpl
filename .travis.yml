@@ -36,7 +36,7 @@ install:
 
 script:
    - python -c 'import pytest_mpl.plugin'
-   - py.test --mpl --cov pytest_mpl tests
+   - pytest -vv --mpl --cov pytest_mpl tests
    - python setup.py check --restructuredtext
 
 after_success:

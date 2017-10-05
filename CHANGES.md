@@ -1,7 +1,8 @@
 0.9 (unreleased)
 ----------------
 
-- No changes yet.
+- Allow baseline_dir to be comma-separated URL list to allow mirrors to
+  be specified. [#59]
 
 0.8 (2017-07-19)
 ----------------
