@@ -4,6 +4,8 @@
 - Allow baseline_dir to be comma-separated URL list to allow mirrors to
   be specified. [#59]
 
+- Make sure figures get closed even if not running with the --mpl option.
+
 0.8 (2017-07-19)
 ----------------
 

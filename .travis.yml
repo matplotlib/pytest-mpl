@@ -21,7 +21,7 @@ env:
     - PYTHON_VERSION=3.6 MATPLOTLIB_VERSION=2.0
 
     # The following build is meant to check that dependencies get set up correctly, but currently
-    # the image tests fail, which should be investigated. 
+    # the image tests fail, which should be investigated.
     # - PYTHON_VERSION=3.5 CONDA_DEPENDENCIES="coverage freetype libpng"
 
 install:
@@ -37,6 +37,9 @@ install:
 script:
    - python -c 'import pytest_mpl.plugin'
    - pytest -vv --mpl --cov pytest_mpl tests
+   # Make sure that the tests run ok even without the --mpl option (we close
+   # figures anyway in this case)
+   - pytest -vv --cov pytest_mpl --cov-append tests
    - python setup.py check --restructuredtext
 
 after_success:
