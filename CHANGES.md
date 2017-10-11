@@ -1,10 +1,13 @@
 0.9 (unreleased)
 ----------------
 
+- Fix compatibility with Matplotlib 2.1. [#54]
+
 - Allow baseline_dir to be comma-separated URL list to allow mirrors to
   be specified. [#59]
 
-- Make sure figures get closed even if not running with the --mpl option.
+- Make sure figures get closed even if not running with the --mpl
+  option, and only close actual Matplotlib Figure objects. [#60]
 
 0.8 (2017-07-19)
 ----------------

@@ -155,6 +155,7 @@ class ImageComparison(object):
 
         import matplotlib
         import matplotlib.pyplot as plt
+        from matplotlib.figure import Figure
         from matplotlib.testing.compare import compare_images
         from matplotlib.testing.decorators import ImageComparisonTest as MplImageComparisonTest
         try:
@@ -223,7 +224,13 @@ class ImageComparison(object):
                     test_image = os.path.abspath(os.path.join(result_dir, filename))
 
                     fig.savefig(test_image, **savefig_kwargs)
-                    plt.close(fig)
+
+                    # We only need to close actual Matplotlib figure objects. If
+                    # we are dealing with a figure-like object that provides
+                    # savefig but is not a real Matplotlib object, we shouldn't
+                    # try closing it here.
+                    if isinstance(fig, Figure):
+                        plt.close(fig)
 
                     # Find path to baseline image
                     if baseline_remote:
@@ -280,6 +287,7 @@ class FigureCloser(object):
             return
 
         import matplotlib.pyplot as plt
+        from matplotlib.figure import Figure
 
         original = item.function
 
@@ -291,7 +299,12 @@ class FigureCloser(object):
             else:  # function
                 fig = original(*args, **kwargs)
 
-            plt.close(fig)
+            # We only need to close actual Matplotlib figure objects. If
+            # we are dealing with a figure-like object that provides
+            # savefig but is not a real Matplotlib object, we shouldn't
+            # try closing it here.
+            if isinstance(fig, Figure):
+                plt.close(fig)
 
         if item.cls is not None:
             setattr(item.cls, item.function.__name__, item_function_wrapper)
