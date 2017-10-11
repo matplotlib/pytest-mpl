@@ -10,17 +10,16 @@ environment:
       PYTHON_ARCH: "64" # needs to be set for CMD_IN_ENV to succeed. If a mix
                         # of 32 bit and 64 bit builds are needed, move this
                         # to the matrix section.
-      CONDA_DEPENDENCIES: "pytest matplotlib nose"
 
   matrix:
       - PYTHON_VERSION: "2.7"
-        MATPLOTLIB_VERSION: "1.5"
+        CONDA_DEPENDENCIES: "matplotlib=1.5 nose"
 
       - PYTHON_VERSION: "3.5"
-        MATPLOTLIB_VERSION: "1.5"
+        CONDA_DEPENDENCIES: "matplotlib=1.5 nose"
 
       - PYTHON_VERSION: "3.6"
-        MATPLOTLIB_VERSION: "2.0"
+        CONDA_DEPENDENCIES: "matplotlib=2.0 nose"
 
 platform:
     -x64

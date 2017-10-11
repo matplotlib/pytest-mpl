@@ -10,7 +10,7 @@ os:
 env:
   global:
     - SETUP_XVFB=True
-    - CONDA_DEPENDENCIES="pytest matplotlib nose coverage"
+    - CONDA_DEPENDENCIES="pytest matplotlib nose coverage freetype=2.5.5"
     - PIP_DEPENDENCIES="pytest-cov coveralls"
   matrix:
     - PYTHON_VERSION=3.4 MATPLOTLIB_VERSION=1.5
