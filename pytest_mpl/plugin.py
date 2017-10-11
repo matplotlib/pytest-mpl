@@ -42,16 +42,30 @@ import pytest
 
 if sys.version_info[0] == 2:
     from urllib import urlopen
+    string_types = basestring
 else:
     from urllib.request import urlopen
+    string_types = str
 
 
-def _download_file(url):
-    u = urlopen(url)
+def _download_file(baseline, filename):
+    # Note that baseline can be a comma-separated list of URLs that we can
+    # then treat as mirrors
+    for base_url in baseline.split(','):
+        try:
+            u = urlopen(base_url + filename)
+            content = u.read()
+        except Exception as exc:
+            warnings.warn('Downloading {0} failed'.format(base_url + filename))
+        else:
+            break
+    else:
+        raise Exception("Could not download baseline image from any of the "
+                        "available URLs")
     result_dir = tempfile.mkdtemp()
     filename = os.path.join(result_dir, 'downloaded')
     with open(filename, 'wb') as tmpfile:
-        tmpfile.write(u.read())
+        tmpfile.write(content)
     return filename
 
 
@@ -60,9 +74,13 @@ def pytest_addoption(parser):
     group.addoption('--mpl', action='store_true',
                     help="Enable comparison of matplotlib figures to reference files")
     group.addoption('--mpl-generate-path',
-                    help="directory to generate reference images in, relative to location where py.test is run", action='store')
+                    help="directory to generate reference images in, relative "
+                    "to location where py.test is run", action='store')
     group.addoption('--mpl-baseline-path',
-                    help="directory containing baseline images, relative to location where py.test is run", action='store')
+                    help="directory containing baseline images, relative to "
+                    "location where py.test is run. This can also be a URL or a "
+                    "set of comma-separated URLs (in case mirrors are "
+                    "specified)", action='store')
 
     results_path_help = "directory for test results, relative to location where py.test is run"
     group.addoption('--mpl-results-path', help=results_path_help, action='store')
@@ -157,11 +175,11 @@ class ImageComparison(object):
                     baseline_dir = os.path.join(os.path.dirname(item.fspath.strpath), 'baseline')
                 else:
                     baseline_dir = self.baseline_dir
+                baseline_remote = False
             else:
-                if not baseline_dir.startswith(('http://', 'https://')):
+                baseline_remote = baseline_dir.startswith(('http://', 'https://'))
+                if not baseline_remote:
                     baseline_dir = os.path.join(os.path.dirname(item.fspath.strpath), baseline_dir)
-
-            baseline_remote = baseline_dir.startswith('http')
 
             with plt.style.context(style), switch_backend(backend):
 
@@ -201,7 +219,7 @@ class ImageComparison(object):
 
                     # Find path to baseline image
                     if baseline_remote:
-                        baseline_image_ref = _download_file(baseline_dir + filename)
+                        baseline_image_ref = _download_file(baseline_dir, filename)
                     else:
                         baseline_image_ref = os.path.abspath(os.path.join(os.path.dirname(item.fspath.strpath), baseline_dir, filename))
 

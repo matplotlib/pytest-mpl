@@ -140,7 +140,9 @@ filename of the plot (which defaults to the name of the test with a
 The baseline directory in the decorator above will be interpreted as
 being relative to the test file. Note that the baseline directory can
 also be a URL (which should start with ``http://`` or ``https://`` and
-end in a slash).
+end in a slash). If you want to specify mirrors, set ``baseline_dir`` to
+a comma-separated list of URLs (real commas in the URL should be encoded
+as ``%2C``).
 
 Finally, you can also set a custom baseline directory globally when
 running tests by running ``py.test`` with:

@@ -39,6 +39,17 @@ def test_succeeds_remote():
     return fig
 
 
+# The following tries an invalid URL first (or at least a URL where the baseline
+# image won't exist), but should succeed with the second mirror.
+@pytest.mark.mpl_image_compare(baseline_dir='http://www.python.org,' + baseline_dir_remote,
+                               filename='test_succeeds_remote.png')
+def test_succeeds_faulty_mirror():
+    fig = plt.figure()
+    ax = fig.add_subplot(1, 1, 1)
+    ax.plot([1, 2, 3])
+    return fig
+
+
 class TestClass(object):
 
     @pytest.mark.mpl_image_compare(baseline_dir=baseline_dir_local)
