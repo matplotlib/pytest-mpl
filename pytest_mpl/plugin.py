@@ -147,6 +147,10 @@ class ImageComparison(object):
         import matplotlib.pyplot as plt
         from matplotlib.testing.compare import compare_images
         from matplotlib.testing.decorators import ImageComparisonTest as MplImageComparisonTest
+        try:
+            from matplotlib.testing.decorators import remove_ticks_and_titles
+        except ImportError:
+            remove_ticks_and_titles = MplImageComparisonTest.remove_text
 
         MPL_LT_15 = LooseVersion(matplotlib.__version__) < LooseVersion('1.5')
 
@@ -196,7 +200,7 @@ class ImageComparison(object):
                     fig = original(*args, **kwargs)
 
                 if remove_text:
-                    MplImageComparisonTest.remove_text(fig)
+                    remove_ticks_and_titles(fig)
 
                 # Find test name to use as plot name
                 filename = compare.kwargs.get('filename', None)
