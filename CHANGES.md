@@ -1,4 +1,4 @@
-0.9 (unreleased)
+0.9 (2017-10-12)
 ----------------
 
 - Fix compatibility with Matplotlib 2.1. [#54]
