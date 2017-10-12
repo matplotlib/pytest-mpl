@@ -34,6 +34,7 @@ import contextlib
 import os
 import sys
 import shutil
+import inspect
 import tempfile
 import warnings
 from distutils.version import LooseVersion
@@ -42,7 +43,7 @@ import pytest
 
 if sys.version_info[0] == 2:
     from urllib import urlopen
-    string_types = basestring
+    string_types = basestring  # noqa
 else:
     from urllib.request import urlopen
     string_types = str
@@ -70,7 +71,7 @@ def _download_file(baseline, filename):
 
 
 def pytest_addoption(parser):
-    group = parser.getgroup("general")
+    group = parser.getgroup("matplotlib image comparison")
     group.addoption('--mpl', action='store_true',
                     help="Enable comparison of matplotlib figures to reference files")
     group.addoption('--mpl-generate-path',
@@ -117,6 +118,10 @@ def pytest_configure(config):
                                                       generate_dir=generate_dir,
                                                       results_dir=results_dir))
 
+    else:
+
+        config.pluginmanager.register(FigureCloser(config))
+
 
 @contextlib.contextmanager
 def switch_backend(backend):
@@ -143,8 +148,14 @@ class ImageComparison(object):
 
     def pytest_runtest_setup(self, item):
 
+        compare = item.keywords.get('mpl_image_compare')
+
+        if compare is None:
+            return
+
         import matplotlib
         import matplotlib.pyplot as plt
+        from matplotlib.figure import Figure
         from matplotlib.testing.compare import compare_images
         from matplotlib.testing.decorators import ImageComparisonTest as MplImageComparisonTest
         try:
@@ -153,11 +164,6 @@ class ImageComparison(object):
             remove_ticks_and_titles = MplImageComparisonTest.remove_text
 
         MPL_LT_15 = LooseVersion(matplotlib.__version__) < LooseVersion('1.5')
-
-        compare = item.keywords.get('mpl_image_compare')
-
-        if compare is None:
-            return
 
         tolerance = compare.kwargs.get('tolerance', 2)
         savefig_kwargs = compare.kwargs.get('savefig_kwargs', {})
@@ -188,7 +194,6 @@ class ImageComparison(object):
             with plt.style.context(style), switch_backend(backend):
 
                 # Run test and get figure object
-                import inspect
                 if inspect.ismethod(original):  # method
                     # In some cases, for example if setup_method is used,
                     # original appears to belong to an instance of the test
@@ -219,7 +224,13 @@ class ImageComparison(object):
                     test_image = os.path.abspath(os.path.join(result_dir, filename))
 
                     fig.savefig(test_image, **savefig_kwargs)
-                    plt.close(fig)
+
+                    # We only need to close actual Matplotlib figure objects. If
+                    # we are dealing with a figure-like object that provides
+                    # savefig but is not a real Matplotlib object, we shouldn't
+                    # try closing it here.
+                    if isinstance(fig, Figure):
+                        plt.close(fig)
 
                     # Find path to baseline image
                     if baseline_remote:
@@ -252,6 +263,48 @@ class ImageComparison(object):
                     fig.savefig(os.path.abspath(os.path.join(self.generate_dir, filename)), **savefig_kwargs)
                     plt.close(fig)
                     pytest.skip("Skipping test, since generating data")
+
+        if item.cls is not None:
+            setattr(item.cls, item.function.__name__, item_function_wrapper)
+        else:
+            item.obj = item_function_wrapper
+
+
+class FigureCloser(object):
+    """
+    This is used in place of ImageComparison when the --mpl option is not used,
+    to make sure that we still close figures returned by tests.
+    """
+
+    def __init__(self, config):
+        self.config = config
+
+    def pytest_runtest_setup(self, item):
+
+        compare = item.keywords.get('mpl_image_compare')
+
+        if compare is None:
+            return
+
+        import matplotlib.pyplot as plt
+        from matplotlib.figure import Figure
+
+        original = item.function
+
+        @wraps(item.function)
+        def item_function_wrapper(*args, **kwargs):
+
+            if inspect.ismethod(original):  # method
+                fig = original.__func__(*args, **kwargs)
+            else:  # function
+                fig = original(*args, **kwargs)
+
+            # We only need to close actual Matplotlib figure objects. If
+            # we are dealing with a figure-like object that provides
+            # savefig but is not a real Matplotlib object, we shouldn't
+            # try closing it here.
+            if isinstance(fig, Figure):
+                plt.close(fig)
 
         if item.cls is not None:
             setattr(item.cls, item.function.__name__, item_function_wrapper)
