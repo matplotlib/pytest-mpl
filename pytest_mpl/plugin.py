@@ -70,6 +70,13 @@ def _download_file(baseline, filename):
     return filename
 
 
+def pytest_report_header(config, startdir):
+    import matplotlib
+    import matplotlib.ft2font
+    return ["Matplotlib: {0}".format(matplotlib.__version__),
+            "Freetype: {0}".format(matplotlib.ft2font.__freetype_version__)]
+
+
 def pytest_addoption(parser):
     group = parser.getgroup("matplotlib image comparison")
     group.addoption('--mpl', action='store_true',
