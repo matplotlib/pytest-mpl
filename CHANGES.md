@@ -1,7 +1,7 @@
 0.10 (unreleased)
 -----------------
 
-- No changes yet.
+- Make sure local matplotlib files are completely ignored. [#64]
 
 0.9 (2017-10-12)
 ----------------

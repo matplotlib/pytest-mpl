@@ -198,7 +198,7 @@ class ImageComparison(object):
                 if not baseline_remote:
                     baseline_dir = os.path.join(os.path.dirname(item.fspath.strpath), baseline_dir)
 
-            with plt.style.context(style), switch_backend(backend):
+            with plt.style.context(style, after_reset=True), switch_backend(backend):
 
                 # Run test and get figure object
                 if inspect.ismethod(original):  # method
