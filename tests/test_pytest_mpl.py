@@ -86,11 +86,11 @@ def test_fails(tmpdir):
         f.write(TEST_FAILING)
 
     # If we use --mpl, it should detect that the figure is wrong
-    code = subprocess.call('py.test --mpl {0}'.format(test_file), shell=True)
+    code = subprocess.call('{0} -m pytest --mpl {1}'.format(sys.executable, test_file), shell=True)
     assert code != 0
 
     # If we don't use --mpl option, the test should succeed
-    code = subprocess.call('py.test {0}'.format(test_file), shell=True)
+    code = subprocess.call('{0} -m pytest {1}'.format(sys.executable, test_file), shell=True)
     assert code == 0
 
 
@@ -113,7 +113,7 @@ def test_output_dir(tmpdir):
 
     # When we run the test, we should get output images where we specify
     output_dir = tmpdir.join('test_output_dir').strpath
-    code = subprocess.call('py.test --mpl-results-path={0} --mpl {1}'.format(output_dir, test_file),
+    code = subprocess.call('{0} -m pytest --mpl-results-path={1} --mpl {2}'.format(sys.executable, output_dir, test_file),
                            shell=True)
 
     assert code != 0
@@ -150,13 +150,13 @@ def test_generate(tmpdir):
     gen_dir = tmpdir.mkdir('spam').mkdir('egg').strpath
 
     # If we don't generate, the test will fail
-    p = subprocess.Popen('py.test --mpl {0}'.format(test_file), shell=True,
+    p = subprocess.Popen('{0} -m pytest --mpl {1}'.format(sys.executable, test_file), shell=True,
                          stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     p.wait()
     assert b'Image file not found for comparison test' in p.stdout.read()
 
     # If we do generate, the test should succeed and a new file will appear
-    code = subprocess.call('py.test --mpl-generate-path={0} {1}'.format(gen_dir, test_file), shell=True)
+    code = subprocess.call('{0} -m pytest --mpl-generate-path={1} {2}'.format(sys.executable, gen_dir, test_file), shell=True)
     assert code == 0
     assert os.path.exists(os.path.join(gen_dir, 'test_gen.png'))
 
