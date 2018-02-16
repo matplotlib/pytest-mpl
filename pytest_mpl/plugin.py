@@ -143,7 +143,7 @@ def switch_backend(backend):
         yield
 
 
-def _close_figure(fig):
+def close_mpl_figure(fig):
     "Close a given matplotlib Figure. Any other type of figure is ignored"
 
     import matplotlib.pyplot as plt
@@ -244,7 +244,7 @@ class ImageComparison(object):
                     test_image = os.path.abspath(os.path.join(result_dir, filename))
 
                     fig.savefig(test_image, **savefig_kwargs)
-                    _close_figure(fig)
+                    close_mpl_figure(fig)
 
                     # Find path to baseline image
                     if baseline_remote:
@@ -275,7 +275,7 @@ class ImageComparison(object):
                         os.makedirs(self.generate_dir)
 
                     fig.savefig(os.path.abspath(os.path.join(self.generate_dir, filename)), **savefig_kwargs)
-                    _close_figure(fig)
+                    close_mpl_figure(fig)
                     pytest.skip("Skipping test, since generating data")
 
         if item.cls is not None:
@@ -312,7 +312,7 @@ class FigureCloser(object):
             else:  # function
                 fig = original(*args, **kwargs)
 
-            _close_figure(fig)
+            close_mpl_figure(fig)
 
         if item.cls is not None:
             setattr(item.cls, item.function.__name__, item_function_wrapper)
