@@ -143,6 +143,20 @@ def switch_backend(backend):
         yield
 
 
+def close_mpl_figure(fig):
+    "Close a given matplotlib Figure. Any other type of figure is ignored"
+
+    import matplotlib.pyplot as plt
+    from matplotlib.figure import Figure
+
+    # We only need to close actual Matplotlib figure objects. If
+    # we are dealing with a figure-like object that provides
+    # savefig but is not a real Matplotlib object, we shouldn't
+    # try closing it here.
+    if isinstance(fig, Figure):
+        plt.close(fig)
+
+
 class ImageComparison(object):
 
     def __init__(self, config, baseline_dir=None, generate_dir=None, results_dir=None):
@@ -162,7 +176,6 @@ class ImageComparison(object):
 
         import matplotlib
         import matplotlib.pyplot as plt
-        from matplotlib.figure import Figure
         from matplotlib.testing.compare import compare_images
         from matplotlib.testing.decorators import ImageComparisonTest as MplImageComparisonTest
         try:
@@ -231,13 +244,7 @@ class ImageComparison(object):
                     test_image = os.path.abspath(os.path.join(result_dir, filename))
 
                     fig.savefig(test_image, **savefig_kwargs)
-
-                    # We only need to close actual Matplotlib figure objects. If
-                    # we are dealing with a figure-like object that provides
-                    # savefig but is not a real Matplotlib object, we shouldn't
-                    # try closing it here.
-                    if isinstance(fig, Figure):
-                        plt.close(fig)
+                    close_mpl_figure(fig)
 
                     # Find path to baseline image
                     if baseline_remote:
@@ -268,7 +275,7 @@ class ImageComparison(object):
                         os.makedirs(self.generate_dir)
 
                     fig.savefig(os.path.abspath(os.path.join(self.generate_dir, filename)), **savefig_kwargs)
-                    plt.close(fig)
+                    close_mpl_figure(fig)
                     pytest.skip("Skipping test, since generating data")
 
         if item.cls is not None:
@@ -294,7 +301,6 @@ class FigureCloser(object):
             return
 
         import matplotlib.pyplot as plt
-        from matplotlib.figure import Figure
 
         original = item.function
 
@@ -306,12 +312,7 @@ class FigureCloser(object):
             else:  # function
                 fig = original(*args, **kwargs)
 
-            # We only need to close actual Matplotlib figure objects. If
-            # we are dealing with a figure-like object that provides
-            # savefig but is not a real Matplotlib object, we shouldn't
-            # try closing it here.
-            if isinstance(fig, Figure):
-                plt.close(fig)
+            close_mpl_figure(fig)
 
         if item.cls is not None:
             setattr(item.cls, item.function.__name__, item_function_wrapper)
