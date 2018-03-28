@@ -1,3 +1,4 @@
+.*.swp
 .tox
 .cache
 *.py[cod]
