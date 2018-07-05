@@ -157,6 +157,15 @@ def close_mpl_figure(fig):
         plt.close(fig)
 
 
+def get_marker(item, marker_name):
+    if hasattr(item, 'get_closest_marker'):
+        return item.get_closest_marker(marker_name)
+    else:
+        # "item.keywords.get" was deprecated in pytest 3.6
+        # See https://docs.pytest.org/en/latest/mark.html#updating-code
+        return item.keywords.get(marker_name)
+
+
 class ImageComparison(object):
 
     def __init__(self, config, baseline_dir=None, generate_dir=None, results_dir=None):
@@ -169,7 +178,7 @@ class ImageComparison(object):
 
     def pytest_runtest_setup(self, item):
 
-        compare = item.keywords.get('mpl_image_compare')
+        compare = get_marker(item, 'mpl_image_compare')
 
         if compare is None:
             return
@@ -295,7 +304,7 @@ class FigureCloser(object):
 
     def pytest_runtest_setup(self, item):
 
-        compare = item.keywords.get('mpl_image_compare')
+        compare = get_marker(item, 'mpl_image_compare')
 
         if compare is None:
             return
