@@ -1,0 +1,45 @@
+version: 2
+
+steps: &steps
+  - checkout
+  - run:
+      name: Run tests
+      command: pytest tests --mpl
+
+jobs:
+
+  image-tests-mpl153:
+    docker:
+      - image: astropy/image-tests-py35-mpl153:1.3
+    steps: *steps
+
+  image-tests-mpl202:
+    docker:
+      - image: astropy/image-tests-py35-mpl202:1.3
+    steps: *steps
+
+  image-tests-mpl212:
+    docker:
+      - image: astropy/image-tests-py35-mpl212:1.3
+    steps: *steps
+
+  image-tests-mpl222:
+    docker:
+      - image: astropy/image-tests-py35-mpl222:1.3
+    steps: *steps
+
+  image-tests-mpl300:
+    docker:
+      - image: astropy/image-tests-py35-mpl300:1.3
+    steps: *steps
+
+
+workflows:
+  version: 2
+  tests:
+    jobs:
+      - image-tests-mpl153
+      - image-tests-mpl202
+      - image-tests-mpl212
+      - image-tests-mpl222
+      - image-tests-mpl300
