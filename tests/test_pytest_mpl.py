@@ -12,6 +12,9 @@ MPL_LT_2 = LooseVersion(matplotlib.__version__) < LooseVersion("2.0")
 
 baseline_dir = 'baseline'
 
+# NOTE: Matplotlib 2.1.x, 2.2.x, and 3.0.x can all use the baseline images
+# from 2.0.x, so we just use those rather than duplicate files.
+
 if MPL_VERSION >= LooseVersion('2'):
     baseline_subdir = '2.0.x'
 elif MPL_VERSION >= LooseVersion('1.5'):
