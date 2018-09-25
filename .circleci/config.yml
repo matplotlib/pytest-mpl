@@ -4,7 +4,7 @@ steps: &steps
   - checkout
   - run:
       name: Run tests
-      command: pytest tests --mpl
+      command: MPLBACKEND=Agg pytest tests --mpl
 
 jobs:
 
