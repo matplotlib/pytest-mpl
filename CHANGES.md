@@ -1,6 +1,14 @@
 0.10 (unreleased)
 -----------------
 
+- Improve error message when baseline image is not found. [#76]
+
+- Update compatibility with pytest 3.6. [#72]
+
+- Only close figures if they are a valid Matplotlib figure. [#66]
+
+- Improve tests to not assume pytest executable is called py.test. [#65]
+
 - Make sure local matplotlib files are completely ignored. [#64]
 
 0.9 (2017-10-12)
