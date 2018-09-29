@@ -160,7 +160,7 @@ Base style
 ^^^^^^^^^^
 
 By default, tests will be run using the Matplotlib 'classic' style
-(ignoring any locally defined RC parameters). This can be overriden by
+(ignoring any locally defined RC parameters). This can be overridden by
 using the ``style`` argument:
 
 .. code:: python
