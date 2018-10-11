@@ -49,6 +49,13 @@ else:
     string_types = str
 
 
+SHAPE_MISMATCH_ERROR = """Error: Image dimensions did not match.
+  Expected shape: {expected_shape}
+    {expected_path}
+  Actual shape: {actual_shape}
+    {actual_path}"""
+
+
 def _download_file(baseline, filename):
     # Note that baseline can be a comma-separated list of URLs that we can
     # then treat as mirrors
@@ -183,6 +190,7 @@ class ImageComparison(object):
         if compare is None:
             return
 
+        from PIL import Image
         import matplotlib
         import matplotlib.pyplot as plt
         from matplotlib.testing.compare import compare_images
@@ -271,6 +279,17 @@ class ImageComparison(object):
                     # copy to our tmpdir to be sure to keep them in case of failure
                     baseline_image = os.path.abspath(os.path.join(result_dir, 'baseline-' + filename))
                     shutil.copyfile(baseline_image_ref, baseline_image)
+
+                    # Compare image size ourselves since the Matplotlib exception is a bit cryptic in this case
+                    # and doesn't show the filenames
+                    expected_shape = Image.open(baseline_image).size
+                    actual_shape = Image.open(test_image).size
+                    if expected_shape != actual_shape:
+                        error = SHAPE_MISMATCH_ERROR.format(expected_path=baseline_image,
+                                                            expected_shape=expected_shape,
+                                                            actual_path=test_image,
+                                                            actual_shape=actual_shape)
+                        pytest.fail(error, pytrace=False)
 
                     msg = compare_images(baseline_image, test_image, tol=tolerance)
 
