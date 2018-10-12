@@ -18,7 +18,7 @@ setup(
     long_description=long_description,
     packages=['pytest_mpl'],
     package_data={'pytest_mpl': ['classic.mplstyle']},
-    install_requires=['pytest', 'matplotlib', 'nose'],
+    install_requires=['pytest', 'matplotlib', 'pillow', 'nose'],
     license='BSD',
     author='Thomas Robitaille',
     author_email='thomas.robitaille@gmail.com',
