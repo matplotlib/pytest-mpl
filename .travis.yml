@@ -9,6 +9,7 @@ os:
 
 env:
   global:
+    - PIP_FALLBACK=False
     - SETUP_XVFB=True
     - CONDA_DEPENDENCIES="pytest matplotlib nose coverage freetype=2.5.5"
     - PIP_DEPENDENCIES="pytest-cov coveralls"
