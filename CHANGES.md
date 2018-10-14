@@ -1,4 +1,9 @@
-0.10 (unreleased)
+0.11 (unreleased)
+-----------------
+
+- Improve error message if image shapes don't match. [#79]
+
+0.10 (2018-09-25)
 -----------------
 
 - Improve error message when baseline image is not found. [#76]
