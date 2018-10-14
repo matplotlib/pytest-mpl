@@ -19,7 +19,16 @@ environment:
         CONDA_DEPENDENCIES: "matplotlib=1.5 nose"
 
       - PYTHON_VERSION: "3.6"
-        CONDA_DEPENDENCIES: "matplotlib=2.0.1 nose"
+        CONDA_DEPENDENCIES: "matplotlib=2.0 nose"
+
+      - PYTHON_VERSION: "3.6"
+        CONDA_DEPENDENCIES: "matplotlib=2.1 nose"
+
+      - PYTHON_VERSION: "3.7"
+        CONDA_DEPENDENCIES: "matplotlib=2.2 nose"
+
+      - PYTHON_VERSION: "3.7"
+        CONDA_DEPENDENCIES: "matplotlib=3.0 nose"
 
 platform:
     -x64
