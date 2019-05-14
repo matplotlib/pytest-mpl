@@ -104,6 +104,8 @@ def pytest_addoption(parser):
 
 def pytest_configure(config):
 
+    config.addinivalue_line('markers', "mpl_image_compare: Compares matplotlib figures against a baseline image")
+
     if config.getoption("--mpl") or config.getoption("--mpl-generate-path") is not None:
 
         baseline_dir = config.getoption("--mpl-baseline-path")
