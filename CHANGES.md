@@ -3,6 +3,8 @@
 
 - Improve error message if image shapes don't match. [#79]
 
+- Properly register mpl_image_compare marker with pytest. [#83]
+
 0.10 (2018-09-25)
 -----------------
 
