@@ -1,4 +1,4 @@
-0.11 (unreleased)
+0.11 (2019-11-15)
 -----------------
 
 - Improve error message if image shapes don't match. [#79]
