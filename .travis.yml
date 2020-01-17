@@ -1,4 +1,4 @@
-language: c
+language: python
 
 sudo: false
 
@@ -13,21 +13,37 @@ env:
     - TOXENV='test'
     - TOXARGS='-v'
     - TOXPOSARGS=''
-  matrix:
-    - PYTHON_VERSION=2.7 TOXENV=py27-test-mpl15
-    - PYTHON_VERSION=3.5 TOXENV=py35-test-mpl20
-    - PYTHON_VERSION=3.6 TOXENV=py36-test-mpl21
-    - PYTHON_VERSION=3.6 TOXENV=py36-test-mpl22
-    - PYTHON_VERSION=3.7 TOXENV=py37-test-mpl30
-    - PYTHON_VERSION=3.8 TOXENV=py38-test-mpl31
-    - PYTHON_VERSION=3.8 TOXENV=py38-test-minimal
-    - PYTHON_VERSION=3.8 TOXENV=codestyle
+
+matrix:
+  include:
+    - python: 2.7
+      env: TOXENV=py27-test-mpl15
+    - python: 3.5
+      env: TOXENV=py35-test-mpl20
+    - python: 3.6
+      env: TOXENV=py36-test-mpl21
+    - python: 3.6
+      env: TOXENV=py36-test-mpl22
+    - python: 3.7
+      env: TOXENV=py37-test-mpl30
+    - python: 3.8
+      env: TOXENV=py38-test-mpl31
+    - python: 3.8
+      env: TOXENV=py38-test-minimal
+    - python: 3.8
+      env: TOXENV=codestyle
+    - os: osx
+      env: PYTHON_VERSION=3.8 TOXENV=py38-test-mpl31
+    - os: windows
+      env: PYTHON_VERSION=3.8 TOXENV=py38-test-mpl31
 
 install:
-  git clone git://github.com/astropy/ci-helpers.git;
-  source ci-helpers/travis/setup_conda.sh;
+  - if [[ $TRAVIS_OS_NAME != linux ]]; then
+      git clone git://github.com/astropy/ci-helpers.git;
+      source ci-helpers/travis/setup_conda.sh;
+    fi
 
-script:
+    script:
   - pip install tox
   - tox $TOXARGS -- $TOXPOSARGS
 
