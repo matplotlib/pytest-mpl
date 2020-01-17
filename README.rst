@@ -1,4 +1,4 @@
-|Travis Build Status| |AppVeyor Build status| |Coveralls coverage|
+|Travis Build Status| |Coveralls coverage|
 
 About
 -----
@@ -254,8 +254,6 @@ plugin is correctly loaded as part of the test suite.
 
 .. |Travis Build Status| image:: https://travis-ci.org/matplotlib/pytest-mpl.svg?branch=master
    :target: https://travis-ci.org/matplotlib/pytest-mpl
-.. |AppVeyor Build status| image:: https://ci.appveyor.com/api/projects/status/mf7hs44scg5mvcyo?svg=true
-   :target: https://ci.appveyor.com/project/astrofrog/pytest-mpl
 .. |Coveralls coverage| image:: https://coveralls.io/repos/matplotlib/pytest-mpl/badge.svg
    :target: https://coveralls.io/r/matplotlib/pytest-mpl
 .. |expected| image:: images/baseline-coords_overlay_auto_coord_meta.png
