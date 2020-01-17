@@ -1,46 +1,34 @@
 language: c
 
-# Setting sudo to false opts in to Travis-CI container-based builds.
 sudo: false
 
 os:
-    - linux
-    - osx
+  - linux
+  - windows
+  - osx
 
 env:
   global:
     - SETUP_XVFB=True
-    - CONDA_DEPENDENCIES="pytest matplotlib nose coverage freetype=2.5.5"
-    - PIP_DEPENDENCIES="pytest-cov coveralls"
+    - TOXENV='test'
+    - TOXARGS='-v'
+    - TOXPOSARGS=''
   matrix:
-    - PYTHON_VERSION=3.4 MATPLOTLIB_VERSION=1.5
-    - PYTHON_VERSION=2.7 MATPLOTLIB_VERSION=1.5
-    - PYTHON_VERSION=3.5 MATPLOTLIB_VERSION=1.5
-    - PYTHON_VERSION=2.7 MATPLOTLIB_VERSION=2.0
-    - PYTHON_VERSION=3.5 MATPLOTLIB_VERSION=2.0
-    - PYTHON_VERSION=3.6 MATPLOTLIB_VERSION=2.0
-
-    # The following build is meant to check that dependencies get set up correctly, but currently
-    # the image tests fail, which should be investigated.
-    # - PYTHON_VERSION=3.5 CONDA_DEPENDENCIES="coverage freetype libpng"
+    - PYTHON_VERSION=2.7 TOXENV=py27-test-mpl15
+    - PYTHON_VERSION=3.5 TOXENV=py35-test-mpl20
+    - PYTHON_VERSION=3.6 TOXENV=py36-test-mpl21
+    - PYTHON_VERSION=3.6 TOXENV=py36-test-mpl22
+    - PYTHON_VERSION=3.7 TOXENV=py37-test-mpl30
+    - PYTHON_VERSION=3.8 TOXENV=py38-test-mpl31
+    - PYTHON_VERSION=3.8 TOXENV=codestyle
 
 install:
-
-    # We use the ci-helpers package from the Astropy project to set up conda
-    # with any requested dependencies above.
-    - git clone git://github.com/astropy/ci-helpers.git
-    - source ci-helpers/travis/setup_conda_$TRAVIS_OS_NAME.sh
-
-    # Need to use develop instead of install to make sure coverage works
-    - python setup.py develop
+  git clone git://github.com/astropy/ci-helpers.git;
+  source ci-helpers/travis/setup_conda.sh;
 
 script:
-   - python -c 'import pytest_mpl.plugin'
-   - pytest -vv --mpl --cov pytest_mpl tests
-   # Make sure that the tests run ok even without the --mpl option (we close
-   # figures anyway in this case)
-   - pytest -vv --cov pytest_mpl --cov-append tests
-   - python setup.py check --restructuredtext
+  - pip install tox
+  - tox $TOXARGS -- $TOXPOSARGS
 
 after_success:
-   - coveralls
+  - coveralls
