@@ -194,8 +194,8 @@ class ImageComparison(object):
         if compare is None:
             return
 
-        from PIL import Image
         import matplotlib
+        from matplotlib.image import imread
         import matplotlib.pyplot as plt
         from matplotlib.testing.compare import compare_images
         try:
@@ -291,8 +291,8 @@ class ImageComparison(object):
                     # Compare image size ourselves since the Matplotlib
                     # exception is a bit cryptic in this case and doesn't show
                     # the filenames
-                    expected_shape = Image.open(baseline_image).size
-                    actual_shape = Image.open(test_image).size
+                    expected_shape = imread(baseline_image).shape[:2]
+                    actual_shape = imread(test_image).shape[:2]
                     if expected_shape != actual_shape:
                         error = SHAPE_MISMATCH_ERROR.format(expected_path=baseline_image,
                                                             expected_shape=expected_shape,
