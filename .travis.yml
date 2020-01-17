@@ -11,6 +11,19 @@ env:
 
 matrix:
   include:
+    # Test the oldest and newest configuration on Mac and Windows
+    - os: osx
+      language: c
+      env: PYTHON_VERSION=2.7 TOXENV=py27-test-mpl15
+    - os: osx
+      language: c
+      env: PYTHON_VERSION=3.8 TOXENV=py38-test-mpl31
+    - os: windows
+      language: c
+      env: PYTHON_VERSION=2.7 TOXENV=py27-test-mpl15
+    - os: windows
+      language: c
+      env: PYTHON_VERSION=3.8 TOXENV=py38-test-mpl31
     # Test all configurations on Linux
     - python: 2.7
       env: TOXENV=py27-test-mpl15
@@ -28,19 +41,6 @@ matrix:
       env: TOXENV=py38-test-minimal
     - python: 3.8
       env: TOXENV=codestyle
-    # Also test the oldest and newest configuration on Mac and Windows
-    - os: osx
-      language: c
-      env: PYTHON_VERSION=2.7 TOXENV=py27-test-mpl15
-    - os: osx
-      language: c
-      env: PYTHON_VERSION=3.8 TOXENV=py38-test-mpl31
-    - os: windows
-      language: c
-      env: PYTHON_VERSION=2.7 TOXENV=py27-test-mpl15
-    - os: windows
-      language: c
-      env: PYTHON_VERSION=3.8 TOXENV=py38-test-mpl31
 
 install:
   - if [[ $TRAVIS_OS_NAME != linux ]]; then
