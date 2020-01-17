@@ -67,6 +67,7 @@ def test_dpi():
     ax.plot([1, 2, 3])
     return fig
 
+
 TEST_FAILING = """
 import pytest
 import matplotlib.pyplot as plt
@@ -113,14 +114,16 @@ def test_output_dir(tmpdir):
 
     # When we run the test, we should get output images where we specify
     output_dir = tmpdir.join('test_output_dir').strpath
-    code = subprocess.call('{0} -m pytest --mpl-results-path={1} --mpl {2}'.format(sys.executable, output_dir, test_file),
+    code = subprocess.call('{0} -m pytest --mpl-results-path={1} --mpl {2}'
+                           .format(sys.executable, output_dir, test_file),
                            shell=True)
 
     assert code != 0
     assert os.path.exists(output_dir)
 
     # Listdir() is to get the random name that the output for the one test is written into
-    assert os.path.exists(os.path.join(output_dir, os.listdir(output_dir)[0], 'test_output_dir.png'))
+    assert os.path.exists(os.path.join(output_dir, os.listdir(output_dir)[0],
+                                       'test_output_dir.png'))
 
 
 TEST_GENERATE = """
@@ -156,7 +159,8 @@ def test_generate(tmpdir):
     assert b'Image file not found for comparison test' in p.stdout.read()
 
     # If we do generate, the test should succeed and a new file will appear
-    code = subprocess.call('{0} -m pytest --mpl-generate-path={1} {2}'.format(sys.executable, gen_dir, test_file), shell=True)
+    code = subprocess.call('{0} -m pytest --mpl-generate-path={1} {2}'
+                           .format(sys.executable, gen_dir, test_file), shell=True)
     assert code == 0
     assert os.path.exists(os.path.join(gen_dir, 'test_gen.png'))
 
@@ -173,7 +177,8 @@ def test_nofigure():
     pass
 
 
-@pytest.mark.skipif(MPL_LT_2, reason="the fivethirtyeight style is only available in Matplotlib 2.0 and later")
+@pytest.mark.skipif(MPL_LT_2, reason="the fivethirtyeight style is only available "
+                                     "in Matplotlib 2.0 and later")
 @pytest.mark.mpl_image_compare(baseline_dir=baseline_dir_local,
                                style='fivethirtyeight')
 def test_base_style():
@@ -198,7 +203,7 @@ def test_remove_text():
 def test_parametrized(s):
     fig = plt.figure()
     ax = fig.add_subplot(1, 1, 1)
-    ax.scatter([1,3,4,3,2],[1,4,3,3,1], s=s)
+    ax.scatter([1, 3, 4, 3, 2], [1, 4, 3, 3, 1], s=s)
     return fig
 
 
