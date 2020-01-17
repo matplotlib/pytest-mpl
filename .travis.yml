@@ -2,20 +2,17 @@ language: python
 
 sudo: false
 
-os:
-  - linux
-  - windows
-  - osx
-
 env:
   global:
     - SETUP_XVFB=True
+    - MPLBACKEND=Agg
     - TOXENV='test'
     - TOXARGS='-v'
     - TOXPOSARGS=''
 
 matrix:
   include:
+    # Test all configurations on Linux
     - python: 2.7
       env: TOXENV=py27-test-mpl15
     - python: 3.5
@@ -32,8 +29,13 @@ matrix:
       env: TOXENV=py38-test-minimal
     - python: 3.8
       env: TOXENV=codestyle
+    # Also test the oldest and newest configuration on Mac and Windows
+    - os: osx
+      env: PYTHON_VERSION=2.7 TOXENV=py27-test-mpl15
     - os: osx
       env: PYTHON_VERSION=3.8 TOXENV=py38-test-mpl31
+    - os: windows
+      env: PYTHON_VERSION=2.7 TOXENV=py27-test-mpl15
     - os: windows
       env: PYTHON_VERSION=3.8 TOXENV=py38-test-mpl31
 
@@ -43,7 +45,7 @@ install:
       source ci-helpers/travis/setup_conda.sh;
     fi
 
-    script:
+script:
   - pip install tox
   - tox $TOXARGS -- $TOXPOSARGS
 
