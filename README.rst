@@ -6,11 +6,6 @@ About
 This is a plugin to facilitate image comparison for
 `Matplotlib <http://www.matplotlib.org>`__ figures in pytest.
 
-Matplotlib includes a number of test utilities and decorators, but these
-are geared towards the `nose <http://nose.readthedocs.org/>`__ testing
-framework. Pytest-mpl makes it easy to compare figures produced by tests
-to reference images when using `pytest <http://pytest.org>`__.
-
 For each figure to test, the reference image is subtracted from the
 generated image, and the RMS of the residual is compared to a
 user-specified tolerance. If the residual is too large, the test will
@@ -23,23 +18,17 @@ section below.
 Installing
 ----------
 
-This plugin is compatible with Python 2.6, 2.7, and 3.3 and later, and
-requires `pytest <http://pytest.org>`__,
-`matplotlib <http://www.matplotlib.org>`__ and
-`nose <http://nose.readthedocs.org/>`__ to be installed (nose is
-required by Matplotlib).
+This plugin is compatible with Python 2.7, and 3.5 and later, and
+requires `pytest <http://pytest.org>`__ and
+`matplotlib <http://www.matplotlib.org>` to be installed.
 
-To install, you can do:
-
-::
+To install, you can do::
 
     pip install pytest-mpl
 
-You can check that the plugin is registered with pytest by doing:
+You can check that the plugin is registered with pytest by doing::
 
-::
-
-    py.test --version
+    pytest --version
 
 which will show a list of plugins:
 
@@ -71,24 +60,20 @@ function returns a Matplotlib figure (or any figure object that has a
 
 To generate the baseline images, run the tests with the
 ``--mpl-generate-path`` option with the name of the directory where the
-generated images should be placed:
+generated images should be placed::
 
-::
-
-    py.test --mpl-generate-path=baseline
+    pytest --mpl-generate-path=baseline
 
 If the directory does not exist, it will be created. The directory will
-be interpreted as being relative to where you are running ``py.test``.
+be interpreted as being relative to where you are running ``pytest``.
 Once you are happy with the generated images, you should move them to a
 sub-directory called ``baseline`` relative to the test files (this name
 is configurable, see below). You can also generate the baseline images
 directly in the right directory.
 
-You can then run the tests simply with:
+You can then run the tests simply with::
 
-::
-
-    py.test --mpl
+    pytest --mpl
 
 and the tests will pass if the images are the same. If you omit the
 ``--mpl`` option, the tests will run but will only check that the code
@@ -145,11 +130,9 @@ a comma-separated list of URLs (real commas in the URL should be encoded
 as ``%2C``).
 
 Finally, you can also set a custom baseline directory globally when
-running tests by running ``py.test`` with:
+running tests by running ``pytest`` with::
 
-::
-
-    py.test --mpl --mpl-baseline-path=baseline_images
+    pytest --mpl --mpl-baseline-path=baseline_images
 
 This directory will be interpreted as being relative to where the tests
 are run. In addition, if both this option and the ``baseline_dir``
@@ -190,9 +173,7 @@ Test failure example
 
 If the images produced by the tests are correct, then the test will
 pass, but if they are not, the test will fail with a message similar to
-the following:
-
-::
+the following::
 
     E               Exception: Error: Image files did not match.
     E                 RMS Value: 142.2287807767823
@@ -226,7 +207,7 @@ By default, the expected, actual and difference files are written to a
 temporary directory with a non-deterministic path. If you want to instead
 write them to a specific directory, you can use::
 
-    py.test --mpl --mpl-results-path=results
+    pytest --mpl --mpl-results-path=results
 
 The ``results`` directory will then contain one sub-directory per test, and each
 sub-directory will contain the three files mentioned above. If you are using a
@@ -242,12 +223,10 @@ Running the tests for pytest-mpl
 --------------------------------
 
 If you are contributing some changes and want to run the tests, first
-install the latest version of the plugin then do:
-
-::
+install the latest version of the plugin then do::
 
     cd tests
-    py.test --mpl
+    pytest --mpl
 
 The reason for having to install the plugin first is to ensure that the
 plugin is correctly loaded as part of the test suite.
