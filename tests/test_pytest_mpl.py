@@ -23,7 +23,7 @@ baseline_dir_remote = 'http://matplotlib.github.io/pytest-mpl/' + baseline_subdi
 WIN = sys.platform.startswith('win')
 
 # In some cases, the fonts on Windows can be quite different
-DEFAULT_TOLERANCE = 10 if WIN else None
+DEFAULT_TOLERANCE = 10 if WIN else 2
 
 
 @pytest.mark.mpl_image_compare(baseline_dir=baseline_dir_local,
