@@ -163,8 +163,8 @@ def test_generate(tmpdir):
 
     # If we do generate, the test should succeed and a new file will appear
     code = subprocess.call([sys.executable, '-m', 'pytest',
-                           '--mpl-generate-path={0}'.format(gen_dir),
-                           test_file])
+                            '--mpl-generate-path={0}'.format(gen_dir),
+                            test_file])
     assert code == 0
     assert os.path.exists(os.path.join(gen_dir, 'test_gen.png'))
 
