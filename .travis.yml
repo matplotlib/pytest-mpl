@@ -20,6 +20,7 @@ env:
     - PYTHON_VERSION=3.6 TOXENV=py36-test-mpl22
     - PYTHON_VERSION=3.7 TOXENV=py37-test-mpl30
     - PYTHON_VERSION=3.8 TOXENV=py38-test-mpl31
+    - PYTHON_VERSION=3.8 TOXENV=py38-test-minimal
     - PYTHON_VERSION=3.8 TOXENV=codestyle
 
 install:
