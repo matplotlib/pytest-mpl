@@ -38,8 +38,6 @@ matrix:
     - python: 3.8
       env: TOXENV=py38-test-mpl31
     - python: 3.8
-      env: TOXENV=py38-test-minimal
-    - python: 3.8
       env: TOXENV=codestyle
 
 install:
