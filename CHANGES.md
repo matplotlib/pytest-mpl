@@ -5,6 +5,8 @@
 
 - Properly register mpl_image_compare marker with pytest. [#83]
 
+- Drop support for Python 3.5 and earlier, and Matplotlib 1.5. [#87]
+
 0.10 (2018-09-25)
 -----------------
 

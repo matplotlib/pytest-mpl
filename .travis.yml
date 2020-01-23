@@ -14,21 +14,19 @@ matrix:
     # Test the oldest and newest configuration on Mac and Windows
     - os: osx
       language: c
-      env: PYTHON_VERSION=2.7 TOXENV=py27-test-mpl15
+      env: PYTHON_VERSION=3.6 TOXENV=py36-test-mpl20
     - os: osx
       language: c
       env: PYTHON_VERSION=3.8 TOXENV=py38-test-mpl31
     - os: windows
       language: c
-      env: PYTHON_VERSION=2.7 TOXENV=py27-test-mpl15
+      env: PYTHON_VERSION=3.6 TOXENV=py36-test-mpl20
     - os: windows
       language: c
       env: PYTHON_VERSION=3.8 TOXENV=py38-test-mpl31
     # Test all configurations on Linux
-    - python: 2.7
-      env: TOXENV=py27-test-mpl15
-    - python: 3.5
-      env: TOXENV=py35-test-mpl20
+    - python: 3.6
+      env: TOXENV=py36-test-mpl20
     - python: 3.6
       env: TOXENV=py36-test-mpl21
     - python: 3.6
