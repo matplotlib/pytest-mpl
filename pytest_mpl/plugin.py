@@ -63,7 +63,7 @@ def _download_file(baseline, filename):
         try:
             u = urlopen(base_url + filename)
             content = u.read()
-        except Exception as exc:
+        except Exception:
             warnings.warn('Downloading {0} failed'.format(base_url + filename))
         else:
             break
@@ -104,7 +104,9 @@ def pytest_addoption(parser):
 
 def pytest_configure(config):
 
-    config.addinivalue_line('markers', "mpl_image_compare: Compares matplotlib figures against a baseline image")
+    config.addinivalue_line('markers',
+                            "mpl_image_compare: Compares matplotlib figures "
+                            "against a baseline image")
 
     if config.getoption("--mpl") or config.getoption("--mpl-generate-path") is not None:
 
@@ -192,8 +194,8 @@ class ImageComparison(object):
         if compare is None:
             return
 
-        from PIL import Image
         import matplotlib
+        from matplotlib.image import imread
         import matplotlib.pyplot as plt
         from matplotlib.testing.compare import compare_images
         try:
@@ -269,23 +271,28 @@ class ImageComparison(object):
                     if baseline_remote:
                         baseline_image_ref = _download_file(baseline_dir, filename)
                     else:
-                        baseline_image_ref = os.path.abspath(os.path.join(os.path.dirname(item.fspath.strpath), baseline_dir, filename))
+                        baseline_image_ref = os.path.abspath(os.path.join(
+                            os.path.dirname(item.fspath.strpath), baseline_dir, filename))
 
                     if not os.path.exists(baseline_image_ref):
                         pytest.fail("Image file not found for comparison test in: "
                                     "\n\t{baseline_dir}"
                                     "\n(This is expected for new tests.)\nGenerated Image: "
-                                    "\n\t{test}".format(baseline_dir=baseline_dir, test=test_image), pytrace=False)
+                                    "\n\t{test}".format(baseline_dir=baseline_dir,
+                                                        test=test_image),
+                                    pytrace=False)
 
                     # distutils may put the baseline images in non-accessible places,
                     # copy to our tmpdir to be sure to keep them in case of failure
-                    baseline_image = os.path.abspath(os.path.join(result_dir, 'baseline-' + filename))
+                    baseline_image = os.path.abspath(os.path.join(result_dir,
+                                                                  'baseline-' + filename))
                     shutil.copyfile(baseline_image_ref, baseline_image)
 
-                    # Compare image size ourselves since the Matplotlib exception is a bit cryptic in this case
-                    # and doesn't show the filenames
-                    expected_shape = Image.open(baseline_image).size
-                    actual_shape = Image.open(test_image).size
+                    # Compare image size ourselves since the Matplotlib
+                    # exception is a bit cryptic in this case and doesn't show
+                    # the filenames
+                    expected_shape = imread(baseline_image).shape[:2]
+                    actual_shape = imread(test_image).shape[:2]
                     if expected_shape != actual_shape:
                         error = SHAPE_MISMATCH_ERROR.format(expected_path=baseline_image,
                                                             expected_shape=expected_shape,
@@ -305,7 +312,8 @@ class ImageComparison(object):
                     if not os.path.exists(self.generate_dir):
                         os.makedirs(self.generate_dir)
 
-                    fig.savefig(os.path.abspath(os.path.join(self.generate_dir, filename)), **savefig_kwargs)
+                    fig.savefig(os.path.abspath(os.path.join(self.generate_dir, filename)),
+                                **savefig_kwargs)
                     close_mpl_figure(fig)
                     pytest.skip("Skipping test, since generating data")
 
@@ -330,8 +338,6 @@ class FigureCloser(object):
 
         if compare is None:
             return
-
-        import matplotlib.pyplot as plt
 
         original = item.function
 

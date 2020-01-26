@@ -22,8 +22,12 @@ baseline_dir_remote = 'http://matplotlib.github.io/pytest-mpl/' + baseline_subdi
 
 WIN = sys.platform.startswith('win')
 
+# In some cases, the fonts on Windows can be quite different
+DEFAULT_TOLERANCE = 10 if WIN else 2
 
-@pytest.mark.mpl_image_compare(baseline_dir=baseline_dir_local)
+
+@pytest.mark.mpl_image_compare(baseline_dir=baseline_dir_local,
+                               tolerance=DEFAULT_TOLERANCE)
 def test_succeeds():
     fig = plt.figure()
     ax = fig.add_subplot(1, 1, 1)
@@ -31,7 +35,8 @@ def test_succeeds():
     return fig
 
 
-@pytest.mark.mpl_image_compare(baseline_dir=baseline_dir_remote)
+@pytest.mark.mpl_image_compare(baseline_dir=baseline_dir_remote,
+                               tolerance=DEFAULT_TOLERANCE)
 def test_succeeds_remote():
     fig = plt.figure()
     ax = fig.add_subplot(1, 1, 1)
@@ -42,7 +47,8 @@ def test_succeeds_remote():
 # The following tries an invalid URL first (or at least a URL where the baseline
 # image won't exist), but should succeed with the second mirror.
 @pytest.mark.mpl_image_compare(baseline_dir='http://www.python.org,' + baseline_dir_remote,
-                               filename='test_succeeds_remote.png')
+                               filename='test_succeeds_remote.png',
+                               tolerance=DEFAULT_TOLERANCE)
 def test_succeeds_faulty_mirror():
     fig = plt.figure()
     ax = fig.add_subplot(1, 1, 1)
@@ -52,7 +58,8 @@ def test_succeeds_faulty_mirror():
 
 class TestClass(object):
 
-    @pytest.mark.mpl_image_compare(baseline_dir=baseline_dir_local)
+    @pytest.mark.mpl_image_compare(baseline_dir=baseline_dir_local,
+                                   tolerance=DEFAULT_TOLERANCE)
     def test_succeeds(self):
         fig = plt.figure()
         ax = fig.add_subplot(1, 1, 1)
@@ -60,12 +67,15 @@ class TestClass(object):
         return fig
 
 
-@pytest.mark.mpl_image_compare(baseline_dir=baseline_dir_local, savefig_kwargs={'dpi': 30})
+@pytest.mark.mpl_image_compare(baseline_dir=baseline_dir_local,
+                               savefig_kwargs={'dpi': 30},
+                               tolerance=DEFAULT_TOLERANCE)
 def test_dpi():
     fig = plt.figure()
     ax = fig.add_subplot(1, 1, 1)
     ax.plot([1, 2, 3])
     return fig
+
 
 TEST_FAILING = """
 import pytest
@@ -86,11 +96,11 @@ def test_fails(tmpdir):
         f.write(TEST_FAILING)
 
     # If we use --mpl, it should detect that the figure is wrong
-    code = subprocess.call('{0} -m pytest --mpl {1}'.format(sys.executable, test_file), shell=True)
+    code = subprocess.call([sys.executable, '-m', 'pytest', '--mpl', test_file])
     assert code != 0
 
     # If we don't use --mpl option, the test should succeed
-    code = subprocess.call('{0} -m pytest {1}'.format(sys.executable, test_file), shell=True)
+    code = subprocess.call([sys.executable, '-m', 'pytest', test_file])
     assert code == 0
 
 
@@ -113,14 +123,16 @@ def test_output_dir(tmpdir):
 
     # When we run the test, we should get output images where we specify
     output_dir = tmpdir.join('test_output_dir').strpath
-    code = subprocess.call('{0} -m pytest --mpl-results-path={1} --mpl {2}'.format(sys.executable, output_dir, test_file),
-                           shell=True)
+    code = subprocess.call([sys.executable, '-m', 'pytest',
+                            '--mpl-results-path={0}'.format(output_dir),
+                            '--mpl', test_file])
 
     assert code != 0
     assert os.path.exists(output_dir)
 
     # Listdir() is to get the random name that the output for the one test is written into
-    assert os.path.exists(os.path.join(output_dir, os.listdir(output_dir)[0], 'test_output_dir.png'))
+    assert os.path.exists(os.path.join(output_dir, os.listdir(output_dir)[0],
+                                       'test_output_dir.png'))
 
 
 TEST_GENERATE = """
@@ -135,12 +147,6 @@ def test_gen():
 """
 
 
-# TODO: We skip the following test on Windows since the first subprocess calls.
-# This should be fixed in the long term, but is not critical since we already
-# test this on Linux.
-
-
-@pytest.mark.skipif("WIN")
 def test_generate(tmpdir):
 
     test_file = tmpdir.join('test.py').strpath
@@ -150,13 +156,15 @@ def test_generate(tmpdir):
     gen_dir = tmpdir.mkdir('spam').mkdir('egg').strpath
 
     # If we don't generate, the test will fail
-    p = subprocess.Popen('{0} -m pytest --mpl {1}'.format(sys.executable, test_file), shell=True,
-                         stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    p.wait()
-    assert b'Image file not found for comparison test' in p.stdout.read()
+    try:
+        subprocess.check_output([sys.executable, '-m', 'pytest', '--mpl', test_file])
+    except subprocess.CalledProcessError as exc:
+        assert b'Image file not found for comparison test' in exc.output
 
     # If we do generate, the test should succeed and a new file will appear
-    code = subprocess.call('{0} -m pytest --mpl-generate-path={1} {2}'.format(sys.executable, gen_dir, test_file), shell=True)
+    code = subprocess.call([sys.executable, '-m', 'pytest',
+                            '--mpl-generate-path={0}'.format(gen_dir),
+                            test_file])
     assert code == 0
     assert os.path.exists(os.path.join(gen_dir, 'test_gen.png'))
 
@@ -173,9 +181,11 @@ def test_nofigure():
     pass
 
 
-@pytest.mark.skipif(MPL_LT_2, reason="the fivethirtyeight style is only available in Matplotlib 2.0 and later")
+@pytest.mark.skipif(MPL_LT_2, reason="the fivethirtyeight style is only available "
+                                     "in Matplotlib 2.0 and later")
 @pytest.mark.mpl_image_compare(baseline_dir=baseline_dir_local,
-                               style='fivethirtyeight')
+                               style='fivethirtyeight',
+                               tolerance=DEFAULT_TOLERANCE)
 def test_base_style():
     fig = plt.figure()
     ax = fig.add_subplot(1, 1, 1)
@@ -198,7 +208,7 @@ def test_remove_text():
 def test_parametrized(s):
     fig = plt.figure()
     ax = fig.add_subplot(1, 1, 1)
-    ax.scatter([1,3,4,3,2],[1,4,3,3,1], s=s)
+    ax.scatter([1, 3, 4, 3, 2], [1, 4, 3, 3, 1], s=s)
     return fig
 
 
@@ -210,7 +220,8 @@ class TestClassWithSetup(object):
         self.x = [1, 2, 3]
 
     @pytest.mark.mpl_image_compare(baseline_dir=baseline_dir_local,
-                                   filename='test_succeeds.png')
+                                   filename='test_succeeds.png',
+                                   tolerance=DEFAULT_TOLERANCE)
     def test_succeeds(self):
         fig = plt.figure()
         ax = fig.add_subplot(1, 1, 1)
