@@ -63,8 +63,8 @@ def _download_file(baseline, filename):
         try:
             u = urlopen(base_url + filename)
             content = u.read()
-        except Exception:
-            warnings.warn('Downloading {0} failed'.format(base_url + filename))
+        except Exception as e:
+            warnings.warn('Downloading {0} failed: {1}'.format(base_url + filename, e))
         else:
             break
     else:
@@ -124,7 +124,7 @@ def pytest_configure(config):
             if results_dir is not None and generate_dir is not None:
                 warnings.warn("Ignoring --mpl-result-path since --mpl-generate-path is set")
 
-        if baseline_dir is not None:
+        if baseline_dir is not None and not baseline_dir.startswith(("https", "http")):
             baseline_dir = os.path.abspath(baseline_dir)
         if generate_dir is not None:
             baseline_dir = os.path.abspath(generate_dir)
@@ -227,10 +227,10 @@ class ImageComparison(object):
                 else:
                     baseline_dir = self.baseline_dir
                 baseline_remote = False
-            else:
-                baseline_remote = baseline_dir.startswith(('http://', 'https://'))
-                if not baseline_remote:
-                    baseline_dir = os.path.join(os.path.dirname(item.fspath.strpath), baseline_dir)
+
+            baseline_remote = baseline_dir.startswith(('http://', 'https://'))
+            if not baseline_remote:
+                baseline_dir = os.path.join(os.path.dirname(item.fspath.strpath), baseline_dir)
 
             with plt.style.context(style, after_reset=True), switch_backend(backend):
 
