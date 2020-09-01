@@ -152,6 +152,15 @@ using the ``style`` argument:
     def test_image():
         ...
 
+Package version dependencies
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Different versions of Matplotlib and FreeType may result in slightly
+different images. When testing on multiple platforms or as part of a
+pipeline, it is important to ensure that the versions of these
+packages match the versions used to generate the images used for
+comparison. It can be useful to pin versions of Matplotlib and FreeType
+so as to avoid automatic updates that fail tests.
+
 Removing text
 ^^^^^^^^^^^^^
 
