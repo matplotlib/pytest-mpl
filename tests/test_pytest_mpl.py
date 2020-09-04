@@ -227,3 +227,14 @@ class TestClassWithSetup(object):
         ax = fig.add_subplot(1, 1, 1)
         ax.plot(self.x)
         return fig
+
+
+@pytest.mark.mpl_image_compare
+def test_check_equal():
+    fig_test = plt.figure()
+    fig_test.subplots().plot([1, 3, 5])
+
+    fig_ref = plt.figure()
+    fig_ref.subplots().plot([0, 1, 2], [1, 3, 5])
+
+    return fig_test, fig_ref

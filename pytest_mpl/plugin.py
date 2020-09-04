@@ -272,7 +272,10 @@ class ImageComparison(object):
                     fig = original(*args, **kwargs)
 
                 if remove_text:
-                    remove_ticks_and_titles(fig)
+                    if not isinstance(fig, tuple):
+                        remove_ticks_and_titles(fig)
+                    else:
+                        [remove_ticks_and_titles(f) for f in fig]
 
                 # Find test name to use as plot name
                 filename = compare.kwargs.get('filename', None)
@@ -286,33 +289,40 @@ class ImageComparison(object):
                 # reference images or simply running the test.
                 if self.generate_dir is None:
 
-                    # Save the figure
+                    # Save the figure(s)
                     result_dir = tempfile.mkdtemp(dir=self.results_dir)
                     test_image = os.path.abspath(os.path.join(result_dir, filename))
-
-                    fig.savefig(test_image, **savefig_kwargs)
-                    close_mpl_figure(fig)
-
-                    # Find path to baseline image
-                    if baseline_remote:
-                        baseline_image_ref = _download_file(baseline_dir, filename)
-                    else:
-                        baseline_image_ref = os.path.abspath(os.path.join(
-                            os.path.dirname(item.fspath.strpath), baseline_dir, filename))
-
-                    if not os.path.exists(baseline_image_ref):
-                        pytest.fail("Image file not found for comparison test in: "
-                                    "\n\t{baseline_dir}"
-                                    "\n(This is expected for new tests.)\nGenerated Image: "
-                                    "\n\t{test}".format(baseline_dir=baseline_dir,
-                                                        test=test_image),
-                                    pytrace=False)
-
-                    # distutils may put the baseline images in non-accessible places,
-                    # copy to our tmpdir to be sure to keep them in case of failure
                     baseline_image = os.path.abspath(os.path.join(result_dir,
                                                                   'baseline-' + filename))
-                    shutil.copyfile(baseline_image_ref, baseline_image)
+
+                    if not isinstance(fig, tuple):
+                        fig.savefig(test_image, **savefig_kwargs)
+                        close_mpl_figure(fig)
+
+                        # Find path to baseline image
+                        if baseline_remote:
+                            baseline_image_ref = _download_file(baseline_dir, filename)
+                        else:
+                            baseline_image_ref = os.path.abspath(os.path.join(
+                                os.path.dirname(item.fspath.strpath), baseline_dir, filename))
+
+                        if not os.path.exists(baseline_image_ref):
+                            pytest.fail("Image file not found for comparison test in: "
+                                        "\n\t{baseline_dir}"
+                                        "\n(This is expected for new tests.)\nGenerated Image: "
+                                        "\n\t{test}".format(baseline_dir=baseline_dir,
+                                                            test=test_image),
+                                        pytrace=False)
+
+                        # distutils may put the baseline images in non-accessible places,
+                        # copy to our tmpdir to be sure to keep them in case of failure
+                        shutil.copyfile(baseline_image_ref, baseline_image)
+
+                    else:
+                        fig[0].savefig(test_image, **savefig_kwargs)
+                        close_mpl_figure(fig[0])
+                        fig[1].savefig(baseline_image, **savefig_kwargs)
+                        close_mpl_figure(fig[1])
 
                     _raise_on_image_difference(
                         expected=baseline_image,
