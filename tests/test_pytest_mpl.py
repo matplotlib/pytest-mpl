@@ -231,10 +231,10 @@ class TestClassWithSetup(object):
 
 @pytest.mark.mpl_image_compare
 def test_check_equal():
-    fig_test = plt.figure()
-    fig_test.subplots().plot([1, 3, 5])
+    fig_test, ax_test = plt.subplots()
+    ax_test.plot([1, 3, 5])
 
-    fig_ref = plt.figure()
-    fig_ref.subplots().plot([0, 1, 2], [1, 3, 5])
+    fig_ref, ax_ref = plt.subplots()
+    ax_ref.plot([0, 1, 2], [1, 3, 5])
 
     return fig_test, fig_ref
