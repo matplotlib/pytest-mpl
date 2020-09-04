@@ -330,6 +330,11 @@ class ImageComparison(object):
                         tol=tolerance
                     )
 
+                elif self.generate_dir and isinstance(fig, tuple):
+                    close_mpl_figure(fig[0])
+                    close_mpl_figure(fig[1])
+                    pytest.skip("Skipping image comparison test")
+
                 else:
 
                     if not os.path.exists(self.generate_dir):
