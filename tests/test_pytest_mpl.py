@@ -227,3 +227,58 @@ class TestClassWithSetup(object):
         ax = fig.add_subplot(1, 1, 1)
         ax.plot(self.x)
         return fig
+
+
+@pytest.mark.mpl_image_compare
+def test_check_equal():
+    fig_test, ax_test = plt.subplots()
+    ax_test.plot([1, 3, 5])
+
+    fig_ref, ax_ref = plt.subplots()
+    ax_ref.plot([0, 1, 2], [1, 3, 5])
+
+    return fig_test, fig_ref
+
+
+TEST_GENERATE_2 = """
+import pytest
+import matplotlib.pyplot as plt
+@pytest.mark.mpl_image_compare
+def test_gen_two_figs():
+    fig_test, ax_test = plt.subplots()
+    ax_test.plot([1, 3, 5])
+    fig_ref, ax_ref = plt.subplots()
+    ax_ref.plot([0, 1, 2], [1, 3, 7])
+    return fig_test, fig_ref
+"""
+
+
+def test_check_unequal_fails(tmpdir):
+
+    test_file = tmpdir.join("test2.py").strpath
+    with open(test_file, "w") as f:
+        f.write(TEST_GENERATE_2)
+
+    # If we use --mpl, it should detect that the two figures are not the same
+    code = subprocess.call([sys.executable, "-m", "pytest", "--mpl", test_file])
+    assert code != 0
+
+    # If we don't use --mpl option, the test should succeed
+    code = subprocess.call([sys.executable, "-m", "pytest", test_file])
+    assert code == 0
+
+
+def test_skip_generate_two_figures(tmpdir):
+
+    test_file = tmpdir.join("test2.py").strpath
+    with open(test_file, "w") as f:
+        f.write(TEST_GENERATE_2)
+
+    gen_dir = tmpdir.mkdir("spam").mkdir("egg").strpath
+
+    # If we try to generate, the test should be skipped and a new file won't appear
+    code = subprocess.call([sys.executable, "-m", "pytest",
+                            "--mpl-generate-path={0}".format(gen_dir),
+                            test_file])
+    assert code == 0
+    assert not os.path.exists(os.path.join(gen_dir, "test_gen_two_figs.png"))

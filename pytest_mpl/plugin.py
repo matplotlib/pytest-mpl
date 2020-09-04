@@ -177,6 +177,34 @@ def get_marker(item, marker_name):
         return item.keywords.get(marker_name)
 
 
+def _raise_on_image_difference(expected, actual, tol):
+    """
+    Based on matplotlib.testing.decorators._raise_on_image_difference
+
+    Compare image size ourselves since the Matplotlib
+    exception is a bit cryptic in this case and doesn't show
+    the filenames
+    """
+    from matplotlib.image import imread
+    from matplotlib.testing.compare import compare_images
+
+    expected_shape = imread(expected).shape[:2]
+    actual_shape = imread(actual).shape[:2]
+    if expected_shape != actual_shape:
+        error = SHAPE_MISMATCH_ERROR.format(expected_path=expected,
+                                            expected_shape=expected_shape,
+                                            actual_path=actual,
+                                            actual_shape=actual_shape)
+        pytest.fail(error, pytrace=False)
+
+    msg = compare_images(expected, actual, tol=tol)
+
+    if msg is None:
+        shutil.rmtree(os.path.dirname(expected))
+    else:
+        pytest.fail(msg, pytrace=False)
+
+
 class ImageComparison(object):
 
     def __init__(self, config, baseline_dir=None, generate_dir=None, results_dir=None):
@@ -195,9 +223,7 @@ class ImageComparison(object):
             return
 
         import matplotlib
-        from matplotlib.image import imread
         import matplotlib.pyplot as plt
-        from matplotlib.testing.compare import compare_images
         try:
             from matplotlib.testing.decorators import remove_ticks_and_titles
         except ImportError:
@@ -246,7 +272,10 @@ class ImageComparison(object):
                     fig = original(*args, **kwargs)
 
                 if remove_text:
-                    remove_ticks_and_titles(fig)
+                    if not isinstance(fig, tuple):
+                        remove_ticks_and_titles(fig)
+                    else:
+                        [remove_ticks_and_titles(f) for f in fig]
 
                 # Find test name to use as plot name
                 filename = compare.kwargs.get('filename', None)
@@ -260,52 +289,51 @@ class ImageComparison(object):
                 # reference images or simply running the test.
                 if self.generate_dir is None:
 
-                    # Save the figure
+                    # Save the figure(s)
                     result_dir = tempfile.mkdtemp(dir=self.results_dir)
                     test_image = os.path.abspath(os.path.join(result_dir, filename))
-
-                    fig.savefig(test_image, **savefig_kwargs)
-                    close_mpl_figure(fig)
-
-                    # Find path to baseline image
-                    if baseline_remote:
-                        baseline_image_ref = _download_file(baseline_dir, filename)
-                    else:
-                        baseline_image_ref = os.path.abspath(os.path.join(
-                            os.path.dirname(item.fspath.strpath), baseline_dir, filename))
-
-                    if not os.path.exists(baseline_image_ref):
-                        pytest.fail("Image file not found for comparison test in: "
-                                    "\n\t{baseline_dir}"
-                                    "\n(This is expected for new tests.)\nGenerated Image: "
-                                    "\n\t{test}".format(baseline_dir=baseline_dir,
-                                                        test=test_image),
-                                    pytrace=False)
-
-                    # distutils may put the baseline images in non-accessible places,
-                    # copy to our tmpdir to be sure to keep them in case of failure
                     baseline_image = os.path.abspath(os.path.join(result_dir,
                                                                   'baseline-' + filename))
-                    shutil.copyfile(baseline_image_ref, baseline_image)
 
-                    # Compare image size ourselves since the Matplotlib
-                    # exception is a bit cryptic in this case and doesn't show
-                    # the filenames
-                    expected_shape = imread(baseline_image).shape[:2]
-                    actual_shape = imread(test_image).shape[:2]
-                    if expected_shape != actual_shape:
-                        error = SHAPE_MISMATCH_ERROR.format(expected_path=baseline_image,
-                                                            expected_shape=expected_shape,
-                                                            actual_path=test_image,
-                                                            actual_shape=actual_shape)
-                        pytest.fail(error, pytrace=False)
+                    if not isinstance(fig, tuple):
+                        fig.savefig(test_image, **savefig_kwargs)
+                        close_mpl_figure(fig)
 
-                    msg = compare_images(baseline_image, test_image, tol=tolerance)
+                        # Find path to baseline image
+                        if baseline_remote:
+                            baseline_image_ref = _download_file(baseline_dir, filename)
+                        else:
+                            baseline_image_ref = os.path.abspath(os.path.join(
+                                os.path.dirname(item.fspath.strpath), baseline_dir, filename))
 
-                    if msg is None:
-                        shutil.rmtree(result_dir)
+                        if not os.path.exists(baseline_image_ref):
+                            pytest.fail("Image file not found for comparison test in: "
+                                        "\n\t{baseline_dir}"
+                                        "\n(This is expected for new tests.)\nGenerated Image: "
+                                        "\n\t{test}".format(baseline_dir=baseline_dir,
+                                                            test=test_image),
+                                        pytrace=False)
+
+                        # distutils may put the baseline images in non-accessible places,
+                        # copy to our tmpdir to be sure to keep them in case of failure
+                        shutil.copyfile(baseline_image_ref, baseline_image)
+
                     else:
-                        pytest.fail(msg, pytrace=False)
+                        fig[0].savefig(test_image, **savefig_kwargs)
+                        close_mpl_figure(fig[0])
+                        fig[1].savefig(baseline_image, **savefig_kwargs)
+                        close_mpl_figure(fig[1])
+
+                    _raise_on_image_difference(
+                        expected=baseline_image,
+                        actual=test_image,
+                        tol=tolerance
+                    )
+
+                elif self.generate_dir and isinstance(fig, tuple):
+                    close_mpl_figure(fig[0])
+                    close_mpl_figure(fig[1])
+                    pytest.skip("Skipping image comparison test")
 
                 else:
 
