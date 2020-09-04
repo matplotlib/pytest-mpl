@@ -177,6 +177,34 @@ def get_marker(item, marker_name):
         return item.keywords.get(marker_name)
 
 
+def _raise_on_image_difference(expected, actual, tol):
+    """
+    Based on matplotlib.testing.decorators._raise_on_image_difference
+
+    Compare image size ourselves since the Matplotlib
+    exception is a bit cryptic in this case and doesn't show
+    the filenames
+    """
+    from matplotlib.image import imread
+    from matplotlib.testing.compare import compare_images
+
+    expected_shape = imread(expected).shape[:2]
+    actual_shape = imread(actual).shape[:2]
+    if expected_shape != actual_shape:
+        error = SHAPE_MISMATCH_ERROR.format(expected_path=expected,
+                                            expected_shape=expected_shape,
+                                            actual_path=actual,
+                                            actual_shape=actual_shape)
+        pytest.fail(error, pytrace=False)
+
+    msg = compare_images(expected, actual, tol=tol)
+
+    if msg is None:
+        shutil.rmtree(os.path.dirname(expected))
+    else:
+        pytest.fail(msg, pytrace=False)
+
+
 class ImageComparison(object):
 
     def __init__(self, config, baseline_dir=None, generate_dir=None, results_dir=None):
@@ -195,9 +223,7 @@ class ImageComparison(object):
             return
 
         import matplotlib
-        from matplotlib.image import imread
         import matplotlib.pyplot as plt
-        from matplotlib.testing.compare import compare_images
         try:
             from matplotlib.testing.decorators import remove_ticks_and_titles
         except ImportError:
@@ -288,24 +314,11 @@ class ImageComparison(object):
                                                                   'baseline-' + filename))
                     shutil.copyfile(baseline_image_ref, baseline_image)
 
-                    # Compare image size ourselves since the Matplotlib
-                    # exception is a bit cryptic in this case and doesn't show
-                    # the filenames
-                    expected_shape = imread(baseline_image).shape[:2]
-                    actual_shape = imread(test_image).shape[:2]
-                    if expected_shape != actual_shape:
-                        error = SHAPE_MISMATCH_ERROR.format(expected_path=baseline_image,
-                                                            expected_shape=expected_shape,
-                                                            actual_path=test_image,
-                                                            actual_shape=actual_shape)
-                        pytest.fail(error, pytrace=False)
-
-                    msg = compare_images(baseline_image, test_image, tol=tolerance)
-
-                    if msg is None:
-                        shutil.rmtree(result_dir)
-                    else:
-                        pytest.fail(msg, pytrace=False)
+                    _raise_on_image_difference(
+                        expected=baseline_image,
+                        actual=test_image,
+                        tol=tolerance
+                    )
 
                 else:
 
