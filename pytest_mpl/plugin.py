@@ -120,7 +120,7 @@ def pytest_configure(config):
             baseline_relative_dir = config.getoption("--mpl-baseline-path")
         else:
             baseline_relative_dir = None
-        
+
         # Note that results_dir is an empty string if not specified
         if not results_dir:
             results_dir = None
@@ -187,11 +187,11 @@ def get_marker(item, marker_name):
 
 class ImageComparison(object):
 
-    def __init__(self, 
-                 config, 
-                 baseline_dir=None, 
-                 baseline_relative_dir=None, 
-                 generate_dir=None, 
+    def __init__(self,
+                 config,
+                 baseline_dir=None,
+                 baseline_relative_dir=None,
+                 generate_dir=None,
                  results_dir=None
                  ):
         self.config = config
@@ -243,7 +243,7 @@ class ImageComparison(object):
                     if self.baseline_relative_dir:
                         # baseline dir is relative to the current test
                         baseline_dir = os.path.join(
-                            os.path.dirname(item.fspath.strpath), 
+                            os.path.dirname(item.fspath.strpath),
                             self.baseline_relative_dir
                         )
                     else:
