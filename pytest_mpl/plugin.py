@@ -187,7 +187,13 @@ def get_marker(item, marker_name):
 
 class ImageComparison(object):
 
-    def __init__(self, config, baseline_dir=None, baseline_relative_dir=None, generate_dir=None, results_dir=None):
+    def __init__(self, 
+                 config, 
+                 baseline_dir=None, 
+                 baseline_relative_dir=None, 
+                 generate_dir=None, 
+                 results_dir=None
+                 ):
         self.config = config
         self.baseline_dir = baseline_dir
         self.baseline_relative_dir = baseline_relative_dir
@@ -236,7 +242,10 @@ class ImageComparison(object):
                 else:
                     if self.baseline_relative_dir:
                         # baseline dir is relative to the current test
-                        baseline_dir = os.path.join(os.path.dirname(item.fspath.strpath), self.baseline_relative_dir)
+                        baseline_dir = os.path.join(
+                            os.path.dirname(item.fspath.strpath), 
+                            self.baseline_relative_dir
+                        )
                     else:
                         # baseline dir is relative to where pytest was run
                         baseline_dir = self.baseline_dir
