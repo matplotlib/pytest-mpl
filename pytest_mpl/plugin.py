@@ -96,8 +96,8 @@ def pytest_addoption(parser):
                     "location where py.test is run unless --mpl-baseline-relative is given. "
                     "This can also be a URL or a set of comma-separated URLs (in case "
                     "mirrors are specified)", action='store')
-    group.addoption("--mpl-baseline-relative", help="interpret the baseline directory as relative "
-                    "to the test location.", action="store_true")
+    group.addoption("--mpl-baseline-relative", help="interpret the baseline directory as "
+                    "relative to the test location.", action="store_true")
 
     results_path_help = "directory for test results, relative to location where py.test is run"
     group.addoption('--mpl-results-path', help=results_path_help, action='store')
