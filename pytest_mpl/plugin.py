@@ -93,9 +93,11 @@ def pytest_addoption(parser):
                     "to location where py.test is run", action='store')
     group.addoption('--mpl-baseline-path',
                     help="directory containing baseline images, relative to "
-                    "location where py.test is run. This can also be a URL or a "
-                    "set of comma-separated URLs (in case mirrors are "
-                    "specified)", action='store')
+                    "location where py.test is run unless --mpl-baseline-relative is given. "
+                    "This can also be a URL or a set of comma-separated URLs (in case "
+                    "mirrors are specified)", action='store')
+    group.addoption("--mpl-baseline-relative", help="interpret the baseline directory as relative "
+                    "to the test location.", action="store_true")
 
     results_path_help = "directory for test results, relative to location where py.test is run"
     group.addoption('--mpl-results-path', help=results_path_help, action='store')
@@ -114,6 +116,11 @@ def pytest_configure(config):
         generate_dir = config.getoption("--mpl-generate-path")
         results_dir = config.getoption("--mpl-results-path") or config.getini("mpl-results-path")
 
+        if config.getoption("--mpl-baseline-relative"):
+            baseline_relative_dir = config.getoption("--mpl-baseline-path")
+        else:
+            baseline_relative_dir = None
+        
         # Note that results_dir is an empty string if not specified
         if not results_dir:
             results_dir = None
@@ -133,6 +140,7 @@ def pytest_configure(config):
 
         config.pluginmanager.register(ImageComparison(config,
                                                       baseline_dir=baseline_dir,
+                                                      baseline_relative_dir=baseline_relative_dir,
                                                       generate_dir=generate_dir,
                                                       results_dir=results_dir))
 
@@ -179,9 +187,10 @@ def get_marker(item, marker_name):
 
 class ImageComparison(object):
 
-    def __init__(self, config, baseline_dir=None, generate_dir=None, results_dir=None):
+    def __init__(self, config, baseline_dir=None, baseline_relative_dir=None, generate_dir=None, results_dir=None):
         self.config = config
         self.baseline_dir = baseline_dir
+        self.baseline_relative_dir = baseline_relative_dir
         self.generate_dir = generate_dir
         self.results_dir = results_dir
         if self.results_dir and not os.path.exists(self.results_dir):
@@ -225,7 +234,12 @@ class ImageComparison(object):
                 if self.baseline_dir is None:
                     baseline_dir = os.path.join(os.path.dirname(item.fspath.strpath), 'baseline')
                 else:
-                    baseline_dir = self.baseline_dir
+                    if self.baseline_relative_dir:
+                        # baseline dir is relative to the current test
+                        baseline_dir = os.path.join(os.path.dirname(item.fspath.strpath), self.baseline_relative_dir)
+                    else:
+                        # baseline dir is relative to where pytest was run
+                        baseline_dir = self.baseline_dir
                 baseline_remote = False
 
             baseline_remote = baseline_dir.startswith(('http://', 'https://'))
