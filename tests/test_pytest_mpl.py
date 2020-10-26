@@ -227,3 +227,14 @@ class TestClassWithSetup(object):
         ax = fig.add_subplot(1, 1, 1)
         ax.plot(self.x)
         return fig
+
+
+# hashlib
+
+
+@pytest.mark.mpl_image_compare(hash_library=os.path.join(baseline_dir_local, "test_hash_lib.json"))
+def test_hash_succeeds():
+    fig = plt.figure()
+    ax = fig.add_subplot(1, 1, 1)
+    ax.plot([1, 2, 3])
+    return fig
