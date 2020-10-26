@@ -41,7 +41,7 @@ matrix:
 install:
   - if [[ $TRAVIS_OS_NAME != linux ]]; then
       git clone git://github.com/astropy/ci-helpers.git;
-      source ci-helpers/travis/setup_conda.sh;
+      source ci-helpers/travis/setup_python.sh;
     fi
 
 script:
