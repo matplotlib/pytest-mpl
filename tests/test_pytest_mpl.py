@@ -1,5 +1,6 @@
 import os
 import sys
+import json
 import subprocess
 from distutils.version import LooseVersion
 
@@ -24,6 +25,10 @@ WIN = sys.platform.startswith('win')
 
 # In some cases, the fonts on Windows can be quite different
 DEFAULT_TOLERANCE = 10 if WIN else 2
+
+
+def call_pytest(args):
+    return subprocess.call([sys.executable, '-m', 'pytest', '-s'] + args)
 
 
 @pytest.mark.mpl_image_compare(baseline_dir=baseline_dir_local,
@@ -96,11 +101,11 @@ def test_fails(tmpdir):
         f.write(TEST_FAILING)
 
     # If we use --mpl, it should detect that the figure is wrong
-    code = subprocess.call([sys.executable, '-m', 'pytest', '--mpl', test_file])
+    code = call_pytest(['--mpl', test_file])
     assert code != 0
 
     # If we don't use --mpl option, the test should succeed
-    code = subprocess.call([sys.executable, '-m', 'pytest', test_file])
+    code = call_pytest([test_file])
     assert code == 0
 
 
@@ -121,11 +126,11 @@ def test_output_dir(tmpdir):
     with open(test_file, 'w') as f:
         f.write(TEST_OUTPUT_DIR)
 
-    # When we run the test, we should get output images where we specify
     output_dir = tmpdir.join('test_output_dir').strpath
-    code = subprocess.call([sys.executable, '-m', 'pytest',
-                            '--mpl-results-path={0}'.format(output_dir),
-                            '--mpl', test_file])
+
+    # When we run the test, we should get output images where we specify
+    code = call_pytest([f'--mpl-results-path={output_dir}',
+                        '--mpl', test_file])
 
     assert code != 0
     assert os.path.exists(output_dir)
@@ -162,11 +167,20 @@ def test_generate(tmpdir):
         assert b'Image file not found for comparison test' in exc.output, exc.output.decode()
 
     # If we do generate, the test should succeed and a new file will appear
-    code = subprocess.call([sys.executable, '-m', 'pytest',
-                            '--mpl-generate-path={0}'.format(gen_dir),
-                            test_file])
+    code = call_pytest([f'--mpl-generate-path={gen_dir}', test_file])
     assert code == 0
     assert os.path.exists(os.path.join(gen_dir, 'test_gen.png'))
+
+    # If we do generate hash, the test should succeed and a new file will appear
+    hash_file = os.path.join(gen_dir, 'test_hashes.json')
+    code = call_pytest([f'--mpl-generate-hash-library={hash_file}', test_file])
+    assert code == 0
+    assert os.path.exists(hash_file)
+
+    with open(hash_file) as fp:
+        hash_lib = json.load(fp)
+
+    assert "test_gen" in hash_lib
 
 
 @pytest.mark.mpl_image_compare(baseline_dir=baseline_dir_local, tolerance=20)
@@ -238,3 +252,57 @@ def test_hash_succeeds():
     ax = fig.add_subplot(1, 1, 1)
     ax.plot([1, 2, 3])
     return fig
+
+
+TEST_FAILING_HASH = """
+import pytest
+import matplotlib.pyplot as plt
+@pytest.mark.mpl_image_compare(hash_library="{hash_library}")
+def test_hash_fails():
+    fig = plt.figure()
+    ax = fig.add_subplot(1,1,1)
+    ax.plot([1,2,2])
+    return fig
+"""
+
+
+def test_hash_fails(tmpdir):
+
+    test_file = tmpdir.join('test.py').strpath
+    with open(test_file, 'w') as f:
+        f.write(TEST_FAILING_HASH.format(hash_library=os.path.join(baseline_dir_local, "test_hash_lib.json")))
+
+    # If we use --mpl, it should detect that the figure is wrong
+    code = call_pytest(['--mpl', test_file])
+    assert code != 0
+
+    # If we don't use --mpl option, the test should succeed
+    code = call_pytest([test_file])
+    assert code == 0
+
+
+TEST_MISSING_HASH = """
+import pytest
+import matplotlib.pyplot as plt
+@pytest.mark.mpl_image_compare
+def test_hash_missing():
+    fig = plt.figure()
+    ax = fig.add_subplot(1,1,1)
+    ax.plot([1,2,2])
+    return fig
+"""
+
+
+def test_hash_missing(tmpdir):
+
+    test_file = tmpdir.join('test.py').strpath
+    with open(test_file, 'w') as f:
+        f.write(TEST_MISSING_HASH)
+
+    # If we use --mpl, it should detect that the figure is wrong
+    code = call_pytest(['--mpl', test_file, '--mpl-hash-library{os.path.join(baseline_dir_local, "test_hash_lib.json")}'])
+    assert code != 0
+
+    # If we don't use --mpl option, the test should succeed
+    code = call_pytest([test_file])
+    assert code == 0

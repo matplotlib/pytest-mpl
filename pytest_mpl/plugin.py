@@ -130,7 +130,9 @@ def pytest_configure(config):
                             "mpl_image_compare: Compares matplotlib figures "
                             "against a baseline image")
 
-    if config.getoption("--mpl") or config.getoption("--mpl-generate-path") is not None:
+    if (config.getoption("--mpl") or
+        config.getoption("--mpl-generate-path") is not None or
+        config.getoption("--mpl-generate-hash-library") is not None):
 
         baseline_dir = config.getoption("--mpl-baseline-path")
         generate_dir = config.getoption("--mpl-generate-path")
@@ -397,14 +399,18 @@ class ImageComparison(object):
 
         # TODO: Should the CLI args or the mark take precedence?
         hash_library_filename = compare.kwargs.get('hash_library', None) or self.hash_library
+        hash_library_filename = os.path.abspath(os.path.join(os.path.dirname(item.fspath.strpath), hash_library_filename))
 
         hash_library = self.load_hash_library(hash_library_filename)
         hash_name = os.path.splitext(self.generate_filename(item))[0]
 
+        if hash_name not in hash_library:
+            return f"Hash for test '{hash_name}' not found in {hash_library_filename}."
+
         test_hash = self.generate_image_hash(item, fig)
 
         if test_hash != hash_library[hash_name]:
-            return "hashes don't match"
+            return f"hash {test_hash} doesn't match hash {hash_library[hash_name]} in library for test {hash_name}."
 
 
     def pytest_runtest_setup(self, item):
