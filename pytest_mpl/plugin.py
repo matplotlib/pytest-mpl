@@ -289,7 +289,7 @@ class ImageComparison(object):
 
         return baseline_dir
 
-    def obtain_baseline_image(self, item, target_dir, test_image=None):
+    def obtain_baseline_image(self, item, target_dir):
         """
         Copy the baseline image to our working directory.
 
@@ -352,7 +352,10 @@ class ImageComparison(object):
         tolerance = compare.kwargs.get('tolerance', 2)
         savefig_kwargs = compare.kwargs.get('savefig_kwargs', {})
 
-        baseline_image_ref = self.obtain_baseline_image(item, result_dir, test_image)
+        baseline_image_ref = self.obtain_baseline_image(item, result_dir)
+
+        test_image = os.path.abspath(os.path.join(result_dir, self.generate_filename(item)))
+        fig.savefig(test_image, **savefig_kwargs)
 
         if not os.path.exists(baseline_image_ref):
             pytest.fail("Image file not found for comparison test in: "
@@ -369,9 +372,6 @@ class ImageComparison(object):
                          'baseline-' + self.generate_filename(item))
         )
         shutil.copyfile(baseline_image_ref, baseline_image)
-
-        test_image = os.path.abspath(os.path.join(result_dir, self.generate_filename(item)))
-        fig.savefig(test_image, **savefig_kwargs)
 
         # Compare image size ourselves since the Matplotlib
         # exception is a bit cryptic in this case and doesn't show
@@ -462,19 +462,16 @@ class ImageComparison(object):
                     self._generated_hash_library[hash_name] = self.generate_image_hash(item, fig)
 
                 # Only test figures if we are not generating hashes or images
-                if self.generate_hash_library is None and self.generate_hash_library is None:
+                if self.generate_dir is None and self.generate_hash_library is None:
                     result_dir = self.make_results_dir(item)
 
-                    # Compare against a baseline if specified
-                    if self.baseline_dir or self.baseline_relative_dir or compare.kwargs.get('baseline_dir', None):
-                        msg = self.compare_image_to_baseline(item, fig, result_dir)
-
                     # Compare to hash library
-                    elif self.hash_library or compare.kwargs.get('hash_library', None):
+                    if self.hash_library or compare.kwargs.get('hash_library', None):
                         msg = self.compare_image_to_hash_library(item, fig, result_dir)
 
+                    # Compare against a baseline if specified
                     else:
-                        msg = "No baseline dir or hash library given to compare image to."
+                        msg = self.compare_image_to_baseline(item, fig, result_dir)
 
                     close_mpl_figure(fig)
 

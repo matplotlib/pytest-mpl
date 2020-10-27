@@ -157,9 +157,9 @@ def test_generate(tmpdir):
 
     # If we don't generate, the test will fail
     try:
-        subprocess.check_output([sys.executable, '-m', 'pytest', '--mpl', test_file])
+        subprocess.check_output([sys.executable, '-m', 'pytest', '-s', '--mpl', test_file])
     except subprocess.CalledProcessError as exc:
-        assert b'Image file not found for comparison test' in exc.output
+        assert b'Image file not found for comparison test' in exc.output, exc.output.decode()
 
     # If we do generate, the test should succeed and a new file will appear
     code = subprocess.call([sys.executable, '-m', 'pytest',
