@@ -311,7 +311,10 @@ class ImageComparison(object):
 
         # distutils may put the baseline images in non-accessible places,
         # copy to our tmpdir to be sure to keep them in case of failure
-        baseline_image = os.path.abspath(os.path.join(result_dir, 'baseline-' + self.generate_filename(item)))
+        baseline_image = os.path.abspath(
+            os.path.join(result_dir,
+                         'baseline-' + self.generate_filename(item))
+        )
         shutil.copyfile(baseline_image_ref, baseline_image)
 
         # Compare image size ourselves since the Matplotlib
