@@ -203,6 +203,9 @@ class ImageComparison(object):
             os.mkdir(self.results_dir)
 
     def get_compare(self, item):
+        """
+        Return the mpl_image_compare marker for the given item.
+        """
         return get_marker(item, 'mpl_image_compare')
 
     def generate_filename(self, item):
