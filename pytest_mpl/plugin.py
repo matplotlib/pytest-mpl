@@ -395,7 +395,6 @@ class ImageComparison(object):
 
     def compare_image_to_hash_library(self, item, fig, result_dir):
         compare = self.get_compare(item)
-        savefig_kwargs = compare.kwargs.get('savefig_kwargs', {})
 
         # TODO: Should the CLI args or the mark take precedence?
         hash_library_filename = compare.kwargs.get('hash_library', None) or self.hash_library
