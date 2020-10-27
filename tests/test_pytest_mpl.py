@@ -180,7 +180,7 @@ def test_generate(tmpdir):
     with open(hash_file) as fp:
         hash_lib = json.load(fp)
 
-    assert "test_gen" in hash_lib
+    assert "test.test_gen" in hash_lib
 
 
 @pytest.mark.mpl_image_compare(baseline_dir=baseline_dir_local, tolerance=20)

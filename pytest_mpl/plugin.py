@@ -325,6 +325,12 @@ class ImageComparison(object):
         close_mpl_figure(fig)
         pytest.skip("Skipping test, since generating data")
 
+    def generate_hash_name(self, item):
+        """
+        Generate a unique name for the hash for this test.
+        """
+        return f"{item.module.__name__}.{item.name}"
+
     def generate_image_hash(self, item, fig):
         """
         For a `matplotlib.figure.Figure`, returns the SHA256 hash as a hexadecimal
@@ -401,7 +407,7 @@ class ImageComparison(object):
         hash_library_filename = os.path.abspath(os.path.join(os.path.dirname(item.fspath.strpath), hash_library_filename))
 
         hash_library = self.load_hash_library(hash_library_filename)
-        hash_name = os.path.splitext(self.generate_filename(item))[0]
+        hash_name = self.generate_hash_name(item)
 
         if hash_name not in hash_library:
             return f"Hash for test '{hash_name}' not found in {hash_library_filename}."
@@ -463,7 +469,7 @@ class ImageComparison(object):
                     self.generate_baseline_image(item, fig)
 
                 if self.generate_hash_library is not None:
-                    hash_name = os.path.splitext(self.generate_filename(item))[0]
+                    hash_name = self.generate_hash_name(item)
                     self._generated_hash_library[hash_name] = self.generate_image_hash(item, fig)
 
                 # Only test figures if we are not generating hashes or images
