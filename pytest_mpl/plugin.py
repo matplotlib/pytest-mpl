@@ -386,7 +386,6 @@ class ImageComparison(object):
                     test_image = os.path.abspath(os.path.join(result_dir, filename))
 
                     fig.savefig(test_image, **savefig_kwargs)
-                    close_mpl_figure(fig)
 
                     msg = self.compare_image_to_baseline(item, test_image, result_dir)
 
@@ -395,6 +394,7 @@ class ImageComparison(object):
                     else:
                         pytest.fail(msg, pytrace=False)
 
+                close_mpl_figure(fig)
 
         if item.cls is not None:
             setattr(item.cls, item.function.__name__, item_function_wrapper)
