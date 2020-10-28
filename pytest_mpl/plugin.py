@@ -28,30 +28,21 @@
 #
 #   https://github.com/astrofrog/wcsaxes
 
-from functools import wraps
-
 import contextlib
-import io
-import os
-import sys
-import json
-import shutil
+import hashlib
 import inspect
+import io
+import json
+import os
+import shutil
 import tempfile
 import warnings
-import hashlib
 from distutils.version import LooseVersion
+from functools import wraps
 from pathlib import Path
+from urllib.request import urlopen
 
 import pytest
-
-if sys.version_info[0] == 2:
-    from urllib import urlopen
-    string_types = basestring  # noqa
-else:
-    from urllib.request import urlopen
-    string_types = str
-
 
 SHAPE_MISMATCH_ERROR = """Error: Image dimensions did not match.
   Expected shape: {expected_shape}
@@ -74,11 +65,11 @@ def _download_file(baseline, filename):
     else:
         raise Exception("Could not download baseline image from any of the "
                         "available URLs")
-    result_dir = tempfile.mkdtemp()
-    filename = os.path.join(result_dir, 'downloaded')
-    with open(filename, 'wb') as tmpfile:
+    result_dir = Path(tempfile.mkdtemp())
+    filename = result_dir / 'downloaded'
+    with open(str(filename), 'wb') as tmpfile:
         tmpfile.write(content)
-    return filename
+    return Path(filename)
 
 
 def _hash_file(in_stream):
@@ -212,6 +203,10 @@ def get_marker(item, marker_name):
         return item.keywords.get(marker_name)
 
 
+def path_is_not_none(apath):
+    return Path(apath) if apath is not None else apath
+
+
 class ImageComparison(object):
 
     def __init__(self,
@@ -225,13 +220,13 @@ class ImageComparison(object):
                  ):
         self.config = config
         self.baseline_dir = baseline_dir
-        self.baseline_relative_dir = baseline_relative_dir
-        self.generate_dir = generate_dir
-        self.results_dir = results_dir
-        self.hash_library = hash_library
-        self.generate_hash_library = generate_hash_library
-        if self.results_dir and not os.path.exists(self.results_dir):
-            os.mkdir(self.results_dir)
+        self.baseline_relative_dir = path_is_not_none(baseline_relative_dir)
+        self.generate_dir = path_is_not_none(generate_dir)
+        self.results_dir = path_is_not_none(results_dir)
+        self.hash_library = path_is_not_none(hash_library)
+        self.generate_hash_library = path_is_not_none(generate_hash_library)
+        if self.results_dir and not self.results_dir.exists():
+            self.results_dir.mkdir()
 
         # We need global state to store all the hashes generated over the run
         self._generated_hash_library = {}
@@ -261,7 +256,7 @@ class ImageComparison(object):
         """
         Generate the directory to put the results in.
         """
-        return tempfile.mkdtemp(dir=self.results_dir)
+        return Path(tempfile.mkdtemp(dir=self.results_dir))
 
     def get_baseline_directory(self, item):
         """
@@ -274,21 +269,18 @@ class ImageComparison(object):
         baseline_dir = compare.kwargs.get('baseline_dir', None)
         if baseline_dir is None:
             if self.baseline_dir is None:
-                baseline_dir = os.path.join(os.path.dirname(item.fspath.strpath), 'baseline')
+                baseline_dir = Path(item.fspath).parent / 'baseline'
             else:
                 if self.baseline_relative_dir:
                     # baseline dir is relative to the current test
-                    baseline_dir = os.path.join(
-                        os.path.dirname(item.fspath.strpath),
-                        self.baseline_relative_dir
-                    )
+                    baseline_dir = Path(item.fspath).parent / self.baseline_relative_dir
                 else:
                     # baseline dir is relative to where pytest was run
                     baseline_dir = self.baseline_dir
 
-        baseline_remote = baseline_dir.startswith(('http://', 'https://'))
+        baseline_remote = isinstance(baseline_dir, str) and baseline_dir.startswith(('http://', 'https://'))
         if not baseline_remote:
-            return os.path.join(os.path.dirname(item.fspath.strpath), baseline_dir)
+            return Path(item.fspath).parent / baseline_dir
 
         return baseline_dir
 
@@ -301,13 +293,13 @@ class ImageComparison(object):
         """
         filename = self.generate_filename(item)
         baseline_dir = self.get_baseline_directory(item)
-        baseline_remote = baseline_dir.startswith(('http://', 'https://'))
+        baseline_remote = isinstance(baseline_dir, str) and baseline_dir.startswith(('http://', 'https://'))
         if baseline_remote:
             # baseline_dir can be a list of URLs when remote, so we have to
             # pass base and filename to download
             baseline_image = _download_file(baseline_dir, filename)
         else:
-            baseline_image = os.path.abspath(os.path.join(baseline_dir, filename))
+            baseline_image = (baseline_dir / filename).absolute()
 
         return baseline_image
 
@@ -321,10 +313,11 @@ class ImageComparison(object):
         if not os.path.exists(self.generate_dir):
             os.makedirs(self.generate_dir)
 
-        fig.savefig(os.path.abspath(os.path.join(self.generate_dir, self.generate_filename(item))),
+        fig.savefig((self.generate_dir / self.generate_filename(item)).absolute(),
                     **savefig_kwargs)
+
         close_mpl_figure(fig)
-        pytest.skip("Skipping test, since generating data")
+        pytest.skip("Skipping test, since generating image")
 
     def generate_hash_name(self, item):
         """
@@ -363,7 +356,7 @@ class ImageComparison(object):
 
         baseline_image_ref = self.obtain_baseline_image(item, result_dir)
 
-        test_image = os.path.abspath(os.path.join(result_dir, self.generate_filename(item)))
+        test_image = (result_dir / self.generate_filename(item)).absolute()
         fig.savefig(test_image, **savefig_kwargs)
 
         if not os.path.exists(baseline_image_ref):
@@ -376,10 +369,7 @@ class ImageComparison(object):
 
         # distutils may put the baseline images in non-accessible places,
         # copy to our tmpdir to be sure to keep them in case of failure
-        baseline_image = os.path.abspath(
-            os.path.join(result_dir,
-                         'baseline-' + self.generate_filename(item))
-        )
+        baseline_image = (result_dir / f"baseline-{self.generate_filename(item)}").absolute()
         shutil.copyfile(baseline_image_ref, baseline_image)
 
         # Compare image size ourselves since the Matplotlib
@@ -397,17 +387,14 @@ class ImageComparison(object):
         return compare_images(baseline_image, test_image, tol=tolerance)
 
     def load_hash_library(self, library_path):
-        with open(library_path) as fp:
+        with open(str(library_path)) as fp:
             return json.load(fp)
 
     def compare_image_to_hash_library(self, item, fig, result_dir):
         compare = self.get_compare(item)
 
         hash_library_filename = self.hash_library or compare.kwargs.get('hash_library', None)
-        hash_library_filename = os.path.abspath(
-            os.path.join(os.path.dirname(item.fspath.strpath),
-                         hash_library_filename)
-        )
+        hash_library_filename = (Path(item.fspath).parent / hash_library_filename).absolute()
 
         if not Path(hash_library_filename).exists():
             pytest.fail(f"Can't find hash library at path {hash_library_filename}")
@@ -437,7 +424,8 @@ class ImageComparison(object):
         try:
             from matplotlib.testing.decorators import remove_ticks_and_titles
         except ImportError:
-            from matplotlib.testing.decorators import ImageComparisonTest as MplImageComparisonTest
+            from matplotlib.testing.decorators import \
+                ImageComparisonTest as MplImageComparisonTest
             remove_ticks_and_titles = MplImageComparisonTest.remove_text
 
         MPL_LT_15 = LooseVersion(matplotlib.__version__) < LooseVersion('1.5')
@@ -447,7 +435,7 @@ class ImageComparison(object):
         backend = compare.kwargs.get('backend', 'agg')
 
         if MPL_LT_15 and style == 'classic':
-            style = os.path.join(os.path.dirname(__file__), 'classic.mplstyle')
+            style = Path(__file__).parent / 'classic.mplstyle'
 
         original = item.function
 
