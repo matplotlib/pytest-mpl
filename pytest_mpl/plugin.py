@@ -361,12 +361,11 @@ class ImageComparison(object):
         fig.savefig(str(test_image), **savefig_kwargs)
 
         if not os.path.exists(baseline_image_ref):
-            pytest.fail("Image file not found for comparison test in: "
-                        "\n\t{baseline_dir}"
-                        "\n(This is expected for new tests.)\nGenerated Image: "
-                        "\n\t{test}".format(baseline_dir=self.get_baseline_directory(item),
-                                            test=test_image),
-                        pytrace=False)
+            return ("Image file not found for comparison test in: \n\t"
+                    f"{self.get_baseline_directory(item)}\n"
+                    "(This is expected for new tests.)\n"
+                    "Generated Image: \n\t"
+                    f"{test_image}")
 
         # distutils may put the baseline images in non-accessible places,
         # copy to our tmpdir to be sure to keep them in case of failure
@@ -379,11 +378,10 @@ class ImageComparison(object):
         expected_shape = imread(str(baseline_image)).shape[:2]
         actual_shape = imread(str(test_image)).shape[:2]
         if expected_shape != actual_shape:
-            error = SHAPE_MISMATCH_ERROR.format(expected_path=baseline_image,
-                                                expected_shape=expected_shape,
-                                                actual_path=test_image,
-                                                actual_shape=actual_shape)
-            pytest.fail(error, pytrace=False)
+            return SHAPE_MISMATCH_ERROR.format(expected_path=baseline_image,
+                                               expected_shape=expected_shape,
+                                               actual_path=test_image,
+                                               actual_shape=actual_shape)
 
         return compare_images(str(baseline_image), str(test_image), tol=tolerance)
 
@@ -408,10 +406,28 @@ class ImageComparison(object):
 
         test_hash = self.generate_image_hash(item, fig)
 
-        if test_hash != hash_library[hash_name]:
-            return (f"hash {test_hash} doesn't match hash "
-                    f"{hash_library[hash_name]} in library "
-                    f"{hash_library_filename} for test {hash_name}.")
+        if test_hash == hash_library[hash_name]:
+            return
+
+        try:
+            baseline_image = self.obtain_baseline_image(item, result_dir)
+            baseline_image = None if not baseline_image.exists() else baseline_image
+        except Exception:
+            baseline_image = None
+
+        hash_error = (f"hash {test_hash} doesn't match hash "
+                      f"{hash_library[hash_name]} in library "
+                      f"{hash_library_filename} for test {hash_name}.")
+
+        if baseline_image is None:
+            return hash_error
+
+        comparison_error = self.compare_image_to_baseline(item, fig, result_dir)
+
+        if not comparison_error:
+            return hash_error + "\nHowever, the comparison to the baseline image succeeded."
+
+        return f"{hash_error}\n{comparison_error}"
 
     def pytest_runtest_setup(self, item):  # noqa
 
