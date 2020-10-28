@@ -79,7 +79,7 @@ With a Hash Library
 
 Instead of comparing to baseline images, you can instead compare against a json
 library of sha256 hashes. This has the advantage of not having to check baseline
-images into the repository with the the tests, or download them from a remote
+images into the repository with the tests, or download them from a remote
 source.
 
 The hash library can be generated with
