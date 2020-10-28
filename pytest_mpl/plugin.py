@@ -418,7 +418,7 @@ class ImageComparison(object):
 
         if test_hash != hash_library[hash_name]:
             return (f"hash {test_hash} doesn't match hash "
-                    "{hash_library[hash_name]} in library for test {hash_name}.")
+                    f"{hash_library[hash_name]} in library for test {hash_name}.")
 
     def pytest_runtest_setup(self, item):
 
