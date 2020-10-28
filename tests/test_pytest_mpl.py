@@ -30,6 +30,8 @@ if "+" in matplotlib.__version__:
 hash_library = (Path(__file__).parent / "baseline" /  # noqa
                 "hashes" / hash_filename)
 
+fail_hash_library = Path(__file__).parent / "baseline" / "test_hash_lib.json"
+
 
 WIN = sys.platform.startswith('win')
 
@@ -264,10 +266,10 @@ def test_hash_succeeds():
     return fig
 
 
-TEST_FAILING_HASH = """
+TEST_FAILING_HASH = f"""
 import pytest
 import matplotlib.pyplot as plt
-@pytest.mark.mpl_image_compare(hash_library="{hash_library}")
+@pytest.mark.mpl_image_compare(hash_library="{fail_hash_library}")
 def test_hash_fails():
     fig = plt.figure()
     ax = fig.add_subplot(1,1,1)
@@ -280,12 +282,13 @@ def test_hash_fails(tmpdir):
 
     test_file = tmpdir.join('test.py').strpath
     with open(test_file, 'w') as f:
-        f.write(TEST_FAILING_HASH.format(hash_library=os.path.join(baseline_dir,
-                                                                   "test_hash_lib.json")))
+        f.write(TEST_FAILING_HASH)
 
     # If we use --mpl, it should detect that the figure is wrong
-    code = call_pytest(['--mpl', test_file])
-    assert code != 0
+    try:
+        subprocess.check_output([sys.executable, '-m', 'pytest', '-s', '--mpl', test_file])
+    except subprocess.CalledProcessError as exc:
+        assert b"doesn't match hash FAIL in library" in exc.output, exc.output.decode()
 
     # If we don't use --mpl option, the test should succeed
     code = call_pytest([test_file])
@@ -311,10 +314,11 @@ def test_hash_missing(tmpdir):
         f.write(TEST_MISSING_HASH)
 
     # If we use --mpl, it should detect that the figure is wrong
-    code = call_pytest(['--mpl',
-                        test_file,
-                        f'--mpl-hash-library={os.path.join(baseline_dir, "test_hash_lib.json")}'])
-    assert code != 0
+    try:
+        subprocess.check_output([sys.executable, '-m', 'pytest', '-s', '--mpl', test_file,
+                                 f'--mpl-hash-library={os.path.join(baseline_dir, "test_hash_lib.json")}'])
+    except subprocess.CalledProcessError as exc:
+        assert b"Can't find hash library at path" in exc.output, exc.output.decode()
 
     # If we don't use --mpl option, the test should succeed
     code = call_pytest([test_file])
