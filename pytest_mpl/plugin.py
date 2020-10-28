@@ -409,7 +409,7 @@ class ImageComparison(object):
                          hash_library_filename)
         )
 
-        if not hash_library_filename.exists():
+        if not Path(hash_library_filename).exists():
             pytest.fail(f"Can't find hash library at path {hash_library_filename}")
 
         hash_library = self.load_hash_library(hash_library_filename)

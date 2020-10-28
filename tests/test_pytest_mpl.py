@@ -316,7 +316,7 @@ def test_hash_missing(tmpdir):
     # If we use --mpl, it should detect that the figure is wrong
     try:
         subprocess.check_output([sys.executable, '-m', 'pytest', '-s', '--mpl', test_file,
-                                 f'--mpl-hash-library={os.path.join(baseline_dir, "test_hash_lib.json")}'])
+                                 f'--mpl-hash-library={os.path.join(baseline_dir, "test_hash_lib.json")}'])  # noqa
     except subprocess.CalledProcessError as exc:
         assert b"Can't find hash library at path" in exc.output, exc.output.decode()
 
