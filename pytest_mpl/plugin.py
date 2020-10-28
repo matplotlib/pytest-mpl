@@ -202,17 +202,144 @@ class ImageComparison(object):
         if self.results_dir and not os.path.exists(self.results_dir):
             os.mkdir(self.results_dir)
 
+    def get_compare(self, item):
+        """
+        Return the mpl_image_compare marker for the given item.
+        """
+        return get_marker(item, 'mpl_image_compare')
+
+    def generate_filename(self, item):
+        """
+        Given a pytest item, generate the figure filename.
+        """
+        compare = self.get_compare(item)
+        # Find test name to use as plot name
+        filename = compare.kwargs.get('filename', None)
+        if filename is None:
+            filename = item.name + '.png'
+            filename = filename.replace('[', '_').replace(']', '_')
+            filename = filename.replace('/', '_')
+            filename = filename.replace('_.png', '.png')
+
+        return filename
+
+    def make_results_dir(self, item):
+        """
+        Generate the directory to put the results in.
+        """
+        return tempfile.mkdtemp(dir=self.results_dir)
+
+    def get_baseline_directory(self, item):
+        """
+        Return a full path to the baseline directory, either local or remote.
+
+        Using the global and per-test configuration return the absolute
+        baseline dir, if the baseline file is local else return base URL.
+        """
+        compare = self.get_compare(item)
+        baseline_dir = compare.kwargs.get('baseline_dir', None)
+        if baseline_dir is None:
+            if self.baseline_dir is None:
+                baseline_dir = os.path.join(os.path.dirname(item.fspath.strpath), 'baseline')
+            else:
+                if self.baseline_relative_dir:
+                    # baseline dir is relative to the current test
+                    baseline_dir = os.path.join(
+                        os.path.dirname(item.fspath.strpath),
+                        self.baseline_relative_dir
+                    )
+                else:
+                    # baseline dir is relative to where pytest was run
+                    baseline_dir = self.baseline_dir
+
+        baseline_remote = baseline_dir.startswith(('http://', 'https://'))
+        if not baseline_remote:
+            return os.path.join(os.path.dirname(item.fspath.strpath), baseline_dir)
+
+        return baseline_dir
+
+    def obtain_baseline_image(self, item, target_dir, test_image=None):
+        """
+        Copy the baseline image to our working directory.
+
+        If the image is remote it is downloaded, if it is local it is copied to
+        ensure it is kept in the event of a test failure.
+        """
+        filename = self.generate_filename(item)
+        baseline_dir = self.get_baseline_directory(item)
+        baseline_remote = baseline_dir.startswith(('http://', 'https://'))
+        if baseline_remote:
+            # baseline_dir can be a list of URLs when remote, so we have to
+            # pass base and filename to download
+            baseline_image = _download_file(baseline_dir, filename)
+        else:
+            baseline_image = os.path.abspath(os.path.join(baseline_dir, filename))
+
+        return baseline_image
+
+    def generate_baseline_image(self, item, fig, savefig_kwargs):
+        """
+        Generate reference figures.
+        """
+        if not os.path.exists(self.generate_dir):
+            os.makedirs(self.generate_dir)
+
+        fig.savefig(os.path.abspath(os.path.join(self.generate_dir, self.generate_filename(item))),
+                    **savefig_kwargs)
+        close_mpl_figure(fig)
+        pytest.skip("Skipping test, since generating data")
+
+    def compare_image_to_baseline(self, item, test_image, result_dir):
+        """
+        Compare a test image to a baseline image.
+        """
+        from matplotlib.image import imread
+        from matplotlib.testing.compare import compare_images
+
+        compare = self.get_compare(item)
+        tolerance = compare.kwargs.get('tolerance', 2)
+
+        baseline_image_ref = self.obtain_baseline_image(item, result_dir, test_image)
+
+        if not os.path.exists(baseline_image_ref):
+            pytest.fail("Image file not found for comparison test in: "
+                        "\n\t{baseline_dir}"
+                        "\n(This is expected for new tests.)\nGenerated Image: "
+                        "\n\t{test}".format(baseline_dir=self.get_baseline_directory(item),
+                                            test=test_image),
+                        pytrace=False)
+
+        # distutils may put the baseline images in non-accessible places,
+        # copy to our tmpdir to be sure to keep them in case of failure
+        baseline_image = os.path.abspath(
+            os.path.join(result_dir,
+                         'baseline-' + self.generate_filename(item))
+        )
+        shutil.copyfile(baseline_image_ref, baseline_image)
+
+        # Compare image size ourselves since the Matplotlib
+        # exception is a bit cryptic in this case and doesn't show
+        # the filenames
+        expected_shape = imread(baseline_image).shape[:2]
+        actual_shape = imread(test_image).shape[:2]
+        if expected_shape != actual_shape:
+            error = SHAPE_MISMATCH_ERROR.format(expected_path=baseline_image,
+                                                expected_shape=expected_shape,
+                                                actual_path=test_image,
+                                                actual_shape=actual_shape)
+            pytest.fail(error, pytrace=False)
+
+        return compare_images(baseline_image, test_image, tol=tolerance)
+
     def pytest_runtest_setup(self, item):
 
-        compare = get_marker(item, 'mpl_image_compare')
+        compare = self.get_compare(item)
 
         if compare is None:
             return
 
         import matplotlib
-        from matplotlib.image import imread
         import matplotlib.pyplot as plt
-        from matplotlib.testing.compare import compare_images
         try:
             from matplotlib.testing.decorators import remove_ticks_and_titles
         except ImportError:
@@ -221,7 +348,6 @@ class ImageComparison(object):
 
         MPL_LT_15 = LooseVersion(matplotlib.__version__) < LooseVersion('1.5')
 
-        tolerance = compare.kwargs.get('tolerance', 2)
         savefig_kwargs = compare.kwargs.get('savefig_kwargs', {})
         style = compare.kwargs.get('style', 'classic')
         remove_text = compare.kwargs.get('remove_text', False)
@@ -234,26 +360,6 @@ class ImageComparison(object):
 
         @wraps(item.function)
         def item_function_wrapper(*args, **kwargs):
-
-            baseline_dir = compare.kwargs.get('baseline_dir', None)
-            if baseline_dir is None:
-                if self.baseline_dir is None:
-                    baseline_dir = os.path.join(os.path.dirname(item.fspath.strpath), 'baseline')
-                else:
-                    if self.baseline_relative_dir:
-                        # baseline dir is relative to the current test
-                        baseline_dir = os.path.join(
-                            os.path.dirname(item.fspath.strpath),
-                            self.baseline_relative_dir
-                        )
-                    else:
-                        # baseline dir is relative to where pytest was run
-                        baseline_dir = self.baseline_dir
-                baseline_remote = False
-
-            baseline_remote = baseline_dir.startswith(('http://', 'https://'))
-            if not baseline_remote:
-                baseline_dir = os.path.join(os.path.dirname(item.fspath.strpath), baseline_dir)
 
             with plt.style.context(style, after_reset=True), switch_backend(backend):
 
@@ -271,74 +377,27 @@ class ImageComparison(object):
                 if remove_text:
                     remove_ticks_and_titles(fig)
 
-                # Find test name to use as plot name
-                filename = compare.kwargs.get('filename', None)
-                if filename is None:
-                    filename = item.name + '.png'
-                    filename = filename.replace('[', '_').replace(']', '_')
-                    filename = filename.replace('/', '_')
-                    filename = filename.replace('_.png', '.png')
+                filename = self.generate_filename(item)
 
                 # What we do now depends on whether we are generating the
                 # reference images or simply running the test.
-                if self.generate_dir is None:
-
+                if self.generate_dir is not None:
+                    self.generate_baseline_image(item, fig, savefig_kwargs)
+                else:
                     # Save the figure
-                    result_dir = tempfile.mkdtemp(dir=self.results_dir)
+                    result_dir = self.make_results_dir(item)
                     test_image = os.path.abspath(os.path.join(result_dir, filename))
 
                     fig.savefig(test_image, **savefig_kwargs)
-                    close_mpl_figure(fig)
 
-                    # Find path to baseline image
-                    if baseline_remote:
-                        baseline_image_ref = _download_file(baseline_dir, filename)
-                    else:
-                        baseline_image_ref = os.path.abspath(os.path.join(
-                            os.path.dirname(item.fspath.strpath), baseline_dir, filename))
-
-                    if not os.path.exists(baseline_image_ref):
-                        pytest.fail("Image file not found for comparison test in: "
-                                    "\n\t{baseline_dir}"
-                                    "\n(This is expected for new tests.)\nGenerated Image: "
-                                    "\n\t{test}".format(baseline_dir=baseline_dir,
-                                                        test=test_image),
-                                    pytrace=False)
-
-                    # distutils may put the baseline images in non-accessible places,
-                    # copy to our tmpdir to be sure to keep them in case of failure
-                    baseline_image = os.path.abspath(os.path.join(result_dir,
-                                                                  'baseline-' + filename))
-                    shutil.copyfile(baseline_image_ref, baseline_image)
-
-                    # Compare image size ourselves since the Matplotlib
-                    # exception is a bit cryptic in this case and doesn't show
-                    # the filenames
-                    expected_shape = imread(baseline_image).shape[:2]
-                    actual_shape = imread(test_image).shape[:2]
-                    if expected_shape != actual_shape:
-                        error = SHAPE_MISMATCH_ERROR.format(expected_path=baseline_image,
-                                                            expected_shape=expected_shape,
-                                                            actual_path=test_image,
-                                                            actual_shape=actual_shape)
-                        pytest.fail(error, pytrace=False)
-
-                    msg = compare_images(baseline_image, test_image, tol=tolerance)
+                    msg = self.compare_image_to_baseline(item, test_image, result_dir)
 
                     if msg is None:
                         shutil.rmtree(result_dir)
                     else:
                         pytest.fail(msg, pytrace=False)
 
-                else:
-
-                    if not os.path.exists(self.generate_dir):
-                        os.makedirs(self.generate_dir)
-
-                    fig.savefig(os.path.abspath(os.path.join(self.generate_dir, filename)),
-                                **savefig_kwargs)
-                    close_mpl_figure(fig)
-                    pytest.skip("Skipping test, since generating data")
+                close_mpl_figure(fig)
 
         if item.cls is not None:
             setattr(item.cls, item.function.__name__, item_function_wrapper)
