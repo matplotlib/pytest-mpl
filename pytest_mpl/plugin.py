@@ -402,9 +402,11 @@ class ImageComparison(object):
     def compare_image_to_hash_library(self, item, fig, result_dir):
         compare = self.get_compare(item)
 
-        # TODO: Should the CLI args or the mark take precedence?
-        hash_library_filename = compare.kwargs.get('hash_library', None) or self.hash_library
-        hash_library_filename = os.path.abspath(os.path.join(os.path.dirname(item.fspath.strpath), hash_library_filename))
+        hash_library_filename = self.hash_library or compare.kwargs.get('hash_library', None)
+        hash_library_filename = os.path.abspath(
+            os.path.join(os.path.dirname(item.fspath.strpath),
+                         hash_library_filename)
+        )
 
         hash_library = self.load_hash_library(hash_library_filename)
         hash_name = self.generate_hash_name(item)
@@ -415,8 +417,8 @@ class ImageComparison(object):
         test_hash = self.generate_image_hash(item, fig)
 
         if test_hash != hash_library[hash_name]:
-            return f"hash {test_hash} doesn't match hash {hash_library[hash_name]} in library for test {hash_name}."
-
+            return (f"hash {test_hash} doesn't match hash "
+                    "{hash_library[hash_name]} in library for test {hash_name}.")
 
     def pytest_runtest_setup(self, item):
 
@@ -504,7 +506,7 @@ class ImageComparison(object):
         """
         if self.generate_hash_library is not None:
             with open(self.generate_hash_library, "w") as fp:
-                json.dump(self._generated_hash_library, fp)
+                json.dump(self._generated_hash_library, fp, indent=2)
 
 
 class FigureCloser(object):
