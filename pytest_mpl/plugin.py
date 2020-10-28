@@ -28,18 +28,17 @@
 #
 #   https://github.com/astrofrog/wcsaxes
 
-import contextlib
+import io
+import os
+import json
+import shutil
 import hashlib
 import inspect
-import io
-import json
-import os
-import shutil
 import tempfile
 import warnings
-from distutils.version import LooseVersion
-from functools import wraps
+import contextlib
 from pathlib import Path
+from functools import wraps
 from urllib.request import urlopen
 
 import pytest
@@ -419,23 +418,16 @@ class ImageComparison(object):
         if compare is None:
             return
 
-        import matplotlib
         import matplotlib.pyplot as plt
         try:
             from matplotlib.testing.decorators import remove_ticks_and_titles
         except ImportError:
-            from matplotlib.testing.decorators import \
-                ImageComparisonTest as MplImageComparisonTest
+            from matplotlib.testing.decorators import ImageComparisonTest as MplImageComparisonTest
             remove_ticks_and_titles = MplImageComparisonTest.remove_text
-
-        MPL_LT_15 = LooseVersion(matplotlib.__version__) < LooseVersion('1.5')
 
         style = compare.kwargs.get('style', 'classic')
         remove_text = compare.kwargs.get('remove_text', False)
         backend = compare.kwargs.get('backend', 'agg')
-
-        if MPL_LT_15 and style == 'classic':
-            style = Path(__file__).parent / 'classic.mplstyle'
 
         original = item.function
 
