@@ -277,7 +277,8 @@ class ImageComparison(object):
                     # baseline dir is relative to where pytest was run
                     baseline_dir = self.baseline_dir
 
-        baseline_remote = isinstance(baseline_dir, str) and baseline_dir.startswith(('http://', 'https://'))
+        baseline_remote = (isinstance(baseline_dir, str) and  # noqa
+                           baseline_dir.startswith(('http://', 'https://')))
         if not baseline_remote:
             return Path(item.fspath).parent / baseline_dir
 
@@ -292,7 +293,8 @@ class ImageComparison(object):
         """
         filename = self.generate_filename(item)
         baseline_dir = self.get_baseline_directory(item)
-        baseline_remote = isinstance(baseline_dir, str) and baseline_dir.startswith(('http://', 'https://'))
+        baseline_remote = (isinstance(baseline_dir, str) and  # noqa
+                           baseline_dir.startswith(('http://', 'https://')))
         if baseline_remote:
             # baseline_dir can be a list of URLs when remote, so we have to
             # pass base and filename to download
@@ -312,7 +314,7 @@ class ImageComparison(object):
         if not os.path.exists(self.generate_dir):
             os.makedirs(self.generate_dir)
 
-        fig.savefig((self.generate_dir / self.generate_filename(item)).absolute(),
+        fig.savefig(str((self.generate_dir / self.generate_filename(item)).absolute()),
                     **savefig_kwargs)
 
         close_mpl_figure(fig)
@@ -356,7 +358,7 @@ class ImageComparison(object):
         baseline_image_ref = self.obtain_baseline_image(item, result_dir)
 
         test_image = (result_dir / self.generate_filename(item)).absolute()
-        fig.savefig(test_image, **savefig_kwargs)
+        fig.savefig(str(test_image), **savefig_kwargs)
 
         if not os.path.exists(baseline_image_ref):
             pytest.fail("Image file not found for comparison test in: "
@@ -374,8 +376,8 @@ class ImageComparison(object):
         # Compare image size ourselves since the Matplotlib
         # exception is a bit cryptic in this case and doesn't show
         # the filenames
-        expected_shape = imread(baseline_image).shape[:2]
-        actual_shape = imread(test_image).shape[:2]
+        expected_shape = imread(str(baseline_image)).shape[:2]
+        actual_shape = imread(str(test_image)).shape[:2]
         if expected_shape != actual_shape:
             error = SHAPE_MISMATCH_ERROR.format(expected_path=baseline_image,
                                                 expected_shape=expected_shape,
@@ -383,7 +385,7 @@ class ImageComparison(object):
                                                 actual_shape=actual_shape)
             pytest.fail(error, pytrace=False)
 
-        return compare_images(baseline_image, test_image, tol=tolerance)
+        return compare_images(str(baseline_image), str(test_image), tol=tolerance)
 
     def load_hash_library(self, library_path):
         with open(str(library_path)) as fp:
