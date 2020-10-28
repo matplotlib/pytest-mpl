@@ -2,24 +2,27 @@ import os
 import sys
 import json
 import subprocess
-from distutils.version import LooseVersion
+from packaging.version import Version
+from pathlib import Path
 
 import pytest
 import matplotlib
 import matplotlib.pyplot as plt
 
-MPL_VERSION = LooseVersion(matplotlib.__version__)
-MPL_LT_2 = LooseVersion(matplotlib.__version__) < LooseVersion("2.0")
+MPL_VERSION = Version(matplotlib.__version__)
+MPL_LT_2 = Version(matplotlib.__version__) < Version("2.0")
 
 baseline_dir = 'baseline'
 
-if MPL_VERSION >= LooseVersion('2'):
+if MPL_VERSION >= Version('2'):
     baseline_subdir = '2.0.x'
-elif MPL_VERSION >= LooseVersion('1.5'):
+elif MPL_VERSION >= Version('1.5'):
     baseline_subdir = '1.5.x'
 
 baseline_dir_local = os.path.join(baseline_dir, baseline_subdir)
 baseline_dir_remote = 'http://matplotlib.github.io/pytest-mpl/' + baseline_subdir + '/'
+
+hash_library = Path(baseline_dir) / "hashes" / f"mpl{MPL_VERSION.major}{MPL_VERSION.minor}.json"
 
 WIN = sys.platform.startswith('win')
 
@@ -245,8 +248,8 @@ class TestClassWithSetup(object):
 
 # hashlib
 
-
-@pytest.mark.mpl_image_compare(hash_library=os.path.join(baseline_dir_local, "test_hash_lib.json"))
+@pytest.mark.skipif(not hash_library.exists(), reason="No hash library for this mpl version")
+@pytest.mark.mpl_image_compare(hash_library=hash_library)
 def test_hash_succeeds():
     fig = plt.figure()
     ax = fig.add_subplot(1, 1, 1)
@@ -270,7 +273,8 @@ def test_hash_fails(tmpdir):
 
     test_file = tmpdir.join('test.py').strpath
     with open(test_file, 'w') as f:
-        f.write(TEST_FAILING_HASH.format(hash_library=os.path.join(baseline_dir_local, "test_hash_lib.json")))
+        f.write(TEST_FAILING_HASH.format(hash_library=os.path.join(baseline_dir,
+                                                                   "test_hash_lib.json")))
 
     # If we use --mpl, it should detect that the figure is wrong
     code = call_pytest(['--mpl', test_file])
@@ -300,7 +304,9 @@ def test_hash_missing(tmpdir):
         f.write(TEST_MISSING_HASH)
 
     # If we use --mpl, it should detect that the figure is wrong
-    code = call_pytest(['--mpl', test_file, '--mpl-hash-library{os.path.join(baseline_dir_local, "test_hash_lib.json")}'])
+    code = call_pytest(['--mpl',
+                        test_file,
+                        f'--mpl-hash-library={os.path.join(baseline_dir, "test_hash_lib.json")}'])
     assert code != 0
 
     # If we don't use --mpl option, the test should succeed

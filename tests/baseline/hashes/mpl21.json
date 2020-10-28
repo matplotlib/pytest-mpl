@@ -1,0 +1,13 @@
+{
+  "test_pytest_mpl.test_succeeds": "f95be1d6722b5fcbc8e0ebaa66d7e45a43af197086875fb110c5ca520ec5217b",
+  "test_pytest_mpl.test_succeeds_remote": "f95be1d6722b5fcbc8e0ebaa66d7e45a43af197086875fb110c5ca520ec5217b",
+  "test_pytest_mpl.test_succeeds_faulty_mirror": "f95be1d6722b5fcbc8e0ebaa66d7e45a43af197086875fb110c5ca520ec5217b",
+  "test_pytest_mpl.test_dpi": "a417c1dbe5ae7d60ad8b4f2132694015f5979735df4eeac68cdc68d5bac4ec8f",
+  "test_pytest_mpl.test_tolerance": "367d0a9612870cea5603b29f46256c9425a363b184ef9de6c502cee45ce28815",
+  "test_pytest_mpl.test_base_style": "d74c791922c64fbda7b0634cb5a0054b26635c20d9f72926edfcd22820458579",
+  "test_pytest_mpl.test_remove_text": "e9abea4ebd0e358026c5ff97bb34a6461b661714518cc6de0de5c7e3e6a1102b",
+  "test_pytest_mpl.test_parametrized[5]": "bbe7049472117118cadc29f8c1c06db19add0d5f3fc418a3665311d6bc40a5ee",
+  "test_pytest_mpl.test_parametrized[50]": "fcfd4d81406e6f1fb953d7d3df01a198803a1a5b979b1d53027278c7a0a5f2e6",
+  "test_pytest_mpl.test_parametrized[500]": "d45c905546695d280cae597a25d8b64b8fbdc7e65892f02a00b913d11b3409db",
+  "test_pytest_mpl.test_hash_succeeds": "f95be1d6722b5fcbc8e0ebaa66d7e45a43af197086875fb110c5ca520ec5217b"
+}

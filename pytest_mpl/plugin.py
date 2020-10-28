@@ -41,6 +41,7 @@ import tempfile
 import warnings
 import hashlib
 from distutils.version import LooseVersion
+from pathlib import Path
 
 import pytest
 
@@ -130,9 +131,9 @@ def pytest_configure(config):
                             "mpl_image_compare: Compares matplotlib figures "
                             "against a baseline image")
 
-    if (config.getoption("--mpl") or
-        config.getoption("--mpl-generate-path") is not None or
-        config.getoption("--mpl-generate-hash-library") is not None):
+    if (config.getoption("--mpl") or  # noqa
+        config.getoption("--mpl-generate-path") is not None or  # noqa
+        config.getoption("--mpl-generate-hash-library") is not None):  # noqa
 
         baseline_dir = config.getoption("--mpl-baseline-path")
         generate_dir = config.getoption("--mpl-generate-path")
@@ -418,9 +419,10 @@ class ImageComparison(object):
 
         if test_hash != hash_library[hash_name]:
             return (f"hash {test_hash} doesn't match hash "
-                    f"{hash_library[hash_name]} in library for test {hash_name}.")
+                    f"{hash_library[hash_name]} in library "
+                    f"{hash_library_filename} for test {hash_name}.")
 
-    def pytest_runtest_setup(self, item):
+    def pytest_runtest_setup(self, item):  # noqa
 
         compare = self.get_compare(item)
 
@@ -505,7 +507,9 @@ class ImageComparison(object):
         Save out the hash library at the end of the run.
         """
         if self.generate_hash_library is not None:
-            with open(self.generate_hash_library, "w") as fp:
+            hash_library_path = Path(config.rootdir) / self.generate_hash_library
+            Path(hash_library_path).parent.mkdir(parents=True, exist_ok=True)
+            with open(hash_library_path, "w") as fp:
                 json.dump(self._generated_hash_library, fp, indent=2)
 
 
