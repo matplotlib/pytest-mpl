@@ -11,14 +11,11 @@ import matplotlib.ft2font
 import matplotlib.pyplot as plt
 
 MPL_VERSION = Version(matplotlib.__version__)
-MPL_LT_2 = Version(matplotlib.__version__) < Version("2.0")
 
 baseline_dir = 'baseline'
 
 if MPL_VERSION >= Version('2'):
     baseline_subdir = '2.0.x'
-elif MPL_VERSION >= Version('1.5'):
-    baseline_subdir = '1.5.x'
 
 baseline_dir_local = os.path.join(baseline_dir, baseline_subdir)
 baseline_dir_remote = 'http://matplotlib.github.io/pytest-mpl/' + baseline_subdir + '/'
@@ -209,8 +206,6 @@ def test_nofigure():
     pass
 
 
-@pytest.mark.skipif(MPL_LT_2, reason="the fivethirtyeight style is only available "
-                                     "in Matplotlib 2.0 and later")
 @pytest.mark.mpl_image_compare(baseline_dir=baseline_dir_local,
                                style='fivethirtyeight',
                                tolerance=DEFAULT_TOLERANCE)
