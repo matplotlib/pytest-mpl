@@ -508,7 +508,7 @@ class ImageComparison(object):
         """
         if self.generate_hash_library is not None:
             hash_library_path = Path(config.rootdir) / self.generate_hash_library
-            Path(hash_library_path).parent.mkdir(parents=True, exist_ok=True)
+            hash_library_path.parent.mkdir(parents=True, exist_ok=True)
             with open(hash_library_path, "w") as fp:
                 json.dump(self._generated_hash_library, fp, indent=2)
 

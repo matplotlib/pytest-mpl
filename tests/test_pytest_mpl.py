@@ -22,7 +22,14 @@ elif MPL_VERSION >= Version('1.5'):
 baseline_dir_local = os.path.join(baseline_dir, baseline_subdir)
 baseline_dir_remote = 'http://matplotlib.github.io/pytest-mpl/' + baseline_subdir + '/'
 
-hash_library = Path(baseline_dir) / "hashes" / f"mpl{MPL_VERSION.major}{MPL_VERSION.minor}.json"
+hash_filename = f"mpl{MPL_VERSION.major}{MPL_VERSION.minor}.json"
+
+if "+" in matplotlib.__version__:
+    hash_filename = "mpldev.json"
+
+hash_library = (Path(__file__).parent / "baseline" /  # noqa
+                "hashes" / hash_filename)
+
 
 WIN = sys.platform.startswith('win')
 
