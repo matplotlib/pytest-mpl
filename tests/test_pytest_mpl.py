@@ -305,10 +305,10 @@ def test_hash_fails(tmpdir):
     assert code == 0
 
 
-TEST_FAILING_HYBRID = f"""
+TEST_FAILING_HYBRID = rf"""
 import pytest
 import matplotlib.pyplot as plt
-@pytest.mark.mpl_image_compare(hash_library="{fail_hash_library}",
+@pytest.mark.mpl_image_compare(hash_library=r"{fail_hash_library}",
                                tolerance=2)
 def test_hash_fail_hybrid():
     fig = plt.figure()
@@ -326,7 +326,7 @@ def test_hash_fail_hybrid(tmpdir):
 
     # Assert that image comparison runs and fails
     output = assert_pytest_fails_with(['--mpl', test_file,
-                                       f'--mpl-baseline-path={hash_baseline_dir_abs / "fail"}'],
+                                       rf'--mpl-baseline-path={hash_baseline_dir_abs / "fail"}'],
                                       "doesn't match hash FAIL in library")
     assert "Error: Image files did not match." in output, output
 
@@ -338,7 +338,7 @@ def test_hash_fail_hybrid(tmpdir):
 
     # Assert reports image comparison succeeds
     output = assert_pytest_fails_with(['--mpl', test_file,
-                                       f'--mpl-baseline-path={hash_baseline_dir_abs / "succeed"}'],
+                                       rf'--mpl-baseline-path={hash_baseline_dir_abs / "succeed"}'],
                                       "doesn't match hash FAIL in library")
     assert "However, the comparison to the baseline image succeeded." in output, output
 
