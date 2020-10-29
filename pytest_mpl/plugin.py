@@ -250,6 +250,7 @@ class ImageComparison(object):
         """
         Given a pytest item, generate the figure filename.
         """
+        return self.generate_test_name(item) + '.png'
         compare = self.get_compare(item)
         # Find test name to use as plot name
         filename = compare.kwargs.get('filename', None)
@@ -520,8 +521,7 @@ class ImageComparison(object):
                     close_mpl_figure(fig)
 
                     if msg is None:
-                        pass
-                        # shutil.rmtree(result_dir)
+                        shutil.rmtree(result_dir)
                     else:
                         pytest.fail(msg, pytrace=False)
 
