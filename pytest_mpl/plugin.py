@@ -147,9 +147,10 @@ def pytest_addoption(parser):
     group.addoption('--mpl-hash-library',
                     help="json library of image hashes, relative to "
                     "location where py.test is run", action='store')
-    group.addoption('--mpl-generate-summary', action='store_true',
-                    help="Generate a summary HTML report of any failed tests"
-                    ", in --mpl-results-path")
+    group.addoption('--mpl-generate-summary', action='store',
+                    help="Generate a summary report of any failed tests"
+                    ", in --mpl-results-path. The type of the report should be "
+                    "specified, the only format supported at the moment is `html`.")
 
     results_path_help = "directory for test results, relative to location where py.test is run"
     group.addoption('--mpl-results-path', help=results_path_help, action='store')
@@ -261,7 +262,7 @@ class ImageComparison:
                  results_dir=None,
                  hash_library=None,
                  generate_hash_library=None,
-                 generate_summary=False
+                 generate_summary=None
                  ):
         self.config = config
         self.baseline_dir = baseline_dir
@@ -270,7 +271,9 @@ class ImageComparison:
         self.results_dir = path_is_not_none(results_dir)
         self.hash_library = path_is_not_none(hash_library)
         self.generate_hash_library = path_is_not_none(generate_hash_library)
-        self.generate_summary = bool(generate_summary)
+        if generate_summary and generate_summary.lower() not in ("html",):
+            raise ValueError(f"The mpl summary type '{generate_summary}' is not supported.")
+        self.generate_summary = generate_summary
 
         # Generate the containing dir for all test results
         if not self.results_dir:
@@ -611,7 +614,7 @@ class ImageComparison:
             with open(hash_library_path, "w") as fp:
                 json.dump(self._generated_hash_library, fp, indent=2)
 
-        if self.generate_summary:
+        if self.generate_summary and self.generate_summary.lower() == 'html':
             # Generate a list of test directories
             dir_list = [p.relative_to(self.results_dir)
                         for p in self.results_dir.iterdir() if p.is_dir()]

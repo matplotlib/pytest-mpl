@@ -292,7 +292,7 @@ def test_hash_fails(tmpdir):
     assert "Unable to find baseline image" not in output, output
 
     # Check that the summary path is printed and that it exists.
-    output = assert_pytest_fails_with(['--mpl', test_file, '--mpl-generate-summary'],
+    output = assert_pytest_fails_with(['--mpl', test_file, '--mpl-generate-summary=html'],
                                       "doesn't match hash FAIL in library")
     # We didn't specify a baseline dir so we shouldn't attempt to find one
     print_message = "A summary of the failed tests can be found at:"
