@@ -31,13 +31,17 @@
 from functools import wraps
 
 import contextlib
+import io
 import os
 import sys
+import json
 import shutil
 import inspect
 import tempfile
 import warnings
+import hashlib
 from distutils.version import LooseVersion
+from pathlib import Path
 
 import pytest
 
@@ -77,6 +81,17 @@ def _download_file(baseline, filename):
     return filename
 
 
+def _hash_file(in_stream):
+    """
+    Hashes an already opened file.
+    """
+    in_stream.seek(0)
+    buf = in_stream.read()
+    hasher = hashlib.sha256()
+    hasher.update(buf)
+    return hasher.hexdigest()
+
+
 def pytest_report_header(config, startdir):
     import matplotlib
     import matplotlib.ft2font
@@ -91,6 +106,9 @@ def pytest_addoption(parser):
     group.addoption('--mpl-generate-path',
                     help="directory to generate reference images in, relative "
                     "to location where py.test is run", action='store')
+    group.addoption('--mpl-generate-hash-library',
+                    help="filepath to save a generated hash library, relative "
+                    "to location where py.test is run", action='store')
     group.addoption('--mpl-baseline-path',
                     help="directory containing baseline images, relative to "
                     "location where py.test is run unless --mpl-baseline-relative is given. "
@@ -98,6 +116,9 @@ def pytest_addoption(parser):
                     "mirrors are specified)", action='store')
     group.addoption("--mpl-baseline-relative", help="interpret the baseline directory as "
                     "relative to the test location.", action="store_true")
+    group.addoption('--mpl-hash-library',
+                    help="json library of image hashes, relative to "
+                    "location where py.test is run", action='store')
 
     results_path_help = "directory for test results, relative to location where py.test is run"
     group.addoption('--mpl-results-path', help=results_path_help, action='store')
@@ -110,11 +131,15 @@ def pytest_configure(config):
                             "mpl_image_compare: Compares matplotlib figures "
                             "against a baseline image")
 
-    if config.getoption("--mpl") or config.getoption("--mpl-generate-path") is not None:
+    if (config.getoption("--mpl") or  # noqa
+        config.getoption("--mpl-generate-path") is not None or  # noqa
+        config.getoption("--mpl-generate-hash-library") is not None):  # noqa
 
         baseline_dir = config.getoption("--mpl-baseline-path")
         generate_dir = config.getoption("--mpl-generate-path")
+        generate_hash_lib = config.getoption("--mpl-generate-hash-library")
         results_dir = config.getoption("--mpl-results-path") or config.getini("mpl-results-path")
+        hash_library = config.getoption("--mpl-hash-library")
 
         if config.getoption("--mpl-baseline-relative"):
             baseline_relative_dir = config.getoption("--mpl-baseline-path")
@@ -142,7 +167,9 @@ def pytest_configure(config):
                                                       baseline_dir=baseline_dir,
                                                       baseline_relative_dir=baseline_relative_dir,
                                                       generate_dir=generate_dir,
-                                                      results_dir=results_dir))
+                                                      results_dir=results_dir,
+                                                      hash_library=hash_library,
+                                                      generate_hash_library=generate_hash_lib))
 
     else:
 
@@ -192,15 +219,22 @@ class ImageComparison(object):
                  baseline_dir=None,
                  baseline_relative_dir=None,
                  generate_dir=None,
-                 results_dir=None
+                 results_dir=None,
+                 hash_library=None,
+                 generate_hash_library=None
                  ):
         self.config = config
         self.baseline_dir = baseline_dir
         self.baseline_relative_dir = baseline_relative_dir
         self.generate_dir = generate_dir
         self.results_dir = results_dir
+        self.hash_library = hash_library
+        self.generate_hash_library = generate_hash_library
         if self.results_dir and not os.path.exists(self.results_dir):
             os.mkdir(self.results_dir)
+
+        # We need global state to store all the hashes generated over the run
+        self._generated_hash_library = {}
 
     def get_compare(self, item):
         """
@@ -258,7 +292,7 @@ class ImageComparison(object):
 
         return baseline_dir
 
-    def obtain_baseline_image(self, item, target_dir, test_image=None):
+    def obtain_baseline_image(self, item, target_dir):
         """
         Copy the baseline image to our working directory.
 
@@ -277,10 +311,13 @@ class ImageComparison(object):
 
         return baseline_image
 
-    def generate_baseline_image(self, item, fig, savefig_kwargs):
+    def generate_baseline_image(self, item, fig):
         """
         Generate reference figures.
         """
+        compare = self.get_compare(item)
+        savefig_kwargs = compare.kwargs.get('savefig_kwargs', {})
+
         if not os.path.exists(self.generate_dir):
             os.makedirs(self.generate_dir)
 
@@ -289,7 +326,31 @@ class ImageComparison(object):
         close_mpl_figure(fig)
         pytest.skip("Skipping test, since generating data")
 
-    def compare_image_to_baseline(self, item, test_image, result_dir):
+    def generate_hash_name(self, item):
+        """
+        Generate a unique name for the hash for this test.
+        """
+        return f"{item.module.__name__}.{item.name}"
+
+    def generate_image_hash(self, item, fig):
+        """
+        For a `matplotlib.figure.Figure`, returns the SHA256 hash as a hexadecimal
+        string.
+        """
+        compare = self.get_compare(item)
+        savefig_kwargs = compare.kwargs.get('savefig_kwargs', {})
+
+        imgdata = io.BytesIO()
+
+        fig.savefig(imgdata, **savefig_kwargs)
+
+        out = _hash_file(imgdata)
+        imgdata.close()
+
+        close_mpl_figure(fig)
+        return out
+
+    def compare_image_to_baseline(self, item, fig, result_dir):
         """
         Compare a test image to a baseline image.
         """
@@ -298,8 +359,12 @@ class ImageComparison(object):
 
         compare = self.get_compare(item)
         tolerance = compare.kwargs.get('tolerance', 2)
+        savefig_kwargs = compare.kwargs.get('savefig_kwargs', {})
 
-        baseline_image_ref = self.obtain_baseline_image(item, result_dir, test_image)
+        baseline_image_ref = self.obtain_baseline_image(item, result_dir)
+
+        test_image = os.path.abspath(os.path.join(result_dir, self.generate_filename(item)))
+        fig.savefig(test_image, **savefig_kwargs)
 
         if not os.path.exists(baseline_image_ref):
             pytest.fail("Image file not found for comparison test in: "
@@ -331,7 +396,36 @@ class ImageComparison(object):
 
         return compare_images(baseline_image, test_image, tol=tolerance)
 
-    def pytest_runtest_setup(self, item):
+    def load_hash_library(self, library_path):
+        with open(library_path) as fp:
+            return json.load(fp)
+
+    def compare_image_to_hash_library(self, item, fig, result_dir):
+        compare = self.get_compare(item)
+
+        hash_library_filename = self.hash_library or compare.kwargs.get('hash_library', None)
+        hash_library_filename = os.path.abspath(
+            os.path.join(os.path.dirname(item.fspath.strpath),
+                         hash_library_filename)
+        )
+
+        if not Path(hash_library_filename).exists():
+            pytest.fail(f"Can't find hash library at path {hash_library_filename}")
+
+        hash_library = self.load_hash_library(hash_library_filename)
+        hash_name = self.generate_hash_name(item)
+
+        if hash_name not in hash_library:
+            return f"Hash for test '{hash_name}' not found in {hash_library_filename}."
+
+        test_hash = self.generate_image_hash(item, fig)
+
+        if test_hash != hash_library[hash_name]:
+            return (f"hash {test_hash} doesn't match hash "
+                    f"{hash_library[hash_name]} in library "
+                    f"{hash_library_filename} for test {hash_name}.")
+
+    def pytest_runtest_setup(self, item):  # noqa
 
         compare = self.get_compare(item)
 
@@ -348,7 +442,6 @@ class ImageComparison(object):
 
         MPL_LT_15 = LooseVersion(matplotlib.__version__) < LooseVersion('1.5')
 
-        savefig_kwargs = compare.kwargs.get('savefig_kwargs', {})
         style = compare.kwargs.get('style', 'classic')
         remove_text = compare.kwargs.get('remove_text', False)
         backend = compare.kwargs.get('backend', 'agg')
@@ -377,20 +470,28 @@ class ImageComparison(object):
                 if remove_text:
                     remove_ticks_and_titles(fig)
 
-                filename = self.generate_filename(item)
-
                 # What we do now depends on whether we are generating the
                 # reference images or simply running the test.
                 if self.generate_dir is not None:
-                    self.generate_baseline_image(item, fig, savefig_kwargs)
-                else:
-                    # Save the figure
+                    self.generate_baseline_image(item, fig)
+
+                if self.generate_hash_library is not None:
+                    hash_name = self.generate_hash_name(item)
+                    self._generated_hash_library[hash_name] = self.generate_image_hash(item, fig)
+
+                # Only test figures if we are not generating hashes or images
+                if self.generate_dir is None and self.generate_hash_library is None:
                     result_dir = self.make_results_dir(item)
-                    test_image = os.path.abspath(os.path.join(result_dir, filename))
 
-                    fig.savefig(test_image, **savefig_kwargs)
+                    # Compare to hash library
+                    if self.hash_library or compare.kwargs.get('hash_library', None):
+                        msg = self.compare_image_to_hash_library(item, fig, result_dir)
 
-                    msg = self.compare_image_to_baseline(item, test_image, result_dir)
+                    # Compare against a baseline if specified
+                    else:
+                        msg = self.compare_image_to_baseline(item, fig, result_dir)
+
+                    close_mpl_figure(fig)
 
                     if msg is None:
                         shutil.rmtree(result_dir)
@@ -403,6 +504,16 @@ class ImageComparison(object):
             setattr(item.cls, item.function.__name__, item_function_wrapper)
         else:
             item.obj = item_function_wrapper
+
+    def pytest_unconfigure(self, config):
+        """
+        Save out the hash library at the end of the run.
+        """
+        if self.generate_hash_library is not None:
+            hash_library_path = Path(config.rootdir) / self.generate_hash_library
+            hash_library_path.parent.mkdir(parents=True, exist_ok=True)
+            with open(hash_library_path, "w") as fp:
+                json.dump(self._generated_hash_library, fp, indent=2)
 
 
 class FigureCloser(object):

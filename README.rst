@@ -41,6 +41,9 @@ which will show a list of plugins:
 Using
 -----
 
+With Baseline Images
+^^^^^^^^^^^^^^^^^^^^
+
 To use, you simply need to mark the function where you want to compare
 images using ``@pytest.mark.mpl_image_compare``, and make sure that the
 function returns a Matplotlib figure (or any figure object that has a
@@ -71,7 +74,26 @@ sub-directory called ``baseline`` relative to the test files (this name
 is configurable, see below). You can also generate the baseline images
 directly in the right directory.
 
-You can then run the tests simply with::
+With a Hash Library
+^^^^^^^^^^^^^^^^^^^
+
+Instead of comparing to baseline images, you can instead compare against a json
+library of sha256 hashes. This has the advantage of not having to check baseline
+images into the repository with the tests, or download them from a remote
+source.
+
+The hash library can be generated with
+``--mpl-generate-hash-library=path_to_file.json``. The hash library to be used
+can either be specified via the ``--mpl-hash-library=`` command line argument,
+or via the ``hash_library=`` keyword argument to the
+``@pytest.mark.mpl_image_comapre`` decorator.
+
+
+Running Tests
+^^^^^^^^^^^^^
+
+Once tests are written with either baseline images or a hash library to compare
+against, the tests can be run with::
 
     pytest --mpl
 
