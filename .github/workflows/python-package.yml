@@ -43,6 +43,12 @@ jobs:
         - os: ubuntu-latest
           python-version: 3.8
           toxenv: py38-test-mpl31
+        - os: ubuntu-latest
+          python-version: 3.7
+          toxenv: py37-test-mpl32
+        - os: ubuntu-latest
+          python-version: 3.8
+          toxenv: py38-test-mpl33
         # Code style checks
         - os: ubuntu-latest
           python-version: 3.8
