@@ -121,9 +121,9 @@ def pytest_configure(config):
                             "mpl_image_compare: Compares matplotlib figures "
                             "against a baseline image")
 
-    if (config.getoption("--mpl") or  # noqa
-        config.getoption("--mpl-generate-path") is not None or  # noqa
-        config.getoption("--mpl-generate-hash-library") is not None):  # noqa
+    if (config.getoption("--mpl") or
+            config.getoption("--mpl-generate-path") is not None or
+            config.getoption("--mpl-generate-hash-library") is not None):
 
         baseline_dir = config.getoption("--mpl-baseline-path")
         generate_dir = config.getoption("--mpl-generate-path")
@@ -256,6 +256,14 @@ class ImageComparison(object):
         Generate the directory to put the results in.
         """
         return Path(tempfile.mkdtemp(dir=self.results_dir))
+
+    def baseline_directory_specified(self, item):
+        """
+        Returns `True` if a non-default baseline directory is specified.
+        """
+        compare = self.get_compare(item)
+        item_baseline_dir = compare.kwargs.get('baseline_dir', None)
+        return item_baseline_dir or self.baseline_dir or self.baseline_relative_dir
 
     def get_baseline_directory(self, item):
         """
@@ -409,25 +417,32 @@ class ImageComparison(object):
         if test_hash == hash_library[hash_name]:
             return
 
+        error_message = (f"hash {test_hash} doesn't match hash "
+                         f"{hash_library[hash_name]} in library "
+                         f"{hash_library_filename} for test {hash_name}.")
+
+        # If the compare has only been specified with hash and not baseline
+        # dir, don't attempt to find a baseline image at the default path.
+        if not self.baseline_directory_specified(item):
+            return error_message
+
+        baseline_image_path = self.obtain_baseline_image(item, result_dir)
         try:
-            baseline_image = self.obtain_baseline_image(item, result_dir)
+            baseline_image = baseline_image_path
             baseline_image = None if not baseline_image.exists() else baseline_image
         except Exception:
             baseline_image = None
 
-        hash_error = (f"hash {test_hash} doesn't match hash "
-                      f"{hash_library[hash_name]} in library "
-                      f"{hash_library_filename} for test {hash_name}.")
+        if baseline_image is None:
+            error_message += f"\nUnable to find baseline image {baseline_image_path}."
 
         if baseline_image is None:
-            return hash_error
+            return error_message
 
-        comparison_error = self.compare_image_to_baseline(item, fig, result_dir)
+        comparison_error = (self.compare_image_to_baseline(item, fig, result_dir) or
+                            "\nHowever, the comparison to the baseline image succeeded.")
 
-        if not comparison_error:
-            return hash_error + "\nHowever, the comparison to the baseline image succeeded."
-
-        return f"{hash_error}\n{comparison_error}"
+        return f"{error_message}\n{comparison_error}"
 
     def pytest_runtest_setup(self, item):  # noqa
 

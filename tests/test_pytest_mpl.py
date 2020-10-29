@@ -30,6 +30,8 @@ hash_library = (Path(__file__).parent / "baseline" /  # noqa
                 "hashes" / hash_filename)
 
 fail_hash_library = Path(__file__).parent / "baseline" / "test_hash_lib.json"
+baseline_dir_abs = Path(__file__).parent / "baseline" / baseline_subdir
+hash_baseline_dir_abs = Path(__file__).parent / "baseline" / "hybrid"
 
 
 WIN = sys.platform.startswith('win')
@@ -40,6 +42,15 @@ DEFAULT_TOLERANCE = 10 if WIN else 2
 
 def call_pytest(args):
     return subprocess.call([sys.executable, '-m', 'pytest', '-s'] + args)
+
+
+def assert_pytest_fails_with(args, output_substring):
+    try:
+        subprocess.check_output([sys.executable, '-m', 'pytest', '-s'] + args)
+    except subprocess.CalledProcessError as exc:
+        output = exc.output.decode()
+        assert output_substring in output, output
+        return output
 
 
 @pytest.mark.mpl_image_compare(baseline_dir=baseline_dir_local,
@@ -172,10 +183,7 @@ def test_generate(tmpdir):
     gen_dir = tmpdir.mkdir('spam').mkdir('egg').strpath
 
     # If we don't generate, the test will fail
-    try:
-        subprocess.check_output([sys.executable, '-m', 'pytest', '-s', '--mpl', test_file])
-    except subprocess.CalledProcessError as exc:
-        assert b'Image file not found for comparison test' in exc.output, exc.output.decode()
+    assert_pytest_fails_with(['--mpl', test_file], 'Image file not found for comparison test')
 
     # If we do generate, the test should succeed and a new file will appear
     code = call_pytest([f'--mpl-generate-path={gen_dir}', test_file])
@@ -282,10 +290,50 @@ def test_hash_fails(tmpdir):
         f.write(TEST_FAILING_HASH)
 
     # If we use --mpl, it should detect that the figure is wrong
-    try:
-        subprocess.check_output([sys.executable, '-m', 'pytest', '-s', '--mpl', test_file])
-    except subprocess.CalledProcessError as exc:
-        assert b"doesn't match hash FAIL in library" in exc.output, exc.output.decode()
+    output = assert_pytest_fails_with(['--mpl', test_file], "doesn't match hash FAIL in library")
+    # We didn't specify a baseline dir so we shouldn't attempt to find one
+    assert "Unable to find baseline image" not in output, output
+
+    # If we don't use --mpl option, the test should succeed
+    code = call_pytest([test_file])
+    assert code == 0
+
+
+TEST_FAILING_HYBRID = f"""
+import pytest
+import matplotlib.pyplot as plt
+@pytest.mark.mpl_image_compare(hash_library="{fail_hash_library}")
+def test_hash_fail_hybrid():
+    fig = plt.figure()
+    ax = fig.add_subplot(1,1,1)
+    ax.plot([1,2,3])
+    return fig
+"""
+
+
+def test_hash_fail_hybrid(tmpdir):
+
+    test_file = tmpdir.join('test.py').strpath
+    with open(test_file, 'w', encoding='ascii') as f:
+        f.write(TEST_FAILING_HYBRID)
+
+    # Assert that image comparison runs and fails
+    output = assert_pytest_fails_with(['--mpl', test_file,
+                                       f'--mpl-baseline-path={hash_baseline_dir_abs / "fail"}'],
+                                      "doesn't match hash FAIL in library")
+    assert "Error: Image files did not match." in output, output
+
+    # Assert reports missing baseline image
+    output = assert_pytest_fails_with(['--mpl', test_file,
+                                       '--mpl-baseline-path=/not/a/path'],
+                                      "doesn't match hash FAIL in library")
+    assert "Unable to find baseline image" in output, output
+
+    # Assert reports image comparison succeeds
+    output = assert_pytest_fails_with(['--mpl', test_file,
+                                       f'--mpl-baseline-path={hash_baseline_dir_abs / "succeed"}'],
+                                      "doesn't match hash FAIL in library")
+    assert "However, the comparison to the baseline image succeeded." in output, output
 
     # If we don't use --mpl option, the test should succeed
     code = call_pytest([test_file])
@@ -310,12 +358,13 @@ def test_hash_missing(tmpdir):
     with open(test_file, 'w') as f:
         f.write(TEST_MISSING_HASH)
 
-    # If we use --mpl, it should detect that the figure is wrong
-    try:
-        subprocess.check_output([sys.executable, '-m', 'pytest', '-s', '--mpl', test_file,
-                                 f'--mpl-hash-library={os.path.join(baseline_dir, "test_hash_lib.json")}'])  # noqa
-    except subprocess.CalledProcessError as exc:
-        assert b"Can't find hash library at path" in exc.output, exc.output.decode()
+    # Assert fails if hash library missing
+    assert_pytest_fails_with(['--mpl', test_file, '--mpl-hash-library=/not/a/path'],
+                             "Can't find hash library at path")
+
+    # Assert fails if hash not in library
+    assert_pytest_fails_with(['--mpl', test_file, f'--mpl-hash-library={fail_hash_library}'],
+                             "Hash for test 'test.test_hash_missing' not found in")
 
     # If we don't use --mpl option, the test should succeed
     code = call_pytest([test_file])
