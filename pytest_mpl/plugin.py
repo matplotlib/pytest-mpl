@@ -108,12 +108,15 @@ def pathify(path):
     Remove non-path safe characters.
     """
     path = Path(path)
-    ext = path.suffix
-    path = str(path).split(ext)[0]
+    ext = ''
+    if path.suffixes[-1] == '.png':
+        ext = '.png'
+        path = str(path).split(ext)[0]
+    path = str(path)
     path = path.replace('[', '_').replace(']', '_')
     path = path.replace('/', '_')
     if path.endswith('_'):
-        path = path[:-2]
+        path = path[:-1]
     return Path(path + ext)
 
 
@@ -296,7 +299,8 @@ class ImageComparison:
             if filename is None:
                 filename = item.name + '.png'
 
-        return str(pathify(filename))
+        filename = str(pathify(filename))
+        return filename
 
     def generate_test_name(self, item):
         """
@@ -308,7 +312,7 @@ class ImageComparison:
         """
         Generate the directory to put the results in.
         """
-        test_name = self.generate_test_name(item)
+        test_name = pathify(self.generate_test_name(item))
         results_dir = self.results_dir / test_name
         results_dir.mkdir(exist_ok=True, parents=True)
         return results_dir

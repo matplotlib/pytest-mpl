@@ -240,7 +240,7 @@ def test_parametrized(s):
     return fig
 
 
-class TestClassWithSetup(object):
+class TestClassWithSetup:
 
     # Regression test for a bug that occurred when using setup_method
 
@@ -291,6 +291,15 @@ def test_hash_fails(tmpdir):
     # We didn't specify a baseline dir so we shouldn't attempt to find one
     assert "Unable to find baseline image" not in output, output
 
+    # Check that the summary path is printed and that it exists.
+    output = assert_pytest_fails_with(['--mpl', test_file, '--mpl-generate-summary'],
+                                      "doesn't match hash FAIL in library")
+    # We didn't specify a baseline dir so we shouldn't attempt to find one
+    print_message = "A summary of the failed tests can be found at:"
+    assert print_message in output, output
+    printed_path = Path(output.split(print_message)[1].strip())
+    assert printed_path.exists()
+
     # If we don't use --mpl option, the test should succeed
     code = call_pytest([test_file])
     assert code == 0
@@ -299,7 +308,8 @@ def test_hash_fails(tmpdir):
 TEST_FAILING_HYBRID = f"""
 import pytest
 import matplotlib.pyplot as plt
-@pytest.mark.mpl_image_compare(hash_library="{fail_hash_library}")
+@pytest.mark.mpl_image_compare(hash_library="{fail_hash_library}",
+                               tolerance=2)
 def test_hash_fail_hybrid():
     fig = plt.figure()
     ax = fig.add_subplot(1,1,1)
