@@ -7,6 +7,7 @@ from pathlib import Path
 
 import pytest
 import matplotlib
+import matplotlib.ft2font
 import matplotlib.pyplot as plt
 
 MPL_VERSION = Version(matplotlib.__version__)
@@ -22,7 +23,8 @@ elif MPL_VERSION >= Version('1.5'):
 baseline_dir_local = os.path.join(baseline_dir, baseline_subdir)
 baseline_dir_remote = 'http://matplotlib.github.io/pytest-mpl/' + baseline_subdir + '/'
 
-hash_filename = f"mpl{MPL_VERSION.major}{MPL_VERSION.minor}.json"
+ftv = matplotlib.ft2font.__freetype_version__.replace('.', '')
+hash_filename = f"mpl{MPL_VERSION.major}{MPL_VERSION.minor}_ft{ftv}.json"
 
 if "+" in matplotlib.__version__:
     hash_filename = "mpldev.json"
