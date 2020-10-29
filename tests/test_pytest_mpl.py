@@ -148,18 +148,15 @@ def test_output_dir(tmpdir):
     with open(test_file, 'w') as f:
         f.write(TEST_OUTPUT_DIR)
 
-    output_dir = tmpdir.join('test_output_dir').strpath
+    output_dir = tmpdir.join('test_output_dir')
 
     # When we run the test, we should get output images where we specify
     code = call_pytest([f'--mpl-results-path={output_dir}',
                         '--mpl', test_file])
 
     assert code != 0
-    assert os.path.exists(output_dir)
-
-    # Listdir() is to get the random name that the output for the one test is written into
-    assert os.path.exists(os.path.join(output_dir, os.listdir(output_dir)[0],
-                                       'test_output_dir.png'))
+    assert output_dir.exists()
+    assert (output_dir / "test.test_output_dir" / "result.png").exists()
 
 
 TEST_GENERATE = """
