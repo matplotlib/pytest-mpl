@@ -266,10 +266,10 @@ def test_hash_succeeds():
     return fig
 
 
-TEST_FAILING_HASH = f"""
+TEST_FAILING_HASH = rf"""
 import pytest
 import matplotlib.pyplot as plt
-@pytest.mark.mpl_image_compare(hash_library="{fail_hash_library}")
+@pytest.mark.mpl_image_compare(hash_library=r"{fail_hash_library}")
 def test_hash_fails():
     fig = plt.figure()
     ax = fig.add_subplot(1,1,1)
@@ -281,7 +281,7 @@ def test_hash_fails():
 def test_hash_fails(tmpdir):
 
     test_file = tmpdir.join('test.py').strpath
-    with open(test_file, 'w') as f:
+    with open(test_file, 'w', encoding='ascii') as f:
         f.write(TEST_FAILING_HASH)
 
     # If we use --mpl, it should detect that the figure is wrong
