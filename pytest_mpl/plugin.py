@@ -49,6 +49,27 @@ SHAPE_MISMATCH_ERROR = """Error: Image dimensions did not match.
   Actual shape: {actual_shape}
     {actual_path}"""
 
+HTML_INTRO = """
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+table, th, td {
+    border: 1px solid black;
+}
+</style>
+</head>
+<body>
+<h2>Image test comparison</h2>
+<table>
+  <tr>
+    <th>Test Name</th>
+    <th>Baseline image</th>
+    <th>Diff</th>
+    <th>New image</th>
+  </tr>
+"""
+
 
 def _download_file(baseline, filename):
     # Note that baseline can be a comma-separated list of URLs that we can
@@ -80,6 +101,20 @@ def _hash_file(in_stream):
     hasher = hashlib.sha256()
     hasher.update(buf)
     return hasher.hexdigest()
+
+
+def pathify(path):
+    """
+    Remove non-path safe characters.
+    """
+    path = Path(path)
+    ext = path.suffix
+    path = str(path).split(ext)[0]
+    path = path.replace('[', '_').replace(']', '_')
+    path = path.replace('/', '_')
+    if path.endswith('_'):
+        path = path[:-2]
+    return Path(path + ext)
 
 
 def pytest_report_header(config, startdir):
@@ -116,6 +151,8 @@ def pytest_addoption(parser):
     results_path_help = "directory for test results, relative to location where py.test is run"
     group.addoption('--mpl-results-path', help=results_path_help, action='store')
     parser.addini('mpl-results-path', help=results_path_help)
+    parser.addini('mpl-use-full-test-name', help="use fully qualified test name as the filename.",
+                  type='bool')
 
 
 def pytest_configure(config):
@@ -211,7 +248,7 @@ def path_is_not_none(apath):
     return Path(apath) if apath is not None else apath
 
 
-class ImageComparison(object):
+class ImageComparison:
 
     def __init__(self,
                  config,
@@ -250,17 +287,16 @@ class ImageComparison(object):
         """
         Given a pytest item, generate the figure filename.
         """
-        return self.generate_test_name(item) + '.png'
-        compare = self.get_compare(item)
-        # Find test name to use as plot name
-        filename = compare.kwargs.get('filename', None)
-        if filename is None:
-            filename = item.name + '.png'
-            filename = filename.replace('[', '_').replace(']', '_')
-            filename = filename.replace('/', '_')
-            filename = filename.replace('_.png', '.png')
+        if self.config.getini('mpl-use-full-test-name'):
+            filename = self.generate_test_name(item) + '.png'
+        else:
+            compare = self.get_compare(item)
+            # Find test name to use as plot name
+            filename = compare.kwargs.get('filename', None)
+            if filename is None:
+                filename = item.name + '.png'
 
-        return filename
+        return str(pathify(filename))
 
     def generate_test_name(self, item):
         """
@@ -413,6 +449,7 @@ class ImageComparison(object):
 
     def compare_image_to_hash_library(self, item, fig, result_dir):
         compare = self.get_compare(item)
+        savefig_kwargs = compare.kwargs.get('savefig_kwargs', {})
 
         hash_library_filename = self.hash_library or compare.kwargs.get('hash_library', None)
         hash_library_filename = (Path(item.fspath).parent / hash_library_filename).absolute()
@@ -431,13 +468,16 @@ class ImageComparison(object):
         if test_hash == hash_library[hash_name]:
             return
 
-        error_message = (f"hash {test_hash} doesn't match hash "
+        error_message = (f"Hash {test_hash} doesn't match hash "
                          f"{hash_library[hash_name]} in library "
                          f"{hash_library_filename} for test {hash_name}.")
 
         # If the compare has only been specified with hash and not baseline
         # dir, don't attempt to find a baseline image at the default path.
         if not self.baseline_directory_specified(item):
+            # Save the figure for later summary
+            test_image = (result_dir / "result.png").absolute()
+            fig.savefig(str(test_image), **savefig_kwargs)
             return error_message
 
         baseline_image_path = self.obtain_baseline_image(item, result_dir)
@@ -449,9 +489,12 @@ class ImageComparison(object):
 
         if baseline_image is None:
             error_message += f"\nUnable to find baseline image {baseline_image_path}."
-
-        if baseline_image is None:
             return error_message
+
+        # Override the tolerance (if not explicitly set) to 0 as the hashes are not forgiving
+        tolerance = compare.kwargs.get('tolerance', None)
+        if not tolerance:
+            compare.kwargs['tolerance'] = 0
 
         comparison_error = (self.compare_image_to_baseline(item, fig, result_dir) or
                             "\nHowever, the comparison to the baseline image succeeded.")
@@ -532,6 +575,28 @@ class ImageComparison(object):
         else:
             item.obj = item_function_wrapper
 
+    def generate_summary_html(self, dir_list):
+        """
+        Generate a simple HTML table of the failed test results
+        """
+        html_file = self.results_dir / 'fig_comparison.html'
+        with open(html_file, 'w') as f:
+            f.write(HTML_INTRO)
+
+            for directory in dir_list:
+                f.write('<tr>'
+                        f'<td>{directory.parts[-1]}\n'
+                        f'<td><img src="{directory / "baseline.png"}"></td>\n'
+                        f'<td><img src="{directory / "result-failed-diff.png"}"></td>\n'
+                        f'<td><img src="{directory / "result.png"}"></td>\n'
+                        '</tr>\n\n')
+
+            f.write('</table>\n')
+            f.write('</body>\n')
+            f.write('</html>')
+
+        return html_file
+
     def pytest_unconfigure(self, config):
         """
         Save out the hash library at the end of the run.
@@ -543,10 +608,14 @@ class ImageComparison(object):
                 json.dump(self._generated_hash_library, fp, indent=2)
 
         if self.generate_summary:
-            breakpoint()
+            # Generate a list of test directories
+            dir_list = [p.relative_to(self.results_dir)
+                        for p in self.results_dir.iterdir() if p.is_dir()]
+            html_summary = self.generate_summary_html(dir_list)
+            print(f"A summary of the failed tests can be found at: {html_summary}")
 
 
-class FigureCloser(object):
+class FigureCloser:
     """
     This is used in place of ImageComparison when the --mpl option is not used,
     to make sure that we still close figures returned by tests.
