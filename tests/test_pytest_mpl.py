@@ -318,6 +318,7 @@ def test_hash_fail_hybrid():
 """
 
 
+@pytest.mark.skipif(ftv != '261', reason="Incorrect freetype version for hash check")
 def test_hash_fail_hybrid(tmpdir):
 
     test_file = tmpdir.join('test.py').strpath
