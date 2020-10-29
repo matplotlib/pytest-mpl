@@ -39,14 +39,14 @@ jobs:
           toxenv: py36-test-mpl22
         - os: ubuntu-latest
           python-version: 3.7
-          toxenv: py36-test-mpl30
+          toxenv: py37-test-mpl30
         - os: ubuntu-latest
           python-version: 3.8
-          toxenv: py36-test-mpl31
+          toxenv: py38-test-mpl31
         # Code style checks
         - os: ubuntu-latest
           python-version: 3.8
-          toxenv: py36-test-mpl31
+          toxenv: codestyle
 
     steps:
     - uses: actions/checkout@v2
