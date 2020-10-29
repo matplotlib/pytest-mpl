@@ -20,13 +20,13 @@ jobs:
           toxenv: py36-test-mpl20
         - os: macos-latest
           python-version: 3.8
-          toxenv: py36-test-mpl31
+          toxenv: py38-test-mpl31
         - os: windows-latest
           python-version: 3.6
           toxenv: py36-test-mpl20
         - os: windows-latest
           python-version: 3.8
-          toxenv: py36-test-mpl31
+          toxenv: py38-test-mpl31
         # Test all configurations on Linux
         - os: ubuntu-latest
           python-version: 3.6
