@@ -71,7 +71,7 @@ If the directory does not exist, it will be created. The directory will
 be interpreted as being relative to where you are running ``pytest``.
 Once you are happy with the generated images, you should move them to a
 sub-directory called ``baseline`` relative to the test files (this name
-is configurable, see below). You can also generate the baseline images
+is configurable, see below). You can also generate the baseline image
 directly in the right directory.
 
 With a Hash Library
@@ -89,6 +89,20 @@ or via the ``hash_library=`` keyword argument to the
 ``@pytest.mark.mpl_image_comapre`` decorator.
 
 
+Hybrid Mode: Hashes and Images
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+It is possible to configure both hashes and baseline images. In this scenario
+the hashes will be compared first, and the baseline images used if the hash
+comparison fails.
+
+This is especially useful if the baseline images are external to the repository
+with the tests in, and can be accessed remotely. In this situation if the hashes
+match the baseline images wont be retrieved, saving time and bandwidth. Also it
+allows the tests to be modified and the hashes updated to reflect the changes
+without having to modify the external images.
+
+
 Running Tests
 ^^^^^^^^^^^^^
 
@@ -100,6 +114,15 @@ against, the tests can be run with::
 and the tests will pass if the images are the same. If you omit the
 ``--mpl`` option, the tests will run but will only check that the code
 runs without checking the output images.
+
+
+Generating a Failure Summary
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+By specifying the ``--mpl-generate-summary=html`` CLI argument a HTML summary
+page will be generated showing the baseline, diff and result image for each
+failing test. If no baseline images are configured, just the result images will
+be displayed.
 
 Options
 -------
