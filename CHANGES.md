@@ -1,7 +1,17 @@
 0.12 (unreleased)
 -----------------
 
-- No changes yet.
+- Fix passing a https url for baseline images from the CLI. [#89]
+
+- Added `--mpl-baseline-relative` option to specify baseline images relative to the test path. [#96]
+
+- Add option to do comparisons against a json library of sha256 hashes. [#98]
+
+- Drop support for matplotlib 1.5 and Python < 3.6. [#100]
+
+- Add support for generating a HTML summary of test faliures. [#101]
+
+- Add support for falling back to baseline image comparison if hash comparison fails. [#101]
 
 0.11 (2019-11-15)
 -----------------
