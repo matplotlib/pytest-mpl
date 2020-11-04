@@ -1,0 +1,11 @@
+# Making a Release of pytest-mpl
+
+To make a new release of pytest-mpl follow the following steps:
+
+* Update the chanelog with the date of the release, and ensure that all relevant PRs have changelog entries.
+* Push the chanelog to master (via a PR)
+* Ensure the sdist and wheel GitHub Actions jobs succeeded on master after the merge of the changelog.
+* Tag the new release, using the format `vX.Y.X`.
+* Push the tag with `git push upstream master --follow-tags`
+* Watch as GitHub actions builds the sdist and universal wheel and pushes them to PyPI for you.
+* Enjoy the beverage of your choosing 🍻.
