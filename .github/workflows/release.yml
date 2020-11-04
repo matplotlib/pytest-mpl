@@ -52,7 +52,7 @@ jobs:
         pip install -U setuptools wheel build
     - name: Build
       run: |
-        python -m build --sdist --outdir dist/ .
+        python -m build --wheel --outdir dist/ .
     - name: Install
       run: |
         pip install dist/*
@@ -63,7 +63,7 @@ jobs:
     - name: Store sdist
       uses: actions/upload-artifact@v2
       with:
-        name: sdist
+        name: wheel
         path: |
           dist/*
 
