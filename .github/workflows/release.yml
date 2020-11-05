@@ -6,6 +6,7 @@ on:
       - "v*"
     branches:
       - master
+  pull_request:
 
 jobs:
   build_sdist:
@@ -88,9 +89,12 @@ jobs:
       uses: actions/download-artifact@v2
       with:
         path: dist/
+    - name: List all downloaded Artifacts
+      run: |
+        ls -lha dist/wheel dist/sdist
     - name: Publish to PyPI
       env:
         TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
         TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
       run: |
-        twine upload dist/*
+        twine upload dist/wheel/* dist/sdist/*
