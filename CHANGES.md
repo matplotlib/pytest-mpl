@@ -1,4 +1,4 @@
-0.12 (unreleased)
+0.12 (2020-11-05)
 -----------------
 
 - Fix passing a https url for baseline images from the CLI. [#89]
