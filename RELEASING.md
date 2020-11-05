@@ -3,6 +3,7 @@
 To make a new release of pytest-mpl follow the following steps:
 
 * Update the chanelog with the date of the release, and ensure that all relevant PRs have changelog entries.
+* Update the version number in setup.cfg
 * Push the chanelog to master (via a PR)
 * Ensure the sdist and wheel GitHub Actions jobs succeeded on master after the merge of the changelog.
 * Tag the new release, using the format `vX.Y.X`.
