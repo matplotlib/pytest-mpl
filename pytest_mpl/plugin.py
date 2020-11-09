@@ -293,6 +293,7 @@ class ImageComparison:
 
         # We need global state to store all the hashes generated over the run
         self._generated_hash_library = {}
+        self._test_results = {}
 
     def get_compare(self, item):
         """
@@ -506,27 +507,26 @@ class ImageComparison:
         if not hash_comparison_pass and not self.baseline_directory_specified(item) or new_test:
             return error_message
 
-        # Get the baseline and generate a diff image, always so that
-        # --mpl-results-always can be respected.
-        # Ignore Errors here as it's possible the reference image dosen't exist yet.
-        try:
-            baseline_comparison = self.compare_image_to_baseline(item, fig, result_dir)
-        except Exception as e:
-            pass
-
-        # If the hash comparison passes then return
-        if hash_comparison_pass:
-            return
-
         # If this is not a new test try and get the baseline image.
         if not new_test:
-            baseline_image_path = self.obtain_baseline_image(item, result_dir)
+            # Ignore Errors here as it's possible the reference image dosen't exist yet.
+            try:
+                baseline_image_path = self.obtain_baseline_image(item, result_dir)
+                # Get the baseline and generate a diff image, always so that
+                # --mpl-results-always can be respected.
+                baseline_comparison = self.compare_image_to_baseline(item, fig, result_dir)
+            except Exception as e:
+                warnings.warn(str(e))
 
         try:
             baseline_image = baseline_image_path
             baseline_image = None if (baseline_image and not baseline_image.exists()) else baseline_image
         except Exception:
             baseline_image = None
+
+        # If the hash comparison passes then return
+        if hash_comparison_pass:
+            return
 
         if baseline_image is None:
             error_message += f"\nUnable to find baseline image {baseline_image_path or ''}."
@@ -581,6 +581,8 @@ class ImageComparison:
                 if remove_text:
                     remove_ticks_and_titles(fig)
 
+                test_name = self.generate_test_name(item)
+
                 # What we do now depends on whether we are generating the
                 # reference images or simply running the test.
                 if self.generate_dir is not None:
@@ -589,8 +591,7 @@ class ImageComparison:
                         pytest.skip("Skipping test, since generating image.")
 
                 if self.generate_hash_library is not None:
-                    hash_name = self.generate_test_name(item)
-                    self._generated_hash_library[hash_name] = self.generate_image_hash(item, fig)
+                    self._generated_hash_library[test_name] = self.generate_image_hash(item, fig)
                     pytest.skip("Skipping test as generating hash library.")
 
                 # Only test figures if we are not generating hashes or images
@@ -606,6 +607,8 @@ class ImageComparison:
                         msg = self.compare_image_to_baseline(item, fig, result_dir)
 
                     close_mpl_figure(fig)
+
+                    self._test_results[str(pathify(test_name))] = msg or True
 
                     if msg is None:
                         if not self.results_always:
@@ -629,8 +632,10 @@ class ImageComparison:
             f.write(HTML_INTRO)
 
             for directory in dir_list:
+                test_name = directory.parts[-1]
+                test_result = 'passed' if self._test_results[test_name] is True else 'failed'
                 f.write('<tr>'
-                        f'<td>{directory.parts[-1]}\n'
+                        f'<td>{test_name} ({test_result})\n'
                         f'<td><img src="{directory / "baseline.png"}"></td>\n'
                         f'<td><img src="{directory / "result-failed-diff.png"}"></td>\n'
                         f'<td><img src="{directory / "result.png"}"></td>\n'
