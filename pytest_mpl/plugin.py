@@ -155,6 +155,12 @@ def pytest_addoption(parser):
     results_path_help = "directory for test results, relative to location where py.test is run"
     group.addoption('--mpl-results-path', help=results_path_help, action='store')
     parser.addini('mpl-results-path', help=results_path_help)
+
+    results_always_help = "Always generate result images, not just for failed tests."
+    group.addoption('--mpl-results-always', action='store_true',
+                    help=results_always_help)
+    parser.addini('mpl-results-always', help=results_always_help)
+
     parser.addini('mpl-use-full-test-name', help="use fully qualified test name as the filename.",
                   type='bool')
 
@@ -175,6 +181,8 @@ def pytest_configure(config):
         results_dir = config.getoption("--mpl-results-path") or config.getini("mpl-results-path")
         hash_library = config.getoption("--mpl-hash-library")
         generate_summary = config.getoption("--mpl-generate-summary")
+        results_always = config.getoption("--mpl-results-always") or config.getini("mpl-results-always")
+
 
         if config.getoption("--mpl-baseline-relative"):
             baseline_relative_dir = config.getoption("--mpl-baseline-path")
@@ -205,7 +213,8 @@ def pytest_configure(config):
                                                       results_dir=results_dir,
                                                       hash_library=hash_library,
                                                       generate_hash_library=generate_hash_lib,
-                                                      generate_summary=generate_summary))
+                                                      generate_summary=generate_summary,
+                                                      results_always=results_always))
 
     else:
 
@@ -262,7 +271,8 @@ class ImageComparison:
                  results_dir=None,
                  hash_library=None,
                  generate_hash_library=None,
-                 generate_summary=None
+                 generate_summary=None,
+                 results_always=False
                  ):
         self.config = config
         self.baseline_dir = baseline_dir
@@ -274,6 +284,7 @@ class ImageComparison:
         if generate_summary and generate_summary.lower() not in ("html",):
             raise ValueError(f"The mpl summary type '{generate_summary}' is not supported.")
         self.generate_summary = generate_summary
+        self.results_always = results_always
 
         # Generate the containing dir for all test results
         if not self.results_dir:
@@ -389,7 +400,6 @@ class ImageComparison:
                     **savefig_kwargs)
 
         close_mpl_figure(fig)
-        pytest.skip("Skipping test, since generating image")
 
     def generate_image_hash(self, item, fig):
         """
@@ -455,6 +465,10 @@ class ImageComparison:
             return json.load(fp)
 
     def compare_image_to_hash_library(self, item, fig, result_dir):
+        new_test = False
+        hash_comparison_pass = False
+        baseline_image_path = None
+
         compare = self.get_compare(item)
         savefig_kwargs = compare.kwargs.get('savefig_kwargs', {})
 
@@ -470,33 +484,52 @@ class ImageComparison:
         test_hash = self.generate_image_hash(item, fig)
 
         if hash_name not in hash_library:
-            return (f"Hash for test '{hash_name}' not found in {hash_library_filename}. "
-                    f"Generated hash is {test_hash}.")
+            new_test = True
+            error_message = (f"Hash for test '{hash_name}' not found in {hash_library_filename}. "
+                             f"Generated hash is {test_hash}.")
 
-        if test_hash == hash_library[hash_name]:
-            return
 
-        error_message = (f"Hash {test_hash} doesn't match hash "
-                         f"{hash_library[hash_name]} in library "
-                         f"{hash_library_filename} for test {hash_name}.")
+        # Save the figure for later summary (will be removed later if not needed)
+        test_image = (result_dir / "result.png").absolute()
+        fig.savefig(str(test_image), **savefig_kwargs)
+
+        if not new_test:
+            if test_hash == hash_library[hash_name]:
+                hash_comparison_pass = True
+            else:
+                error_message = (f"Hash {test_hash} doesn't match hash "
+                                f"{hash_library[hash_name]} in library "
+                                f"{hash_library_filename} for test {hash_name}.")
 
         # If the compare has only been specified with hash and not baseline
         # dir, don't attempt to find a baseline image at the default path.
-        if not self.baseline_directory_specified(item):
-            # Save the figure for later summary
-            test_image = (result_dir / "result.png").absolute()
-            fig.savefig(str(test_image), **savefig_kwargs)
+        if not hash_comparison_pass and not self.baseline_directory_specified(item) or new_test:
             return error_message
 
-        baseline_image_path = self.obtain_baseline_image(item, result_dir)
+        # Get the baseline and generate a diff image, always so that
+        # --mpl-results-always can be respected.
+        # Ignore Errors here as it's possible the reference image dosen't exist yet.
+        try:
+            baseline_comparison = self.compare_image_to_baseline(item, fig, result_dir)
+        except Exception as e:
+            pass
+
+        # If the hash comparison passes then return
+        if hash_comparison_pass:
+            return
+
+        # If this is not a new test try and get the baseline image.
+        if not new_test:
+            baseline_image_path = self.obtain_baseline_image(item, result_dir)
+
         try:
             baseline_image = baseline_image_path
-            baseline_image = None if not baseline_image.exists() else baseline_image
+            baseline_image = None if (baseline_image and not baseline_image.exists()) else baseline_image
         except Exception:
             baseline_image = None
 
         if baseline_image is None:
-            error_message += f"\nUnable to find baseline image {baseline_image_path}."
+            error_message += f"\nUnable to find baseline image {baseline_image_path or ''}."
             return error_message
 
         # Override the tolerance (if not explicitly set) to 0 as the hashes are not forgiving
@@ -504,7 +537,7 @@ class ImageComparison:
         if not tolerance:
             compare.kwargs['tolerance'] = 0
 
-        comparison_error = (self.compare_image_to_baseline(item, fig, result_dir) or
+        comparison_error = (baseline_comparison or
                             "\nHowever, the comparison to the baseline image succeeded.")
 
         return f"{error_message}\n{comparison_error}"
@@ -552,10 +585,13 @@ class ImageComparison:
                 # reference images or simply running the test.
                 if self.generate_dir is not None:
                     self.generate_baseline_image(item, fig)
+                    if self.generate_hash_library is None:
+                        pytest.skip("Skipping test, since generating image.")
 
                 if self.generate_hash_library is not None:
                     hash_name = self.generate_test_name(item)
                     self._generated_hash_library[hash_name] = self.generate_image_hash(item, fig)
+                    pytest.skip("Skipping test as generating hash library.")
 
                 # Only test figures if we are not generating hashes or images
                 if self.generate_dir is None and self.generate_hash_library is None:
@@ -572,7 +608,8 @@ class ImageComparison:
                     close_mpl_figure(fig)
 
                     if msg is None:
-                        shutil.rmtree(result_dir)
+                        if not self.results_always:
+                            shutil.rmtree(result_dir)
                     else:
                         pytest.fail(msg, pytrace=False)
 
