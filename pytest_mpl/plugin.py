@@ -470,7 +470,7 @@ class ImageComparison:
         test_hash = self.generate_image_hash(item, fig)
 
         if hash_name not in hash_library:
-            return (f"Hash for test '{hash_name}' not found in {hash_library_filename}.
+            return (f"Hash for test '{hash_name}' not found in {hash_library_filename}. "
                     f"Generated hash is {test_hash}.")
 
         if test_hash == hash_library[hash_name]:
