@@ -3,5 +3,5 @@ include README.rst
 include CHANGES.md
 include tox.ini
 
-recursive-include tests *.py *.png
+recursive-include tests *.py *.json *.png
 recursive-include images *.png
