@@ -466,7 +466,7 @@ class ImageComparison:
 
         hash_library = self.load_hash_library(hash_library_filename)
         hash_name = self.generate_test_name(item)
-        
+
         test_hash = self.generate_image_hash(item, fig)
 
         if hash_name not in hash_library:
