@@ -9,5 +9,5 @@
   "test_pytest_mpl.test_parametrized[5]": "04c998af2d7932ca4a851d610e8a020d94a2f623d1301dbe9b59fe6efd28a5f7",
   "test_pytest_mpl.test_parametrized[50]": "937d986ab6b209e7d48eb30cc30e9db62c93bbc4c86768e276a5b454e63bca93",
   "test_pytest_mpl.test_parametrized[500]": "e39ed724b0762b8736879801e32dc0c1525afd03c0567a43b119435aaa608498",
-  "test_pytest_mpl.test_hash_succeeds": "cd01b7a39330033b18d54b507635236214cae5e24f9e09d84b56462a9ac81052"
+  "test_pytest_mpl.test_hash_succeeds": "4150d2d146801b5feb41ef6bd022d5baabf4811c7f2e9ed72b639e80904243e1"
 }
