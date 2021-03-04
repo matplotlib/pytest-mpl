@@ -222,6 +222,37 @@ decorator:
 This will make the test insensitive to changes in e.g. the freetype
 library.
 
+
+Using full test paths for output names
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Use full test name starting at root directory for outputs
+
+.. code:: python
+
+    # pytest.ini|tox.ini|setup.cfg
+    [tool:pytest]
+    mpl-use-full-test-name = True
+
+Example:
+
+.. code:: bash
+
+    # test configuration
+    tests/
+        tests_1/
+            test_pytest_mpl.py
+        tests_2/
+            test_pytest_mpl.py
+
+    # output
+    baseline/
+        tests_1.test_pytest_mpl.xxx
+        tests_2.test_pytest_mpl.xxx
+
+See also `pytest -h`
+
+
 Test failure example
 --------------------
 
