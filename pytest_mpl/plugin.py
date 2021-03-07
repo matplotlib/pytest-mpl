@@ -476,8 +476,8 @@ class ImageComparison:
 
         if hash_name not in hash_library:
             error_message = (f"Hash for test '{hash_name}' not found in"
-                    f" {hash_library_filename}. "
-                    f"Generated hash is {test_hash}.")
+                             f" {hash_library_filename}. "
+                             f"Generated hash is {test_hash}.")
             error_message = wrap_message(error_message)
             return error_message
 
