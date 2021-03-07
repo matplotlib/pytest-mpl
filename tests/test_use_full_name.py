@@ -140,4 +140,4 @@ def test_incorrect_hash(tmpdir):
     )
     assert_is_in_output(output1, "3 passed")
     assert_is_in_output(output2, "1 failed, 2 passed")
-    assert_is_in_output(output2, "doesn't match hash 12345 in library")
+    assert_is_in_output(output2, "doesn't match")
