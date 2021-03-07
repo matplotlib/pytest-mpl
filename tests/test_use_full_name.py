@@ -4,6 +4,8 @@ import sys
 import configparser
 import json
 
+from tests.test_pytest_mpl import assert_is_in_output
+
 TEST_FILE = """
 import pytest
 import matplotlib.pyplot as plt
@@ -68,8 +70,8 @@ def test_success(tmpdir):
         args=["--mpl", "--mpl-hash-library", has_lib_file, "tests"],
         cwd=basedir.strpath,
     )
-    assert "3 passed" in output1
-    assert "3 passed" in output2
+    assert_is_in_output(output1, "3 passed")
+    assert_is_in_output(output2, "3 passed")
 
 
 def test_missing_hash(tmpdir):
@@ -99,9 +101,9 @@ def test_missing_hash(tmpdir):
         args=["--mpl", "--mpl-hash-library", has_lib_file, "tests"],
         cwd=basedir.strpath,
     )
-    assert "3 passed" in output1
-    assert "1 failed, 2 passed" in output2
-    assert "Hash for test 'tests.test_foo.test_plot' not found" in output2.replace("\n", " ")
+    assert_is_in_output(output1, "3 passed")
+    assert_is_in_output(output2, "1 failed, 2 passed")
+    assert_is_in_output(output2, "Hash for test 'tests.test_foo.test_plot' not found")
 
 
 def test_incorrect_hash(tmpdir):
@@ -131,6 +133,6 @@ def test_incorrect_hash(tmpdir):
         args=["--mpl", "--mpl-hash-library", has_lib_file, "tests"],
         cwd=basedir.strpath,
     )
-    assert "3 passed" in output1
-    assert "1 failed, 2 passed" in output2
-    assert "doesn't match hash 12345 in library" in output2.replace("\n", " ")
+    assert_is_in_output(output1, "3 passed")
+    assert_is_in_output(output2, "1 failed, 2 passed")
+    assert_is_in_output(output2, "doesn't match hash 12345 in library")
