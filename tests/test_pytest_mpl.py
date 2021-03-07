@@ -49,9 +49,20 @@ def assert_pytest_fails_with(args, output_substring):
         subprocess.check_output([sys.executable, '-m', 'pytest', '-s'] + args)
     except subprocess.CalledProcessError as exc:
         output = exc.output.decode()
-        assert output_substring in output, output
+        assert_is_in_output(output, output_substring)
         return output
 
+def assert_is_in_output(output, output_substring):
+    """Remove all formatting characters before running assertion"""
+    A = output_substring.replace("\n", " ").replace(" ", "")
+    B = output.replace("\n", " ").replace(" ", "")
+    assert A in B, output
+
+def assert_is_not_in_output(output, output_substring):
+    """Remove all formatting characters before running assertion"""
+    A = output_substring.replace("\n", " ").replace(" ", "")
+    B = output.replace("\n", " ").replace(" ", "")
+    assert A not in B, output
 
 @pytest.mark.mpl_image_compare(baseline_dir=baseline_dir_local,
                                tolerance=DEFAULT_TOLERANCE)
@@ -289,14 +300,14 @@ def test_hash_fails(tmpdir):
     # If we use --mpl, it should detect that the figure is wrong
     output = assert_pytest_fails_with(['--mpl', test_file], "doesn't match hash FAIL in library")
     # We didn't specify a baseline dir so we shouldn't attempt to find one
-    assert "Unable to find baseline image" not in output, output
+    assert_is_not_in_output(output, "Unable to find baseline image")
 
     # Check that the summary path is printed and that it exists.
     output = assert_pytest_fails_with(['--mpl', test_file, '--mpl-generate-summary=html'],
                                       "doesn't match hash FAIL in library")
     # We didn't specify a baseline dir so we shouldn't attempt to find one
     print_message = "A summary of the failed tests can be found at:"
-    assert print_message in output, output
+    assert_is_in_output(output, print_message)
     printed_path = Path(output.split(print_message)[1].strip())
     assert printed_path.exists()
 
@@ -329,19 +340,19 @@ def test_hash_fail_hybrid(tmpdir):
     output = assert_pytest_fails_with(['--mpl', test_file,
                                        rf'--mpl-baseline-path={hash_baseline_dir_abs / "fail"}'],
                                       "doesn't match hash FAIL in library")
-    assert "Error: Image files did not match." in output, output
+    assert_is_in_output(output, "Error: Image files did not match.")
 
     # Assert reports missing baseline image
     output = assert_pytest_fails_with(['--mpl', test_file,
                                        '--mpl-baseline-path=/not/a/path'],
                                       "doesn't match hash FAIL in library")
-    assert "Unable to find baseline image" in output, output
+    assert_is_in_output(output, "Unable to find baseline image")
 
     # Assert reports image comparison succeeds
     output = assert_pytest_fails_with(['--mpl', test_file,
                                        rf'--mpl-baseline-path={hash_baseline_dir_abs / "succeed"}'],
                                       "doesn't match hash FAIL in library")
-    assert "However, the comparison to the baseline image succeeded." in output, output
+    assert_is_in_output(output, "However, the comparison to the baseline image succeeded.")
 
     # If we don't use --mpl option, the test should succeed
     code = call_pytest([test_file])
