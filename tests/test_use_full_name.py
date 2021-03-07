@@ -15,6 +15,7 @@ def test_plot():
     return fig
 """
 
+
 def assert_is_in_output(output, output_substring):
     """Remove all formatting characters before running assertion"""
     A = output_substring.replace("\n", " ").replace(" ", "")
