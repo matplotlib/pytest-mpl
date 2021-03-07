@@ -1,6 +1,6 @@
 import textwrap
 
-CHAR_WIDTH = 80
+CHAR_WIDTH = 120
 
 
 def wrap_message(msg):

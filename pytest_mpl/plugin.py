@@ -475,8 +475,8 @@ class ImageComparison:
         test_hash = self.generate_image_hash(item, fig)
 
         if hash_name not in hash_library:
-            error_message = (f"Hash for test '{hash_name}' not found in"
-                             f" {hash_library_filename}. "
+            error_message = (f"Hash for test '{hash_name}'\n"
+                             f"not found in {hash_library_filename}.\n"
                              f"Generated hash is {test_hash}.")
             error_message = wrap_message(error_message)
             return error_message
@@ -484,9 +484,11 @@ class ImageComparison:
         if test_hash == hash_library[hash_name]:
             return
 
-        error_message = (f"Hash {test_hash} doesn't match hash "
-                         f"{hash_library[hash_name]} in library "
-                         f"{hash_library_filename} for test {hash_name}.")
+        error_message = (f"Hash {test_hash}\n"
+                         f"doesn't match\n"
+                         f"hash {hash_library[hash_name]}\n"
+                         f"in library {hash_library_filename}\n"
+                         f"for test {hash_name}.")
         error_message = wrap_message(error_message)
 
         # If the compare has only been specified with hash and not baseline
