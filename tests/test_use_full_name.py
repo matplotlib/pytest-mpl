@@ -45,7 +45,7 @@ def make_test_subdir(pardir, subdir_name):
     return sub_dir
 
 
-def test_success(self, tmpdir):
+def test_success(tmpdir):
     basedir = tmpdir
     tests_basedir = make_test_subdir(basedir, "tests")
     subtest_dir1 = make_test_subdir(tests_basedir, "test_1")
