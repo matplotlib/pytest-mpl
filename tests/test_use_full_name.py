@@ -100,7 +100,7 @@ def test_missing_hash(tmpdir):
                         cwd=basedir.strpath)
     assert "3 passed" in output1
     assert "1 failed, 2 passed" in output2
-    assert "Hash for test 'tests.test_foo.test_plot' not found" in output2
+    assert "Hash for test 'tests.test_foo.test_plot' not found" in output2.strip("\n")
 
 def test_incorrect_hash(tmpdir):
     basedir = tmpdir
@@ -132,4 +132,4 @@ def test_incorrect_hash(tmpdir):
                         cwd=basedir.strpath)
     assert "3 passed" in output1
     assert "1 failed, 2 passed" in output2
-    assert "doesn't match hash 12345 in library" in output2
+    assert "doesn't match hash 12345 in library" in output2.strip("\n")
