@@ -4,8 +4,6 @@ import sys
 import configparser
 import json
 
-from tests.test_pytest_mpl import assert_is_in_output
-
 TEST_FILE = """
 import pytest
 import matplotlib.pyplot as plt
@@ -16,6 +14,12 @@ def test_plot():
     ax.plot([1,2,2])
     return fig
 """
+
+def assert_is_in_output(output, output_substring):
+    """Remove all formatting characters before running assertion"""
+    A = output_substring.replace("\n", " ").replace(" ", "")
+    B = output.replace("\n", " ").replace(" ", "")
+    assert A in B, output
 
 
 def call_pytest(args, cwd):
