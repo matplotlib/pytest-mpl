@@ -43,6 +43,8 @@ from urllib.request import urlopen
 
 import pytest
 
+from pytest_mpl.utils import wrap_message
+
 SHAPE_MISMATCH_ERROR = """Error: Image dimensions did not match.
   Expected shape: {expected_shape}
     {expected_path}
@@ -473,8 +475,11 @@ class ImageComparison:
         test_hash = self.generate_image_hash(item, fig)
 
         if hash_name not in hash_library:
-            return (f"Hash for test '{hash_name}' not found in {hash_library_filename}. "
+            error_message = (f"Hash for test '{hash_name}' not found in"
+                    f" {hash_library_filename}. "
                     f"Generated hash is {test_hash}.")
+            error_message = wrap_message(error_message)
+            return error_message
 
         if test_hash == hash_library[hash_name]:
             return
@@ -482,6 +487,7 @@ class ImageComparison:
         error_message = (f"Hash {test_hash} doesn't match hash "
                          f"{hash_library[hash_name]} in library "
                          f"{hash_library_filename} for test {hash_name}.")
+        error_message = wrap_message(error_message)
 
         # If the compare has only been specified with hash and not baseline
         # dir, don't attempt to find a baseline image at the default path.
@@ -500,7 +506,7 @@ class ImageComparison:
 
         if baseline_image is None:
             error_message += f"\nUnable to find baseline image {baseline_image_path}."
-            return error_message
+            return wrap_message(error_message)
 
         # Override the tolerance (if not explicitly set) to 0 as the hashes are not forgiving
         tolerance = compare.kwargs.get('tolerance', None)
