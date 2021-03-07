@@ -459,7 +459,10 @@ class ImageComparison:
         savefig_kwargs = compare.kwargs.get('savefig_kwargs', {})
 
         hash_library_filename = self.hash_library or compare.kwargs.get('hash_library', None)
-        hash_library_filename = (Path(item.fspath).parent / hash_library_filename).absolute()
+        if self.config.getini("mpl-use-full-test-name"):
+            hash_library_filename = hash_library_filename.absolute()
+        else:
+            hash_library_filename = (Path(item.fspath).parent / hash_library_filename).absolute()
 
         if not Path(hash_library_filename).exists():
             pytest.fail(f"Can't find hash library at path {hash_library_filename}")
