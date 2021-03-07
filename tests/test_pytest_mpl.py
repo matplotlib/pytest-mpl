@@ -52,17 +52,20 @@ def assert_pytest_fails_with(args, output_substring):
         assert_is_in_output(output, output_substring)
         return output
 
+
 def assert_is_in_output(output, output_substring):
     """Remove all formatting characters before running assertion"""
     A = output_substring.replace("\n", " ").replace(" ", "")
     B = output.replace("\n", " ").replace(" ", "")
     assert A in B, output
 
+
 def assert_is_not_in_output(output, output_substring):
     """Remove all formatting characters before running assertion"""
     A = output_substring.replace("\n", " ").replace(" ", "")
     B = output.replace("\n", " ").replace(" ", "")
     assert A not in B, output
+
 
 @pytest.mark.mpl_image_compare(baseline_dir=baseline_dir_local,
                                tolerance=DEFAULT_TOLERANCE)
