@@ -509,6 +509,7 @@ class ImageComparison:
 
         # If this is not a new test try and get the baseline image.
         if not new_test:
+            baseline_error = None
             # Ignore Errors here as it's possible the reference image dosen't exist yet.
             try:
                 baseline_image_path = self.obtain_baseline_image(item, result_dir)
@@ -525,7 +526,9 @@ class ImageComparison:
             return
 
         if baseline_image is None:
-            error_message += f"\nUnable to find baseline image for {item}.\n{baseline_error}"
+            error_message += f"\nUnable to find baseline image for {item}."
+            if baseline_error:
+                error_message += f"\n{baseline_error}"
             return error_message
 
         # Override the tolerance (if not explicitly set) to 0 as the hashes are not forgiving
