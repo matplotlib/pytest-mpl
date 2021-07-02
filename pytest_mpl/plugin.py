@@ -499,8 +499,8 @@ class ImageComparison:
                 hash_comparison_pass = True
             else:
                 error_message = (f"Hash {test_hash} doesn't match hash "
-                                f"{hash_library[hash_name]} in library "
-                                f"{hash_library_filename} for test {hash_name}.")
+                                 f"{hash_library[hash_name]} in library "
+                                 f"{hash_library_filename} for test {hash_name}.")
 
         # If the compare has only been specified with hash and not baseline
         # dir, don't attempt to find a baseline image at the default path.
@@ -512,24 +512,20 @@ class ImageComparison:
             # Ignore Errors here as it's possible the reference image dosen't exist yet.
             try:
                 baseline_image_path = self.obtain_baseline_image(item, result_dir)
+                baseline_image = baseline_image_path
+                baseline_image = None if (baseline_image and not baseline_image.exists()) else baseline_image
                 # Get the baseline and generate a diff image, always so that
                 # --mpl-results-always can be respected.
                 baseline_comparison = self.compare_image_to_baseline(item, fig, result_dir)
-            except Exception as e:
-                warnings.warn(str(e))
-
-        try:
-            baseline_image = baseline_image_path
-            baseline_image = None if (baseline_image and not baseline_image.exists()) else baseline_image
-        except Exception:
-            baseline_image = None
+            except Exception as baseline_error:
+                baseline_image = None
 
         # If the hash comparison passes then return
         if hash_comparison_pass:
             return
 
         if baseline_image is None:
-            error_message += f"\nUnable to find baseline image {baseline_image_path or ''}."
+            error_message += f"\nUnable to find baseline image for {item}.\n{baseline_error}"
             return error_message
 
         # Override the tolerance (if not explicitly set) to 0 as the hashes are not forgiving
