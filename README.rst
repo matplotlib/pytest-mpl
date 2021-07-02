@@ -1,5 +1,3 @@
-|Travis Build Status| |Coveralls coverage|
-
 About
 -----
 
@@ -18,7 +16,7 @@ section below.
 Installing
 ----------
 
-This plugin is compatible with Python 2.7, and 3.5 and later, and
+This plugin is compatible with Python 2.7, and 3.6 and later, and
 requires `pytest <http://pytest.org>`__ and
 `matplotlib <http://www.matplotlib.org>` to be installed.
 
@@ -285,10 +283,6 @@ install the latest version of the plugin then do::
 The reason for having to install the plugin first is to ensure that the
 plugin is correctly loaded as part of the test suite.
 
-.. |Travis Build Status| image:: https://travis-ci.org/matplotlib/pytest-mpl.svg?branch=master
-   :target: https://travis-ci.org/matplotlib/pytest-mpl
-.. |Coveralls coverage| image:: https://coveralls.io/repos/matplotlib/pytest-mpl/badge.svg
-   :target: https://coveralls.io/r/matplotlib/pytest-mpl
 .. |expected| image:: images/baseline-coords_overlay_auto_coord_meta.png
 .. |actual| image:: images/coords_overlay_auto_coord_meta.png
 .. |diff| image:: images/coords_overlay_auto_coord_meta-failed-diff.png
