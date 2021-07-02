@@ -557,8 +557,8 @@ class ImageComparison:
                     hash_name = self.generate_test_name(item)
                     self._generated_hash_library[hash_name] = self.generate_image_hash(item, fig)
 
-                # Only test figures if we are not generating hashes or images
-                if self.generate_dir is None and self.generate_hash_library is None:
+                # Only test figures if not generating images
+                if self.generate_dir is None:
                     result_dir = self.make_test_results_dir(item)
 
                     # Compare to hash library
