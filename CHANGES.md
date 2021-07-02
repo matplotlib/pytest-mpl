@@ -1,3 +1,19 @@
+0.13 (2021-07-02)
+---------------------
+
+- Ensure all test files are included in the sdist. [#109]
+
+- Print hash for new figure tests. [#111]
+
+- Do not error if a baseline image can not be retrieved when using figure hashes. [#118]
+
+- Allow generation of hash library and testing against hash library simultaneously. [#121]
+
+0.12.1 (2021-07-02)
+-------------------
+
+- Fix specification of required Python version in setup.cfg. [#122]
+
 0.12 (2020-11-05)
 -----------------
 
