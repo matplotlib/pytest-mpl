@@ -51,6 +51,8 @@ def assert_pytest_fails_with(args, output_substring):
         output = exc.output.decode()
         assert output_substring in output, output
         return output
+    else:
+        raise RuntimeError(f'pytest did not fail with args {args}')
 
 
 @pytest.mark.mpl_image_compare(baseline_dir=baseline_dir_local,
@@ -187,10 +189,10 @@ def test_generate(tmpdir):
     assert code == 0
     assert os.path.exists(os.path.join(gen_dir, 'test_gen.png'))
 
-    # If we do generate hash, the test should succeed and a new file will appear
+    # If we do generate hash, the test will fail as no image is present
     hash_file = os.path.join(gen_dir, 'test_hashes.json')
     code = call_pytest([f'--mpl-generate-hash-library={hash_file}', test_file])
-    assert code == 0
+    assert code == 1
     assert os.path.exists(hash_file)
 
     with open(hash_file) as fp:
@@ -346,6 +348,38 @@ def test_hash_fail_hybrid(tmpdir):
     # If we don't use --mpl option, the test should succeed
     code = call_pytest([test_file])
     assert code == 0
+
+
+TEST_FAILING_NEW_HASH = r"""
+import pytest
+import matplotlib.pyplot as plt
+@pytest.mark.mpl_image_compare
+def test_hash_fails():
+    fig = plt.figure()
+    ax = fig.add_subplot(1,1,1)
+    ax.plot([1,2,2])
+    return fig
+"""
+
+
+@pytest.mark.skipif(ftv != '261', reason="Incorrect freetype version for hash check")
+def test_hash_fail_new_hashes(tmpdir):
+    # Check that the hash comparison fails even if a new hash file is requested
+    test_file = tmpdir.join('test.py').strpath
+    with open(test_file, 'w', encoding='ascii') as f:
+        f.write(TEST_FAILING_NEW_HASH)
+
+    # Assert that image comparison runs and fails
+    assert_pytest_fails_with(['--mpl', test_file,
+                              f'--mpl-hash-library={fail_hash_library}'],
+                             "doesn't match hash FAIL in library")
+
+    hash_file = tmpdir.join('new_hashes.json').strpath
+    # Assert that image comparison runs and fails
+    assert_pytest_fails_with(['--mpl', test_file,
+                              f'--mpl-hash-library={fail_hash_library}',
+                              f'--mpl-generate-hash-library={hash_file}'],
+                             "doesn't match hash FAIL")
 
 
 TEST_MISSING_HASH = """
