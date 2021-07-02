@@ -488,15 +488,15 @@ class ImageComparison:
             fig.savefig(str(test_image), **savefig_kwargs)
             return error_message
 
-        baseline_image_path = self.obtain_baseline_image(item, result_dir)
         try:
+            baseline_image_path = self.obtain_baseline_image(item, result_dir)
             baseline_image = baseline_image_path
             baseline_image = None if not baseline_image.exists() else baseline_image
         except Exception:
             baseline_image = None
 
         if baseline_image is None:
-            error_message += f"\nUnable to find baseline image {baseline_image_path}."
+            error_message += f"\nUnable to find baseline image for {item}."
             return error_message
 
         # Override the tolerance (if not explicitly set) to 0 as the hashes are not forgiving
