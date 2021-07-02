@@ -1,3 +1,8 @@
+0.12.1 (2021-07-02)
+-------------------
+
+- Fix specification of required Python version in setup.cfg. [#122]
+
 0.12 (2020-11-05)
 -----------------
 
