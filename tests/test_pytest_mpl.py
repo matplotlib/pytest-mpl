@@ -430,6 +430,7 @@ def test_unmodified(): return plot()
 """
 
 
+@pytest.mark.skipif(not hash_library.exists(), reason="No hash library for this mpl version")
 def test_results_always(tmpdir):
 
     test_file = tmpdir.join('test.py').strpath
