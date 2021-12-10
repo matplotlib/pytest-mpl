@@ -464,7 +464,7 @@ def test_results_always(tmpdir):
             image = f'{test_name}/{image_type}.png'
             assert image in html  # <img> is present even if 404
             image_exists = results_path.join(*image.split('/')).exists()
-            if image_type in exists:
-                assert image_exists
+            if image_type in exists:  # assert image so pytest prints it on error
+                assert image and image_exists
             else:
-                assert not image_exists
+                assert image and not image_exists
