@@ -8,5 +8,8 @@
   "test_pytest_mpl.test_remove_text": "9c284d7bcbbb1d6c1362b417859e4ce842b573a2fe32c7ceaafcf328a1eb7057",
   "test_pytest_mpl.test_parametrized[5]": "04c998af2d7932ca4a851d610e8a020d94a2f623d1301dbe9b59fe6efd28a5f7",
   "test_pytest_mpl.test_parametrized[50]": "937d986ab6b209e7d48eb30cc30e9db62c93bbc4c86768e276a5b454e63bca93",
-  "test_pytest_mpl.test_parametrized[500]": "e39ed724b0762b8736879801e32dc0c1525afd03c0567a43b119435aaa608498"
+  "test_pytest_mpl.test_parametrized[500]": "e39ed724b0762b8736879801e32dc0c1525afd03c0567a43b119435aaa608498",
+  "test.test_modified": "ce07de6b726c3b01afb03aa7c9e939d584bc71a54b9737d69853a0d915cd6181",
+  "test.test_new": "ce07de6b726c3b01afb03aa7c9e939d584bc71a54b9737d69853a0d915cd6181",
+  "test.test_unmodified": "ce07de6b726c3b01afb03aa7c9e939d584bc71a54b9737d69853a0d915cd6181"
 }

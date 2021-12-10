@@ -9,5 +9,8 @@
   "test_pytest_mpl.test_parametrized[5]": "9b2b5b1df784c8f9a5fc624840138fe7b4dbdd42cf592fe5733c9c825e5dda91",
   "test_pytest_mpl.test_parametrized[50]": "fcf0566ef5514674e2b4bf1e9b4c7f52451c6f98abdc75dc876f43c97a23bc32",
   "test_pytest_mpl.test_parametrized[500]": "38dccccfc980b44359bc1b325bef48471bc084db37ed622af00a553792a8b093",
-  "test_pytest_mpl.test_hash_succeeds": "8b8ff9ce044bc9075876278781667a708414460209bba25a39d8262ed73d0f04"
+  "test_pytest_mpl.test_hash_succeeds": "8b8ff9ce044bc9075876278781667a708414460209bba25a39d8262ed73d0f04",
+  "test.test_modified": "ce07de6b726c3b01afb03aa7c9e939d584bc71a54b9737d69853a0d915cd6181",
+  "test.test_new": "ce07de6b726c3b01afb03aa7c9e939d584bc71a54b9737d69853a0d915cd6181",
+  "test.test_unmodified": "ce07de6b726c3b01afb03aa7c9e939d584bc71a54b9737d69853a0d915cd6181"
 }
