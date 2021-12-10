@@ -592,7 +592,6 @@ class ImageComparison:
 
                 if self.generate_hash_library is not None:
                     self._generated_hash_library[test_name] = self.generate_image_hash(item, fig)
-                    pytest.skip("Skipping test as generating hash library.")
 
                 # Only test figures if not generating images
                 if self.generate_dir is None:
