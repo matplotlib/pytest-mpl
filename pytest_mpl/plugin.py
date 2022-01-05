@@ -443,7 +443,7 @@ class ImageComparison:
                     "Generated Image: \n\t"
                     f"{test_image}")
 
-        # distutils may put the baseline images in non-accessible places,
+        # setuptools may put the baseline images in non-accessible places,
         # copy to our tmpdir to be sure to keep them in case of failure
         baseline_image = (result_dir / "baseline.png").absolute()
         shutil.copyfile(baseline_image_ref, baseline_image)
