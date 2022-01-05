@@ -18,7 +18,7 @@ Installing
 
 This plugin is compatible with Python 2.7, and 3.6 and later, and
 requires `pytest <http://pytest.org>`__ and
-`matplotlib <http://www.matplotlib.org>` to be installed.
+`matplotlib <http://www.matplotlib.org>`__ to be installed.
 
 To install, you can do::
 
