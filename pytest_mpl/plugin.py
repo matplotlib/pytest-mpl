@@ -43,6 +43,8 @@ from urllib.request import urlopen
 
 import pytest
 
+SUPPORTED_FORMATS = {'html', 'json'}
+
 SHAPE_MISMATCH_ERROR = """Error: Image dimensions did not match.
   Expected shape: {expected_shape}
     {expected_path}
@@ -150,7 +152,8 @@ def pytest_addoption(parser):
     group.addoption('--mpl-generate-summary', action='store',
                     help="Generate a summary report of any failed tests"
                     ", in --mpl-results-path. The type of the report should be "
-                    "specified, the only format supported at the moment is `html`.")
+                    "specified. Supported types are `html` and `json`. "
+                    "Multiple types can be specified separated by commas.")
 
     results_path_help = "directory for test results, relative to location where py.test is run"
     group.addoption('--mpl-results-path', help=results_path_help, action='store')
@@ -281,8 +284,12 @@ class ImageComparison:
         self.results_dir = path_is_not_none(results_dir)
         self.hash_library = path_is_not_none(hash_library)
         self.generate_hash_library = path_is_not_none(generate_hash_library)
-        if generate_summary and generate_summary.lower() not in ("html",):
-            raise ValueError(f"The mpl summary type '{generate_summary}' is not supported.")
+        if generate_summary:
+            generate_summary = {i.lower() for i in generate_summary.split(',')}
+            unsupported_formats = generate_summary - SUPPORTED_FORMATS
+            if len(unsupported_formats) > 0:
+                raise ValueError(f"The mpl summary type(s) '{sorted(unsupported_formats)}' "
+                                 "are not supported.")
         self.generate_summary = generate_summary
         self.results_always = results_always
 
@@ -420,12 +427,15 @@ class ImageComparison:
         close_mpl_figure(fig)
         return out
 
-    def compare_image_to_baseline(self, item, fig, result_dir):
+    def compare_image_to_baseline(self, item, fig, result_dir, summary=None):
         """
         Compare a test image to a baseline image.
         """
         from matplotlib.image import imread
         from matplotlib.testing.compare import compare_images
+
+        if summary is None:
+            summary = {}
 
         compare = self.get_compare(item)
         tolerance = compare.kwargs.get('tolerance', 2)
@@ -435,18 +445,23 @@ class ImageComparison:
 
         test_image = (result_dir / "result.png").absolute()
         fig.savefig(str(test_image), **savefig_kwargs)
+        summary['result_image'] = '%EXISTS%'
 
         if not os.path.exists(baseline_image_ref):
-            return ("Image file not found for comparison test in: \n\t"
-                    f"{self.get_baseline_directory(item)}\n"
-                    "(This is expected for new tests.)\n"
-                    "Generated Image: \n\t"
-                    f"{test_image}")
+            summary['status'] = 'failed'
+            error_message = ("Image file not found for comparison test in: \n\t"
+                             f"{self.get_baseline_directory(item)}\n"
+                             "(This is expected for new tests.)\n"
+                             "Generated Image: \n\t"
+                             f"{test_image}")
+            summary['status_msg'] = error_message
+            return error_message
 
         # setuptools may put the baseline images in non-accessible places,
         # copy to our tmpdir to be sure to keep them in case of failure
         baseline_image = (result_dir / "baseline.png").absolute()
         shutil.copyfile(baseline_image_ref, baseline_image)
+        summary['baseline_image'] = '%EXISTS%'
 
         # Compare image size ourselves since the Matplotlib
         # exception is a bit cryptic in this case and doesn't show
@@ -454,21 +469,44 @@ class ImageComparison:
         expected_shape = imread(str(baseline_image)).shape[:2]
         actual_shape = imread(str(test_image)).shape[:2]
         if expected_shape != actual_shape:
-            return SHAPE_MISMATCH_ERROR.format(expected_path=baseline_image,
-                                               expected_shape=expected_shape,
-                                               actual_path=test_image,
-                                               actual_shape=actual_shape)
+            summary['status'] = 'failed'
+            error_message = SHAPE_MISMATCH_ERROR.format(expected_path=baseline_image,
+                                                        expected_shape=expected_shape,
+                                                        actual_path=test_image,
+                                                        actual_shape=actual_shape)
+            summary['status_msg'] = error_message
+            return error_message
 
-        return compare_images(str(baseline_image), str(test_image), tol=tolerance)
+        results = compare_images(str(baseline_image), str(test_image), tol=tolerance, in_decorator=True)
+        summary['tolerance'] = tolerance
+        if results is None:
+            summary['status'] = 'passed'
+            summary['status_msg'] = 'Image comparison passed.'
+            return None
+        else:
+            summary['status'] = 'failed'
+            summary['rms'] = results['rms']
+            summary['diff_image'] = '%EXISTS%'
+            template = ['Error: Image files did not match.',
+                        'RMS Value: {rms}',
+                        'Expected:  \n    {expected}',
+                        'Actual:    \n    {actual}',
+                        'Difference:\n    {diff}',
+                        'Tolerance: \n    {tol}', ]
+            error_message = '\n  '.join([line.format(**results) for line in template])
+            summary['status_msg'] = error_message
+            return error_message
 
     def load_hash_library(self, library_path):
         with open(str(library_path)) as fp:
             return json.load(fp)
 
-    def compare_image_to_hash_library(self, item, fig, result_dir):
+    def compare_image_to_hash_library(self, item, fig, result_dir, summary=None):
         new_test = False
         hash_comparison_pass = False
         baseline_image_path = None
+        if summary is None:
+            summary = {}
 
         compare = self.get_compare(item)
         savefig_kwargs = compare.kwargs.get('savefig_kwargs', {})
@@ -483,23 +521,33 @@ class ImageComparison:
         hash_name = self.generate_test_name(item)
 
         test_hash = self.generate_image_hash(item, fig)
+        summary['result_hash'] = test_hash
 
         if hash_name not in hash_library:
             new_test = True
+            summary['status'] = 'failed'
             error_message = (f"Hash for test '{hash_name}' not found in {hash_library_filename}. "
                              f"Generated hash is {test_hash}.")
+            summary['status_msg'] = error_message
+        else:
+            summary['baseline_hash'] = hash_library[hash_name]
 
         # Save the figure for later summary (will be removed later if not needed)
         test_image = (result_dir / "result.png").absolute()
         fig.savefig(str(test_image), **savefig_kwargs)
+        summary['result_image'] = '%EXISTS%'
 
         if not new_test:
             if test_hash == hash_library[hash_name]:
                 hash_comparison_pass = True
+                summary['status'] = 'passed'
+                summary['status_msg'] = 'Test hash matches baseline hash.'
             else:
                 error_message = (f"Hash {test_hash} doesn't match hash "
                                  f"{hash_library[hash_name]} in library "
                                  f"{hash_library_filename} for test {hash_name}.")
+                summary['status'] = 'failed'
+                summary['status_msg'] = 'Test hash does not match baseline hash.'
 
         # If the compare has only been specified with hash and not baseline
         # dir, don't attempt to find a baseline image at the default path.
@@ -509,6 +557,7 @@ class ImageComparison:
         # If this is not a new test try and get the baseline image.
         if not new_test:
             baseline_error = None
+            baseline_summary = {}
             # Ignore Errors here as it's possible the reference image dosen't exist yet.
             try:
                 baseline_image_path = self.obtain_baseline_image(item, result_dir)
@@ -517,10 +566,13 @@ class ImageComparison:
                     baseline_image = None
                 # Get the baseline and generate a diff image, always so that
                 # --mpl-results-always can be respected.
-                baseline_comparison = self.compare_image_to_baseline(item, fig, result_dir)
+                baseline_comparison = self.compare_image_to_baseline(item, fig, result_dir,
+                                                                     summary=baseline_summary)
             except Exception as e:
                 baseline_image = None
                 baseline_error = e
+            for k in ['baseline_image', 'diff_image', 'rms', 'tolerance', 'result_image']:
+                summary[k] = summary[k] or baseline_summary.get(k)
 
         # If the hash comparison passes then return
         if hash_comparison_pass:
@@ -530,7 +582,11 @@ class ImageComparison:
             error_message += f"\nUnable to find baseline image for {item}."
             if baseline_error:
                 error_message += f"\n{baseline_error}"
+            summary['status'] = 'failed'
+            summary['status_msg'] = error_message
             return error_message
+
+        summary['baseline_image'] = '%EXISTS%'
 
         # Override the tolerance (if not explicitly set) to 0 as the hashes are not forgiving
         tolerance = compare.kwargs.get('tolerance', None)
@@ -540,7 +596,10 @@ class ImageComparison:
         comparison_error = (baseline_comparison or
                             "\nHowever, the comparison to the baseline image succeeded.")
 
-        return f"{error_message}\n{comparison_error}"
+        error_message = f"{error_message}\n{comparison_error}"
+        summary['status'] = 'failed'
+        summary['status_msg'] = error_message
+        return error_message
 
     def pytest_runtest_setup(self, item):  # noqa
 
@@ -583,15 +642,32 @@ class ImageComparison:
 
                 test_name = self.generate_test_name(item)
 
+                summary = {
+                    'status': None,
+                    'status_msg': None,
+                    'baseline_image': None,
+                    'diff_image': None,
+                    'rms': None,
+                    'tolerance': None,
+                    'result_image': None,
+                    'baseline_hash': None,
+                    'result_hash': None,
+                }
+
                 # What we do now depends on whether we are generating the
                 # reference images or simply running the test.
                 if self.generate_dir is not None:
+                    summary['status'] = 'skipped'
+                    summary['status_msg'] = 'Skipped test, since generating image.'
                     self.generate_baseline_image(item, fig)
                     if self.generate_hash_library is None:
+                        self._test_results[str(pathify(test_name))] = summary
                         pytest.skip("Skipping test, since generating image.")
 
                 if self.generate_hash_library is not None:
-                    self._generated_hash_library[test_name] = self.generate_image_hash(item, fig)
+                    image_hash = self.generate_image_hash(item, fig)
+                    self._generated_hash_library[test_name] = image_hash
+                    summary['result_hash'] = image_hash
 
                 # Only test figures if not generating images
                 if self.generate_dir is None:
@@ -599,23 +675,26 @@ class ImageComparison:
 
                     # Compare to hash library
                     if self.hash_library or compare.kwargs.get('hash_library', None):
-                        msg = self.compare_image_to_hash_library(item, fig, result_dir)
+                        msg = self.compare_image_to_hash_library(item, fig, result_dir, summary=summary)
 
                     # Compare against a baseline if specified
                     else:
-                        msg = self.compare_image_to_baseline(item, fig, result_dir)
+                        msg = self.compare_image_to_baseline(item, fig, result_dir, summary=summary)
 
                     close_mpl_figure(fig)
-
-                    self._test_results[str(pathify(test_name))] = msg or True
 
                     if msg is None:
                         if not self.results_always:
                             shutil.rmtree(result_dir)
+                            for image_type in ['baseline_image', 'diff_image', 'result_image']:
+                                summary[image_type] = None  # image no longer %EXISTS%
                     else:
+                        self._test_results[str(pathify(test_name))] = summary
                         pytest.fail(msg, pytrace=False)
 
                 close_mpl_figure(fig)
+
+                self._test_results[str(pathify(test_name))] = summary
 
         if item.cls is not None:
             setattr(item.cls, item.function.__name__, item_function_wrapper)
@@ -646,6 +725,12 @@ class ImageComparison:
 
         return html_file
 
+    def generate_summary_json(self):
+        json_file = self.results_dir / 'results.json'
+        with open(json_file, 'w') as f:
+            json.dump(self._test_results, f, indent=2)
+        return json_file
+
     def pytest_unconfigure(self, config):
         """
         Save out the hash library at the end of the run.
@@ -656,12 +741,28 @@ class ImageComparison:
             with open(hash_library_path, "w") as fp:
                 json.dump(self._generated_hash_library, fp, indent=2)
 
-        if self.generate_summary and self.generate_summary.lower() == 'html':
+        if self.generate_summary:
             # Generate a list of test directories
             dir_list = [p.relative_to(self.results_dir)
                         for p in self.results_dir.iterdir() if p.is_dir()]
-            html_summary = self.generate_summary_html(dir_list)
-            print(f"A summary of the failed tests can be found at: {html_summary}")
+
+            # Resolve image paths
+            for directory in dir_list:
+                test_name = directory.parts[-1]
+                for image_type, filename in [
+                    ('baseline_image', 'baseline.png'),
+                    ('diff_image', 'result-failed-diff.png'),
+                    ('result_image', 'result.png'),
+                ]:
+                    if self._test_results[test_name][image_type] == '%EXISTS%':
+                        self._test_results[test_name][image_type] = str(directory / filename)
+
+            if 'json' in self.generate_summary:
+                summary = self.generate_summary_json()
+                print(f"A JSON report can be found at: {summary}")
+            if 'html' in self.generate_summary:
+                summary = self.generate_summary_html(dir_list)
+                print(f"A summary of the failed tests can be found at: {summary}")
 
 
 class FigureCloser:
