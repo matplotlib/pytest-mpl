@@ -846,7 +846,7 @@ class ImageComparison:
                 summary = self.generate_summary_json()
                 print(f"A JSON report can be found at: {summary}")
             if 'html' in self.generate_summary:
-                summary = self.generate_summary_html(dir_list)
+                summary = self.generate_summary_html()
                 print(f"A summary of the failed tests can be found at: {summary}")
 
 
