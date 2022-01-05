@@ -59,10 +59,20 @@ HTML_INTRO = """
 table, th, td {
     border: 1px solid black;
 }
+.summary > div {
+    padding: 0.5em;
+}
+tr.passed .status, .rms.passed, .hashes.passed {
+    color: green;
+}
+tr.failed .status, .rms.failed, .hashes.failed {
+    color: red;
+}
 </style>
 </head>
 <body>
 <h2>Image test comparison</h2>
+%summary%
 <table>
   <tr>
     <th>Test Name</th>
@@ -301,6 +311,7 @@ class ImageComparison:
         # We need global state to store all the hashes generated over the run
         self._generated_hash_library = {}
         self._test_results = {}
+        self._test_stats = None
 
     def get_compare(self, item):
         """
@@ -701,22 +712,94 @@ class ImageComparison:
         else:
             item.obj = item_function_wrapper
 
-    def generate_summary_html(self, dir_list):
+    def generate_stats(self):
+        """
+        Generate a dictionary of summary statistics.
+        """
+        stats = {'passed': 0, 'failed': 0, 'passed_baseline': 0, 'failed_baseline': 0, 'skipped': 0}
+        for test in self._test_results.values():
+            if test['status'] == 'passed':
+                stats['passed'] += 1
+                if test['rms'] is not None:
+                    stats['failed_baseline'] += 1
+            elif test['status'] == 'failed':
+                stats['failed'] += 1
+                if test['rms'] is None:
+                    stats['passed_baseline'] += 1
+            elif test['status'] == 'skipped':
+                stats['skipped'] += 1
+            else:
+                raise ValueError(f"Unknown test status '{test['status']}'.")
+        self._test_stats = stats
+
+    def generate_summary_html(self):
         """
         Generate a simple HTML table of the failed test results
         """
         html_file = self.results_dir / 'fig_comparison.html'
         with open(html_file, 'w') as f:
-            f.write(HTML_INTRO)
 
-            for directory in dir_list:
-                test_name = directory.parts[-1]
-                test_result = 'passed' if self._test_results[test_name] is True else 'failed'
-                f.write('<tr>'
-                        f'<td>{test_name} ({test_result})\n'
-                        f'<td><img src="{directory / "baseline.png"}"></td>\n'
-                        f'<td><img src="{directory / "result-failed-diff.png"}"></td>\n'
-                        f'<td><img src="{directory / "result.png"}"></td>\n'
+            passed = f"{self._test_stats['passed']} passed"
+            if self._test_stats['failed_baseline'] > 0:
+                passed += (" hash comparison, although "
+                           f"{self._test_stats['failed_baseline']} "
+                           "of those have a different baseline image")
+
+            failed = f"{self._test_stats['failed']} failed"
+            if self._test_stats['passed_baseline'] > 0:
+                failed += (" hash comparison, although "
+                           f"{self._test_stats['passed_baseline']} "
+                           "of those have a matching baseline image")
+
+            f.write(HTML_INTRO.replace('%summary%', f'<p>{passed}.</p><p>{failed}.</p>'))
+
+            for test_name in sorted(self._test_results.keys()):
+                summary = self._test_results[test_name]
+
+                if summary['rms'] is None and summary['tolerance'] is not None:
+                    rms = (f'<div class="rms passed">\n'
+                           f'  <strong>RMS:</strong> '
+                           f'  &lt; <span class="tolerance">{summary["tolerance"]}</span>\n'
+                           f'</div>')
+                elif summary['rms'] is not None:
+                    rms = (f'<div class="rms failed">\n'
+                           f'  <strong>RMS:</strong> '
+                           f'  <span class="rms">{summary["rms"]}</span>\n'
+                           f'</div>')
+                else:
+                    rms = ''
+
+                hashes = ''
+                if summary['baseline_hash'] is not None:
+                    hashes += (f'  <div class="baseline">Baseline: '
+                               f'{summary["baseline_hash"]}</div>\n')
+                if summary['result_hash'] is not None:
+                    hashes += (f'  <div class="result">Result: '
+                               f'{summary["result_hash"]}</div>\n')
+                if len(hashes) > 0:
+                    if summary["baseline_hash"] == summary["result_hash"]:
+                        hash_result = 'passed'
+                    else:
+                        hash_result = 'failed'
+                    hashes = f'<div class="hashes {hash_result}">\n{hashes}</div>'
+
+                images = {}
+                for image_type in ['baseline_image', 'diff_image', 'result_image']:
+                    if summary[image_type] is not None:
+                        images[image_type] = f'<img src="{summary[image_type]}" />'
+                    else:
+                        images[image_type] = ''
+
+                f.write(f'<tr class="{summary["status"]}">\n'
+                        '  <td>\n'
+                        '    <div class="summary">\n'
+                        f'      <div class="test-name">{test_name}</div>\n'
+                        f'      <div class="status">{summary["status"]}</div>\n'
+                        f'      {rms}{hashes}\n'
+                        '  </td>\n'
+                        f'  <td>{images["baseline_image"]}</td>\n'
+                        f'  <td>{images["diff_image"]}</td>\n'
+                        f'  <td>{images["result_image"]}</td>\n'
                         '</tr>\n\n')
 
             f.write('</table>\n')
@@ -756,6 +839,8 @@ class ImageComparison:
                 ]:
                     if self._test_results[test_name][image_type] == '%EXISTS%':
                         self._test_results[test_name][image_type] = str(directory / filename)
+
+            self.generate_stats()
 
             if 'json' in self.generate_summary:
                 summary = self.generate_summary_json()
