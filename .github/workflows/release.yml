@@ -13,6 +13,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
     - name: Set up Python
       uses: actions/setup-python@v2
       with:
@@ -42,6 +44,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
     - name: Set up Python
       uses: actions/setup-python@v2
       with:
@@ -76,6 +80,8 @@ jobs:
       - build_sdist
     steps:
     - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
     - name: Set up Python
       uses: actions/setup-python@v2
       with:
