@@ -756,6 +756,9 @@ class ImageComparison:
             for test_name in sorted(self._test_results.keys()):
                 summary = self._test_results[test_name]
 
+                if not self.results_always and summary['result_image'] is None:
+                    continue  # Don't show test if no result image
+
                 if summary['rms'] is None and summary['tolerance'] is not None:
                     rms = (f'<div class="rms passed">\n'
                            f'  <strong>RMS:</strong> '
