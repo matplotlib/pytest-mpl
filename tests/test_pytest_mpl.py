@@ -2,13 +2,13 @@ import os
 import sys
 import json
 import subprocess
-from packaging.version import Version
 from pathlib import Path
 
-import pytest
 import matplotlib
 import matplotlib.ft2font
 import matplotlib.pyplot as plt
+import pytest
+from packaging.version import Version
 
 MPL_VERSION = Version(matplotlib.__version__)
 
