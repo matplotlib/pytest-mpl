@@ -411,3 +411,61 @@ def test_hash_missing(tmpdir):
     # If we don't use --mpl option, the test should succeed
     code = call_pytest([test_file])
     assert code == 0
+
+
+TEST_RESULTS_ALWAYS = """
+import pytest
+import matplotlib.pyplot as plt
+def plot():
+    fig = plt.figure()
+    ax = fig.add_subplot(1,1,1)
+    ax.plot([1,2,2])
+    return fig
+@pytest.mark.mpl_image_compare
+def test_modified(): return plot()
+@pytest.mark.mpl_image_compare
+def test_new(): return plot()
+@pytest.mark.mpl_image_compare
+def test_unmodified(): return plot()
+"""
+
+
+@pytest.mark.skipif(not hash_library.exists(), reason="No hash library for this mpl version")
+def test_results_always(tmpdir):
+
+    test_file = tmpdir.join('test.py').strpath
+    with open(test_file, 'w') as f:
+        f.write(TEST_RESULTS_ALWAYS)
+    results_path = tmpdir.mkdir('results')
+
+    code = call_pytest(['--mpl', test_file, '--mpl-results-always',
+                        rf'--mpl-hash-library={hash_library}',
+                        rf'--mpl-baseline-path={baseline_dir_abs}',
+                        '--mpl-generate-summary=html',
+                        rf'--mpl-results-path={results_path.strpath}'])
+    assert code == 0  # hashes correct, so all should pass
+
+    comparison_file = results_path.join('fig_comparison.html')
+    with open(comparison_file, 'r') as f:
+        html = f.read()
+
+    # each test, and which images should exist
+    for test, exists in [
+        ('test_modified', ['baseline', 'result-failed-diff', 'result']),
+        ('test_new', ['result']),
+        ('test_unmodified', ['baseline', 'result']),
+    ]:
+
+        test_name = f'test.{test}'
+
+        summary = f'{test_name} (passed)'
+        assert summary in html
+
+        for image_type in ['baseline', 'result-failed-diff', 'result']:
+            image = f'{test_name}/{image_type}.png'
+            assert image in html  # <img> is present even if 404
+            image_exists = results_path.join(*image.split('/')).exists()
+            if image_type in exists:  # assert image so pytest prints it on error
+                assert image and image_exists
+            else:
+                assert image and not image_exists

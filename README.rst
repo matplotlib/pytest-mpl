@@ -84,19 +84,19 @@ The hash library can be generated with
 ``--mpl-generate-hash-library=path_to_file.json``. The hash library to be used
 can either be specified via the ``--mpl-hash-library=`` command line argument,
 or via the ``hash_library=`` keyword argument to the
-``@pytest.mark.mpl_image_comapre`` decorator.
+``@pytest.mark.mpl_image_compare`` decorator.
 
 
 Hybrid Mode: Hashes and Images
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 It is possible to configure both hashes and baseline images. In this scenario
-the hashes will be compared first, and the baseline images used if the hash
+the hashes will be compared first, with the baseline images only used if the hash
 comparison fails.
 
 This is especially useful if the baseline images are external to the repository
-with the tests in, and can be accessed remotely. In this situation if the hashes
-match the baseline images wont be retrieved, saving time and bandwidth. Also it
+containing the tests, and are accessed via HTTP. In this situation, if the hashes
+match, the baseline images won't be retrieved, saving time and bandwidth. Also, it
 allows the tests to be modified and the hashes updated to reflect the changes
 without having to modify the external images.
 
@@ -111,16 +111,16 @@ against, the tests can be run with::
 
 and the tests will pass if the images are the same. If you omit the
 ``--mpl`` option, the tests will run but will only check that the code
-runs without checking the output images.
+runs, without checking the output images.
 
 
 Generating a Failure Summary
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-By specifying the ``--mpl-generate-summary=html`` CLI argument a HTML summary
+By specifying the ``--mpl-generate-summary=html`` CLI argument, a HTML summary
 page will be generated showing the baseline, diff and result image for each
 failing test. If no baseline images are configured, just the result images will
-be displayed.
+be displayed. (See also, the **Results always** section below.)
 
 Options
 -------
@@ -181,6 +181,24 @@ This directory will be interpreted as being relative to where the tests
 are run. In addition, if both this option and the ``baseline_dir``
 option in the ``mpl_image_compare`` decorator are used, the one in the
 decorator takes precedence.
+
+Results always
+^^^^^^^^^^^^^^
+
+By default, result images are only generated for tests that fail.
+Passing ``--mpl-results-always`` to pytest will force result images
+to be generated for all tests, even for tests that pass.
+If a baseline image exists, a diff image will also be generated.
+All of these images will be shown in the summary (if requested).
+
+This option is useful for always *comparing* the result images again
+the baseline images, while only *assessing* the tests against the
+hash library.
+If you only update your baseline images after merging a PR, this
+option means that the generated summary will always show how the
+PR affects the baseline images, with the success status of each
+test (based on the hash library) also shown in the generated
+summary.
 
 Base style
 ^^^^^^^^^^
