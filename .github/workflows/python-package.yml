@@ -19,14 +19,14 @@ jobs:
           python-version: 3.6
           toxenv: py36-test-mpl20
         - os: macos-latest
-          python-version: 3.8
-          toxenv: py38-test-mpl31
+          python-version: "3.10"
+          toxenv: py310-test-mpl35
         - os: windows-latest
           python-version: 3.6
           toxenv: py36-test-mpl20
         - os: windows-latest
-          python-version: 3.8
-          toxenv: py38-test-mpl31
+          python-version: "3.10"
+          toxenv: py310-test-mpl35
         # Test all configurations on Linux
         - os: ubuntu-latest
           python-version: 3.6
@@ -41,14 +41,20 @@ jobs:
           python-version: 3.7
           toxenv: py37-test-mpl30
         - os: ubuntu-latest
-          python-version: 3.8
-          toxenv: py38-test-mpl31
+          python-version: 3.7
+          toxenv: py37-test-mpl31
         - os: ubuntu-latest
           python-version: 3.7
           toxenv: py37-test-mpl32
         - os: ubuntu-latest
           python-version: 3.8
           toxenv: py38-test-mpl33
+        - os: ubuntu-latest
+          python-version: 3.9
+          toxenv: py39-test-mpl34
+        - os: ubuntu-latest
+          python-version: "3.10"
+          toxenv: py310-test-mpl35
 
     steps:
     - uses: actions/checkout@v2
