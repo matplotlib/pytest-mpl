@@ -41,7 +41,7 @@ RESULT_BADGE_ICON = template('result_badge_icon')
 RESULT_IMAGES = template('result_images')
 
 
-def status_sort(status):
+def get_status_sort(status):
     s = 50
     if status['overall'] == 'failed':
         s -= 10
@@ -119,6 +119,7 @@ def card(name, item, warn_missing=None):
     module = '.'.join(name.split('.')[:-1])
 
     status, classes, badge = get_status(item, card_id, warn_missing)
+    status_sort = get_status_sort(status)
 
     if item['diff_image'] is None:
         image = f'<img src="{item["result_image"]}" class="card-img-top" alt="result image">'
@@ -170,7 +171,7 @@ def card(name, item, warn_missing=None):
         id=card_id,
         test_name=test_name,
         module=module,
-        status_sort=status_sort(status),
+        status_sort=status_sort,
 
         image=image,
         badge=badge,
@@ -178,7 +179,7 @@ def card(name, item, warn_missing=None):
 
     )
 
-    return result_card
+    return result_card, status_sort
 
 
 def generate_summary_html(results, results_dir):
@@ -196,15 +197,16 @@ def generate_summary_html(results, results_dir):
         classes += ['no-hash-test']
 
     # Generate result cards
-    cards = ''
+    cards = []
     for name, item in results.items():
-        cards += card(name, item, warn_missing=warn_missing)
+        cards += [card(name, item, warn_missing=warn_missing)]
+    cards = [j[0] for j in sorted(cards, key=lambda i: i[1])]
 
     # Generate HTML
     html = BASE.format(
         title="Image comparison",
         navbar=NAVBAR,
-        cards=cards,
+        cards="\n".join(cards),
         filter=FILTER,
         classes=" ".join(classes),
     )
