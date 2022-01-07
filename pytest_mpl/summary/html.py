@@ -41,6 +41,21 @@ RESULT_BADGE_ICON = template('result_badge_icon')
 RESULT_IMAGES = template('result_images')
 
 
+def status_sort(status):
+    s = 50
+    if status['overall'] == 'failed':
+        s -= 10
+    if status['image'] == 'diff':
+        s -= 3
+    elif status['image'] == 'missing':
+        s -= 4
+    if status['hash'] == 'diff':
+        s -= 1
+    elif status['hash'] == 'missing':
+        s -= 5
+    return s
+
+
 def get_status(item, card_id, warn_missing):
     status = {
         'overall': None,
@@ -155,6 +170,7 @@ def card(name, item, warn_missing=None):
         id=card_id,
         test_name=test_name,
         module=module,
+        status_sort=status_sort(status),
 
         image=image,
         badge=badge,

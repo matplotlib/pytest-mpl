@@ -10,3 +10,10 @@ var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggl
 var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
     return new bootstrap.Tooltip(tooltipTriggerEl)
 })
+
+// Search, sort and filter
+var options = {
+  valueNames: [ 'test-name', 'status-sort', 'rms', 'baseline-hash', 'result-hash' ]
+};
+var userList = new List('results', options);
+userList.sort('status-sort');

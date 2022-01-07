@@ -8,11 +8,11 @@
           integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
     <title>{title}</title>
 </head>
-<body class="{classes}">
+<body class="{classes}" id="results">
 {navbar}
 <div class="album bg-light">
     <div class="container-fluid">
-        <div class="row">
+        <div class="row list">
             {cards}
         </div>
     </div>
@@ -21,6 +21,9 @@
 {filter}
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
+        crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/list.js@1.5.0/dist/list.min.js"
+        integrity="sha256-YqOIp4MygNx9/lcWr5lpcR88Ki/MNMWvJJkH0eK+fHM="
         crossorigin="anonymous"></script>
 <script src="extra.js"></script>
 </body>
