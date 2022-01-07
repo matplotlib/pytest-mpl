@@ -135,8 +135,13 @@ def card(name, item, warn_missing=None):
 
     if status['image'] == 'match':
         rms = '&lt; tolerance'
-    else:
+        rms_sort = 999999
+    elif status['image'] == 'diff':
         rms = item['rms']
+        rms_sort = 99999 - item['rms']
+    else:
+        rms = 'None'
+        rms_sort = 999998
 
     offcanvas = RESULT_IMAGES.format(
 
@@ -172,6 +177,7 @@ def card(name, item, warn_missing=None):
         test_name=test_name,
         module=module,
         status_sort=status_sort,
+        rms_sort=rms_sort,
 
         image=image,
         badge=badge,
