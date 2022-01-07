@@ -1,0 +1,66 @@
+<div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasFilter" aria-labelledby="offcanvasFilterLabel">
+    <div class="offcanvas-header">
+        <h6>Filter results</h6>
+        <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body">
+        <h5>Sort tests by...</h5>
+        <div class="btn-group m-2" role="group" aria-label="Select sorting">
+            <input type="radio" class="btn-check" name="sort" id="sortstatus" autocomplete="off" checked>
+            <label class="btn btn-outline-secondary" for="sortstatus">status</label>
+            <input type="radio" class="btn-check" name="sort" id="sortname" autocomplete="off">
+            <label class="btn btn-outline-secondary" for="sortname">name</label>
+        </div>
+        <h5>Show tests which have...</h5>
+        <div class="list-group m-2">
+            <label class="list-group-item">
+                <input class="form-check-input me-1" type="checkbox" value="">
+                passed
+            </label>
+            <label class="list-group-item">
+                <input class="form-check-input me-1" type="checkbox" value="">
+                failed
+            </label>
+            <label class="list-group-item">
+                <input class="form-check-input me-1" type="checkbox" value="">
+                skipped
+            </label>
+        </div>
+        <div class="list-group m-2">
+            <label class="list-group-item">
+                <input class="form-check-input me-1" type="checkbox" value="">
+                matching images
+            </label>
+            <label class="list-group-item">
+                <input class="form-check-input me-1" type="checkbox" value="">
+                differing images
+            </label>
+        </div>
+        <div class="list-group m-2 mpl-hash">
+            <label class="list-group-item">
+                <input class="form-check-input me-1" type="checkbox" value="">
+                matching hashes
+            </label>
+            <label class="list-group-item">
+                <input class="form-check-input me-1" type="checkbox" value="">
+                differing hashes
+            </label>
+        </div>
+        <div class="list-group m-2">
+            <label class="list-group-item mpl-hash">
+                <input class="form-check-input me-1" type="checkbox" value="">
+                no baseline hash
+            </label>
+            <label class="list-group-item">
+                <input class="form-check-input me-1" type="checkbox" value="">
+                no baseline image
+            </label>
+        </div>
+        <div class="btn-group m-2" role="group" aria-label="Select condition">
+            <input type="radio" class="btn-check" name="condition" id="conditionand" autocomplete="off" checked>
+            <label class="btn btn-outline-secondary" for="conditionand">AND</label>
+            <input type="radio" class="btn-check" name="condition" id="conditionor" autocomplete="off">
+            <label class="btn btn-outline-secondary" for="conditionor">OR</label>
+        </div>
+    </div>
+</div>

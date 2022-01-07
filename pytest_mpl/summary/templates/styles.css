@@ -1,0 +1,30 @@
+body.no-hash-test .mpl-hash {
+    display: none;
+}
+.image-missing .mpl-image .card-body {
+    display: none;
+}
+pre {
+    white-space: pre-wrap;
+}
+div.result div.status-badge button img {
+    vertical-align: sub;
+}
+div.result div.status-badge button.btn-warning img {
+    filter: brightness(0);
+}
+div.mpl-images {
+    height: 1000px;
+}
+div.hover-image {
+    position: relative;
+    border: 3px solid #dc3545;
+    border-radius: .2rem;
+}
+div.hover-image div.result-image {
+    position: absolute;
+    top: 0;
+}
+div.hover-image div.result-image img {
+    filter: opacity(0.3);
+}

@@ -1,0 +1,68 @@
+<div class="offcanvas offcanvas-bottom mpl-images" tabindex="-1" id="offcanvas{id}"
+     aria-labelledby="offcanvas{id}Label">
+    <div class="offcanvas-header">
+        <h6><small class="text-muted">{module}</small></h6>
+        <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body">
+        <h5 class="card-title">{test_name}</h5>
+        <div class="row row-cols-1 row-cols-md-3 g-4 mt-3">
+            <div class="col py-3 m-0">
+                <div class="card h-100">
+                    <div class="card-header">Baseline</div>
+                    {baseline_image}
+                </div>
+            </div>
+            <div class="col py-3 m-0">
+                <div class="card h-100">
+                    <div class="card-header">Diff</div>
+                    {diff_image}
+                </div>
+            </div>
+            <div class="col py-3 m-0">
+                <div class="card h-100">
+                    <div class="card-header">Result</div>
+                    {result_image}
+                </div>
+            </div>
+        </div>
+        <div class="row row-cols-1 row-cols-md-2 g-4">
+            <div class="col">
+                <div class="card text-white bg-{btn_class}">
+                    <div class="card-header">{status}</div>
+                    <div class="card-body">
+                        <pre class="card-text">{status_msg}</pre>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card text-white bg-{image_btn_class} mb-3 mpl-image">
+                    <div class="card-header">{image_status}</div>
+                    <div class="card-body">
+                        <div class="mb-3 rms">
+                            <label for="rms" class="form-label">RMS</label>
+                            <pre class="form-control" id="rms">{rms}</pre>
+                        </div>
+                        <div class="mb-3 tolerance">
+                            <label for="tolerance" class="form-label">Tolerance</label>
+                            <pre class="form-control" id="tolerance">{tolerance}</pre>
+                        </div>
+                    </div>
+                </div>
+                <div class="card text-white bg-{hash_btn_class} mb-3 mpl-hash">
+                    <div class="card-header">{hash_status}</div>
+                    <div class="card-body">
+                        <div class="mb-3 baseline-hash">
+                            <label for="baseline_hash" class="form-label">Baseline</label>
+                            <pre class="form-control" id="baseline_hash">{baseline_hash}</pre>
+                        </div>
+                        <div class="mb-3 result-hash">
+                            <label for="result_hash" class="form-label">Result</label>
+                            <pre class="form-control" id="result_hash">{result_hash}</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
