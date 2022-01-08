@@ -17,7 +17,7 @@ var options = {
         'rms-value', 'baseline-hash-value', 'result-hash-value']
 };
 var resultsList = new List('results', options);
-resultsList.sort('status-sort');
+resultsList.sort('status-sort', { order: "desc" });
 
 function applyFilters() {
     var cond_and = document.getElementById('filterForm').elements['conditionand'].checked;

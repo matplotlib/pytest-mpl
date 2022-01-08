@@ -42,18 +42,18 @@ RESULT_IMAGES = template('result_images')
 
 
 def get_status_sort(status):
-    s = 50
+    s = 0
     if status['overall'] == 'failed':
-        s -= 10
+        s += 10
     if status['image'] == 'diff':
-        s -= 3
+        s += 3
     elif status['image'] == 'missing':
-        s -= 4
+        s += 4
     if status['hash'] == 'diff':
-        s -= 1
+        s += 1
     elif status['hash'] == 'missing':
-        s -= 5
-    return s
+        s += 5
+    return f"{s:02.0f}"
 
 
 def get_status(item, card_id, warn_missing):
@@ -135,13 +135,13 @@ def card(name, item, warn_missing=None):
 
     if status['image'] == 'match':
         rms = '&lt; tolerance'
-        rms_sort = 999999
+        rms_sort = "000000"
     elif status['image'] == 'diff':
         rms = item['rms']
-        rms_sort = 99999 - item['rms']
+        rms_sort = f"{(item['rms']+2)*1000:06.0f}"
     else:
         rms = 'None'
-        rms_sort = 999998
+        rms_sort = "000001"
 
     offcanvas = RESULT_IMAGES.format(
 
@@ -206,7 +206,7 @@ def generate_summary_html(results, results_dir):
     cards = []
     for name, item in results.items():
         cards += [card(name, item, warn_missing=warn_missing)]
-    cards = [j[0] for j in sorted(cards, key=lambda i: i[1])]
+    cards = [j[0] for j in sorted(cards, key=lambda i: i[1], reverse=True)]
 
     # Generate HTML
     html = BASE.format(
