@@ -17,7 +17,14 @@ var options = {
         'rms-value', 'baseline-hash-value', 'result-hash-value']
 };
 var resultsList = new List('results', options);
-resultsList.sort('status-sort', { order: "desc" });
+resultsList.sort('status-sort', {order: "desc"});
+
+var filterClasses = [];
+var filterElements = document.getElementById('filterForm').getElementsByClassName('filter');
+for (var i = 0, elem; elem = filterElements[i++];) {
+    filterClasses.push(elem.id);
+}
+countClasses();
 
 function applyFilters() {
     var cond_and = document.getElementById('filterForm').elements['conditionand'].checked;
@@ -29,7 +36,8 @@ function applyFilters() {
         }
     }
     if (filters.length == 0) {
-        return resultsList.filter();  // Show all if nothing selected
+        resultsList.filter();  // Show all if nothing selected
+        return countClasses();
     }
     resultsList.filter(function (item) {
         var inc = false;
@@ -47,9 +55,29 @@ function applyFilters() {
         }
         return inc;
     });
+    countClasses();
 }
 
 function resetFilters() {
     resultsList.filter();
     document.getElementById("filterForm").reset();
+    countClasses();
+}
+
+function countClasses() {
+    for (var i = 0, filt; filt = filterElements[i++];) {
+        var count = 0;
+        if (document.getElementById('filterForm').elements['conditionand'].checked) {
+            var itms = resultsList.visibleItems;
+        } else {
+            var itms = resultsList.items;
+        }
+        for (var j = 0, itm; itm = itms[j++];) {
+            if (itm.values()['filter-classes'].includes(filt.id)) {
+                count++;
+            }
+        }
+        var badge = filt.parentElement.getElementsByClassName('badge')[0];
+        badge.innerHTML = count.toString();
+    }
 }

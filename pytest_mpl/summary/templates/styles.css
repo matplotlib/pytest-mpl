@@ -17,6 +17,10 @@ body.no-hash-test .mpl-hash {
 #filterForm .spacer {
     flex: 1;
 }
+#filterForm span.badge {
+    float: right;
+    margin-top: 2px;
+}
 @media (min-width: 576px) {
     .nav-filtertools div.spacer {
         display: block;
