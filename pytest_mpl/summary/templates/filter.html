@@ -1,73 +1,89 @@
 <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasFilter" aria-labelledby="offcanvasFilterLabel">
     <div class="offcanvas-header">
-        <h6>Filter results</h6>
+        <h6>Sort and filter results</h6>
         <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
     </div>
     <div class="offcanvas-body">
         <h5>Sort tests by...</h5>
         <div class="btn-group m-2 pb-2" role="group" aria-label="Select sorting">
-            <input type="radio" class="btn-check sort" data-sort="status-sort" data-order="desc" name="sort" id="sortstatus"
+            <input type="radio" class="btn-check sort" data-sort="status-sort" data-order="desc" name="sort"
+                   id="sortstatus"
                    autocomplete="off" checked>
             <label class="btn btn-outline-secondary" for="sortstatus">status</label>
             <input type="radio" class="btn-check sort" data-sort="test-name" name="sort" id="sortname"
                    autocomplete="off">
             <label class="btn btn-outline-secondary" for="sortname">name</label>
-            <input type="radio" class="btn-check sort" data-sort="rms-sort" data-order="desc" name="sort" id="sortrms" autocomplete="off">
+            <input type="radio" class="btn-check sort" data-sort="rms-sort" data-order="desc" name="sort" id="sortrms"
+                   autocomplete="off">
             <label class="btn btn-outline-secondary" for="sortrms">RMS</label>
         </div>
         <form id="filterForm" onsubmit="return false;">
             <h5>Show tests which have...</h5>
             <div class="list-group m-2">
                 <label class="list-group-item list-group-item-success">
-                    <input class="form-check-input me-1 filter" type="checkbox" value="" id="overall-passed" onclick="applyFilters()">
+                    <input class="form-check-input me-1 filter" type="checkbox" value="" id="overall-passed"
+                           onclick="applyFilters()">
                     passed
                 </label>
                 <label class="list-group-item list-group-item-danger">
-                    <input class="form-check-input me-1 filter" type="checkbox" value="" id="overall-failed" onclick="applyFilters()">
+                    <input class="form-check-input me-1 filter" type="checkbox" value="" id="overall-failed"
+                           onclick="applyFilters()">
                     failed
                 </label>
                 <label class="list-group-item list-group-item-warning">
-                    <input class="form-check-input me-1 filter" type="checkbox" value="" id="overall-skipped" onclick="applyFilters()">
+                    <input class="form-check-input me-1 filter" type="checkbox" value="" id="overall-skipped"
+                           onclick="applyFilters()">
                     skipped
                 </label>
             </div>
             <div class="list-group m-2">
                 <label class="list-group-item list-group-item-success">
-                    <input class="form-check-input me-1 filter" type="checkbox" value="" id="image-match" onclick="applyFilters()">
+                    <input class="form-check-input me-1 filter" type="checkbox" value="" id="image-match"
+                           onclick="applyFilters()">
                     matching images
                 </label>
                 <label class="list-group-item list-group-item-danger">
-                    <input class="form-check-input me-1 filter" type="checkbox" value="" id="image-diff" onclick="applyFilters()">
+                    <input class="form-check-input me-1 filter" type="checkbox" value="" id="image-diff"
+                           onclick="applyFilters()">
                     differing images
                 </label>
             </div>
             <div class="list-group m-2 mpl-hash">
                 <label class="list-group-item list-group-item-success">
-                    <input class="form-check-input me-1 filter" type="checkbox" value="" id="hash-match" onclick="applyFilters()">
+                    <input class="form-check-input me-1 filter" type="checkbox" value="" id="hash-match"
+                           onclick="applyFilters()">
                     matching hashes
                 </label>
                 <label class="list-group-item list-group-item-danger">
-                    <input class="form-check-input me-1 filter" type="checkbox" value="" id="hash-diff" onclick="applyFilters()">
+                    <input class="form-check-input me-1 filter" type="checkbox" value="" id="hash-diff"
+                           onclick="applyFilters()">
                     differing hashes
                 </label>
             </div>
             <div class="list-group m-2">
                 <label class="list-group-item mpl-hash list-group-item-warning">
-                    <input class="form-check-input me-1 filter" type="checkbox" value="" id="hash-missing" onclick="applyFilters()">
+                    <input class="form-check-input me-1 filter" type="checkbox" value="" id="hash-missing"
+                           onclick="applyFilters()">
                     no baseline hash
                 </label>
                 <label class="list-group-item list-group-item-warning">
-                    <input class="form-check-input me-1 filter" type="checkbox" value="" id="image-missing" onclick="applyFilters()">
+                    <input class="form-check-input me-1 filter" type="checkbox" value="" id="image-missing"
+                           onclick="applyFilters()">
                     no baseline image
                 </label>
             </div>
-            <button type="submit" class="btn btn-primary m-2" data-bs-dismiss="offcanvas">Apply</button>
-            <button type="submit" class="btn btn-secondary m-2" onclick="resetFilters()">Reset</button>
-            <div class="btn-group m-2" role="group" aria-label="Select condition">
-                <input type="radio" class="btn-check" name="condition" id="conditionand" value="and" autocomplete="off" onclick="applyFilters()" checked>
-                <label class="btn btn-outline-secondary" for="conditionand">AND</label>
-                <input type="radio" class="btn-check" name="condition" id="conditionor" value="or" autocomplete="off" onclick="applyFilters()">
-                <label class="btn btn-outline-secondary" for="conditionor">OR</label>
+            <div class="d-flex">
+                <button type="submit" class="btn btn-primary m-2" data-bs-dismiss="offcanvas">Apply</button>
+                <button type="submit" class="btn btn-outline-secondary m-2" onclick="resetFilters()">Reset</button>
+                <div class="spacer"></div>
+                <div class="btn-group m-2" role="group" aria-label="Select condition">
+                    <input type="radio" class="btn-check" name="condition" id="conditionand" value="and"
+                           autocomplete="off" onclick="applyFilters()" checked>
+                    <label class="btn btn-outline-secondary" for="conditionand">AND</label>
+                    <input type="radio" class="btn-check" name="condition" id="conditionor" value="or"
+                           autocomplete="off" onclick="applyFilters()">
+                    <label class="btn btn-outline-secondary" for="conditionor">OR</label>
+                </div>
             </div>
         </form>
     </div>
