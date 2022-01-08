@@ -13,7 +13,43 @@ var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
 
 // Search, sort and filter
 var options = {
-    valueNames: ['test-name', 'status-sort', 'rms-sort', 'rms-value', 'baseline-hash-value', 'result-hash-value']
+    valueNames: ['test-name', 'status-sort', 'rms-sort', 'filter-classes',
+        'rms-value', 'baseline-hash-value', 'result-hash-value']
 };
 var resultsList = new List('results', options);
 resultsList.sort('status-sort');
+
+function applyFilters() {
+    var cond_and = document.getElementById('filterForm').elements['conditionand'].checked;
+    var filters = [];
+    var filterElements = document.getElementById('filterForm').getElementsByClassName('filter');
+    for (var i = 0, elem; elem = filterElements[i++];) {
+        if (elem.checked) {
+            filters.push(elem.id);
+        }
+    }
+    if (filters.length == 0) {
+        return resultsList.filter();  // Show all if nothing selected
+    }
+    resultsList.filter(function (item) {
+        var inc = false;
+        for (var i = 0, filt; filt = filters[i++];) {
+            if (item.values()['filter-classes'].includes(filt)) {
+                if (!cond_and) {
+                    return true;
+                }
+                inc = true;
+            } else {
+                if (cond_and) {
+                    return false;
+                }
+            }
+        }
+        return inc;
+    });
+}
+
+function resetFilters() {
+    resultsList.filter();
+    document.getElementById("filterForm").reset();
+}
