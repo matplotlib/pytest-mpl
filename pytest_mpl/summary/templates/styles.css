@@ -1,6 +1,27 @@
 body.no-hash-test .mpl-hash {
     display: none;
 }
+.navbar-brand span.repo {
+    font-weight: bold;
+}
+.nav-filtertools {
+    width: 100%;
+}
+.nav-filtertools div.spacer {
+    flex: 1;
+    display: none;
+}
+.nav-filtertools .nav-searchbar {
+    flex: 10;
+}
+@media (min-width: 576px) {
+    .nav-filtertools div.spacer {
+        display: block;
+    }
+    .nav-filtertools .nav-searchbar {
+        max-width: 400px;
+    }
+}
 .image-missing .mpl-image .card-body {
     display: none;
 }
