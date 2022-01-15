@@ -13,7 +13,7 @@ var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
 
 // Search, sort and filter
 var options = {
-    valueNames: ['test-name', 'status-sort', 'rms-sort', 'filter-classes',
+    valueNames: ['collected-sort', 'test-name', 'status-sort', 'rms-sort', 'filter-classes',
         'rms-value', 'baseline-hash-value', 'result-hash-value']
 };
 var resultsList = new List('results', options);

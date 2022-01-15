@@ -113,8 +113,7 @@ def get_status(item, card_id, warn_missing):
     return status, classes, badge
 
 
-def card(name, item, warn_missing=None):
-    card_id = name.replace('.', '-')
+def card(name, item, card_id, warn_missing=None):
     test_name = name.split('.')[-1]
     module = '.'.join(name.split('.')[:-1])
 
@@ -203,9 +202,11 @@ def generate_summary_html(results, results_dir):
         classes += ['no-hash-test']
 
     # Generate result cards
+    pad = len(str(len(results.items())))
     cards = []
-    for name, item in results.items():
-        cards += [card(name, item, warn_missing=warn_missing)]
+    for collect_n, (name, item) in enumerate(results.items()):
+        card_id = str(collect_n).zfill(pad)  # zero pad for alphanumerical sorting
+        cards += [card(name, item, card_id, warn_missing=warn_missing)]
     cards = [j[0] for j in sorted(cards, key=lambda i: i[1], reverse=True)]
 
     # Generate HTML
