@@ -33,6 +33,13 @@ if (window.location.search.length > 0) {
     resultsList.sort('status-sort', {order: "desc"});
 }
 
+// Show a message if no tests match current filters
+var alertPlaceholder = document.getElementById('noResultsAlert');
+warnIfNone();  // Initialize
+resultsList.on('updated', function () {
+    warnIfNone();
+})
+
 // Record URL parameters after new sort (but do not update URL yet)
 resultsList.on('sortComplete', function updateSortURL() {
     var sortElements = document.getElementsByClassName('sort');
@@ -183,4 +190,25 @@ function countClasses() {
         var badge = filt.parentElement.getElementsByClassName('badge')[0];
         badge.innerHTML = count.toString();
     }
+}
+
+function warnIfNone() {
+    if (resultsList.visibleItems.length === 0) {  // Show info box
+        alertPlaceholder.innerHTML = '<div class="alert alert-info" role="alert">' +
+            '<h4 class="alert-heading">No tests found</h4>' +
+            '<p class="m-0">Try adjusting any active filters or searches, or ' +
+            '<a href="javascript:clearAll()" class="alert-link">clear all</a>.</p>' +
+            '</div>';
+    } else {  // Remove info box
+        alertPlaceholder.innerHTML = '';
+    }
+}
+
+// Clear active search and filters
+function clearAll() {
+    document.getElementsByClassName('search')[0].value = '';
+    resultsList.search('');
+    searchParams.delete('q');
+    resetFilters();
+    updateURL();
 }
