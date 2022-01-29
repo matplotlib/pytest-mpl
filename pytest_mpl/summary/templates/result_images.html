@@ -1,65 +1,54 @@
-<div class="offcanvas offcanvas-bottom mpl-images" tabindex="-1" id="offcanvas{id}"
-     aria-labelledby="offcanvas{id}Label">
+<div class="offcanvas offcanvas-bottom mpl-images" tabindex="-1" id="offcanvas{{ r.id }}"
+     aria-labelledby="offcanvas{{ r.id }}Label">
     <div class="offcanvas-header">
-        <h6><small class="text-muted">{module}</small></h6>
+        <h6><small class="text-muted">{{ r.module }}</small></h6>
         <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
     </div>
     <div class="offcanvas-body">
-        <h5 class="card-title">{test_name}</h5>
+        <h5 class="card-title">{{ r.name }}</h5>
         <div class="row row-cols-1 row-cols-md-3 g-4 mt-3">
+            {% macro image_card(file, name) -%}
             <div class="col py-3 m-0">
                 <div class="card h-100">
-                    <div class="card-header">Baseline</div>
-                    {baseline_image}
+                    <div class="card-header">{{ name }}</div>
+                    {% if file -%}
+                    <img src="{{ file }}" class="card-img-top" alt="">
+                    {%- endif %}
                 </div>
             </div>
-            <div class="col py-3 m-0">
-                <div class="card h-100">
-                    <div class="card-header">Diff</div>
-                    {diff_image}
-                </div>
-            </div>
-            <div class="col py-3 m-0">
-                <div class="card h-100">
-                    <div class="card-header">Result</div>
-                    {result_image}
-                </div>
-            </div>
+            {%- endmacro -%}
+            {{ image_card(r.baseline_image, 'Baseline') }}
+            {{ image_card(r.diff_image, 'Diff') }}
+            {{ image_card(r.result_image, 'Result') }}
         </div>
         <div class="row row-cols-1 row-cols-md-2 g-4">
             <div class="col">
-                <div class="card text-white bg-{btn_class}">
-                    <div class="card-header">{status}</div>
+                <div class="card text-white bg-{{ r.status | status_class }}">
+                    <div class="card-header">{{ r.status | upper }}</div>
                     <div class="card-body">
-                        <pre class="card-text">{status_msg}</pre>
+                        <pre class="card-text">{{ r.status_msg }}</pre>
                     </div>
                 </div>
             </div>
             <div class="col">
-                <div class="card text-white bg-{image_btn_class} mb-3 mpl-image">
-                    <div class="card-header">{image_status}</div>
+                <div class="card text-white bg-{{ r.image_status | status_class }} mb-3 mpl-image">
+                    <div class="card-header">{{ r.image_status | image_status_msg }}</div>
                     <div class="card-body">
-                        <div class="mb-3 rms">
-                            <label for="rms" class="form-label">RMS</label>
-                            <pre class="form-control rms-value" id="rms">{rms}</pre>
+                        {% macro pre_data(id, value, name) -%}
+                        <div class="mb-3 {{ id | replace('_', '-') }}">
+                            <label for="{{ id }}" class="form-label">{{ name }}</label>
+                            <pre class="form-control {{ id | replace('_', '-') }}-value" id="{{ id }}">{{ value }}</pre>
                         </div>
-                        <div class="mb-3 tolerance">
-                            <label for="tolerance" class="form-label">Tolerance</label>
-                            <pre class="form-control tolerance-value" id="tolerance">{tolerance}</pre>
-                        </div>
+                        {%- endmacro -%}
+                        {{ pre_data('rms', r.rms_str, 'RMS') }}
+                        {{ pre_data('tolerance', r.tolerance, 'Tolerance') }}
                     </div>
                 </div>
-                <div class="card text-white bg-{hash_btn_class} mb-3 mpl-hash">
-                    <div class="card-header">{hash_status}</div>
+                <div class="card text-white bg-{{ r.hash_status | status_class }} mb-3 mpl-hash">
+                    <div class="card-header">{{ r.hash_status | hash_status_msg }}</div>
                     <div class="card-body">
-                        <div class="mb-3 baseline-hash">
-                            <label for="baseline_hash" class="form-label">Baseline</label>
-                            <pre class="form-control baseline-hash-value" id="baseline_hash">{baseline_hash}</pre>
-                        </div>
-                        <div class="mb-3 result-hash">
-                            <label for="result_hash" class="form-label">Result</label>
-                            <pre class="form-control result-hash-value" id="result_hash">{result_hash}</pre>
-                        </div>
+                        {{ pre_data('baseline_hash', r.baseline_hash, 'Baseline') }}
+                        {{ pre_data('result_hash', r.result_hash, 'Result') }}
                     </div>
                 </div>
             </div>

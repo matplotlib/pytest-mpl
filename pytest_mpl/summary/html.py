@@ -1,222 +1,229 @@
 import os
 import shutil
+from functools import cached_property
+
+from jinja2 import Environment, PackageLoader, select_autoescape
 
 __all__ = ['generate_summary_html']
 
-BTN_CLASS = {
-    'passed': 'success',
-    'failed': 'danger',
-    'skipped': 'warning',
-    'match': 'success',
-    'diff': 'danger',
-    'missing': 'warning',
-}
 
-IMAGE_STATUS = {
-    'match': 'Baseline image matches',
-    'diff': 'Baseline image differs',
-    'missing': 'Baseline image not found',
-}
+class Results:
+    """
+    Data for the whole test run, used for providing data to the template.
 
-HASH_STATUS = {
-    'match': 'Baseline hash matches',
-    'diff': 'Baseline hash differs',
-    'missing': 'Baseline hash not found',
-}
+    Parameters
+    ----------
+    results : dict
+        The `pytest_mpl.plugin.ImageComparison._test_results` object.
+    title : str
+        Value for HTML <title>.
+    """
+    def __init__(self, results, title="Image comparison"):
+        self.title = title  # HTML <title>
 
+        # If any baseline images or baseline hashes are present,
+        # assume all results should have them
+        self.warn_missing = {'baseline_image': False, 'baseline_hash': False}
+        for key in self.warn_missing.keys():
+            for result in results.values():
+                if result[key] is not None:
+                    self.warn_missing[key] = True
+                    break
 
-def template(name):
-    file = os.path.join(os.path.dirname(__file__), 'templates', f'{name}.html')
-    f = open(file, 'r')
-    return f.read()
+        # Additional <body> classes
+        self.classes = []
+        if self.warn_missing['baseline_hash'] is False:
+            self.classes += ['no-hash-test']
 
-
-BASE = template('base')
-NAVBAR = template('navbar')
-FILTER = template('filter')
-RESULT = template('result')
-RESULT_DIFFIMAGE = template('result_diffimage')
-RESULT_BADGE = template('result_badge')
-RESULT_BADGE_ICON = template('result_badge_icon')
-RESULT_IMAGES = template('result_images')
-
-
-def get_status_sort(status):
-    s = 0
-    if status['overall'] == 'failed':
-        s += 10
-    if status['image'] == 'diff':
-        s += 3
-    elif status['image'] == 'missing':
-        s += 4
-    if status['hash'] == 'diff':
-        s += 1
-    elif status['hash'] == 'missing':
-        s += 5
-    return f"{s:02.0f}"
+        # Generate sorted list of results
+        self.cards = []
+        pad = len(str(len(results.items())))  # maximum length of a result index
+        for collect_n, (name, item) in enumerate(results.items()):
+            card_id = str(collect_n).zfill(pad)  # zero pad for alphanumerical sorting
+            self.cards += [Result(name, item, card_id, self.warn_missing)]
+        self.cards = sorted(self.cards, key=lambda i: i.indexes['status'], reverse=True)
 
 
-def get_status(item, card_id, warn_missing):
-    status = {
-        'overall': None,
-        'image': None,
-        'hash': None,
+class Result:
+    """
+    Result data for a single image test, used for providing data to the template.
+
+    Parameters
+    ----------
+    name : str
+        Full name of the test including modules.
+    item : dict
+        Dictionary of summary results for a test in
+        `pytest_mpl.plugin.ImageComparison._test_results`.
+    id : str
+        The test number in order collected. Numbers must be
+        zero padded due to alphanumerical sorting.
+    warn_missing : dict
+        Whether to include relevant status badges for images and/or hashes.
+        Must have keys ``baseline_image`` and ``baseline_hash``.
+    """
+    def __init__(self, name, item, id, warn_missing):
+        # Make the summary dictionary available as attributes
+        self.__dict__ = item
+
+        # Sort index for collection order
+        self.id = id
+
+        # Whether to show image and/or hash status badges
+        self.warn_missing = warn_missing
+
+        # Name of test with module and test function together and separate
+        self.full_name = name
+        self.name = name.split('.')[-1]
+        self.module = '.'.join(name.split('.')[:-1])
+
+        # Additional classes to add to the result card
+        self.classes = [f'{k}-{str(v).lower()}' for k, v in [
+            ('overall', self.status),
+            ('image', self.image_status),
+            ('hash', self.hash_status),
+        ]]
+
+    @cached_property
+    def image_status(self):
+        """Status of the image comparison test."""
+        if self.rms is None and self.tolerance is not None:
+            return 'match'
+        elif self.rms is not None:
+            return 'diff'
+        elif self.baseline_image is None:
+            return 'missing'
+        else:
+            raise ValueError('Unknown image result.')
+
+    @cached_property
+    def hash_status(self):
+        """Status of the hash comparison test."""
+        if self.baseline_hash is not None or self.result_hash is not None:
+            if self.baseline_hash is None:
+                return 'missing'
+            elif self.baseline_hash == self.result_hash:
+                return 'match'
+            else:
+                return 'diff'
+        return None
+
+    @cached_property
+    def indexes(self):
+        """Dictionary with strings optimized for sorting."""
+        return {'status': self._status_sort, 'rms': self._rms_sort}
+
+    @property
+    def _status_sort(self):
+        """Status number. Higher means more issues."""
+        s = 0
+        if self.status == 'failed':
+            s += 10
+        if self.image_status == 'diff':
+            s += 3
+        elif self.image_status == 'missing':
+            s += 4
+        if self.hash_status == 'diff':
+            s += 1
+        elif self.hash_status == 'missing':
+            s += 5
+        return f"{s:02.0f}"
+
+    @property
+    def _rms_sort(self):
+        """RMS to 3 d.p. for sorting."""
+        if self.image_status == 'match':
+            return "000000"
+        elif self.image_status == 'diff':
+            # RMS will be in [0, 255]
+            return f"{(self.rms + 2) * 1000:06.0f}"
+        else:  # Missing baseline image
+            return "000001"
+
+    @cached_property
+    def rms_str(self):
+        """RMS to show in template."""
+        if self.image_status == 'match':
+            return '< tolerance'  # self.rms is None
+        elif self.image_status == 'diff':
+            return self.rms
+        else:  # Missing baseline image
+            return 'None'
+
+    @property
+    def badges(self):
+        """Additional badges to show beside overall status badge."""
+        for test_type, status_getter in [('image', image_status_msg), ('hash', hash_status_msg)]:
+            status = getattr(self, f'{test_type}_status')
+            if not self.warn_missing[f'baseline_{test_type}']:
+                continue  # not expected to exist
+            if (
+                    (status == 'missing') or
+                    (self.status == 'failed' and status == 'match') or
+                    (self.status == 'passed' and status == 'diff')
+            ):  # Only show if different to overall status
+                yield {'status': status, 'svg': test_type, 'tooltip': status_getter(status)}
+
+
+def status_class(status):
+    """Status to Bootstrap class."""
+    status = status.split('-')[-1]  # e.g. "overall-passed" -> "passed"
+    classes = {
+        'passed': 'success',
+        'failed': 'danger',
+        'skipped': 'warning',
+        'match': 'success',
+        'diff': 'danger',
+        'missing': 'warning',
     }
-
-    assert item['status'] in BTN_CLASS.keys()
-    status['overall'] = item['status']
-
-    if item['rms'] is None and item['tolerance'] is not None:
-        status['image'] = 'match'
-    elif item['rms'] is not None:
-        status['image'] = 'diff'
-    elif item['baseline_image'] is None:
-        status['image'] = 'missing'
-    else:
-        raise ValueError('Unknown image result.')
-
-    baseline_hash = item['baseline_hash']
-    result_hash = item['result_hash']
-    if baseline_hash is not None or result_hash is not None:
-        if baseline_hash is None:
-            status['hash'] = 'missing'
-        elif baseline_hash == result_hash:
-            status['hash'] = 'match'
-        else:
-            status['hash'] = 'diff'
-
-    classes = [f'{k}-{str(v).lower()}' for k, v in status.items()]
-
-    extra_badges = ''
-    for test_type, status_dict in [('image', IMAGE_STATUS), ('hash', HASH_STATUS)]:
-        if not warn_missing[f'baseline_{test_type}']:
-            continue  # not expected to exist
-        if (
-                (status[test_type] == 'missing') or
-                (status['overall'] == 'failed' and status[test_type] == 'match') or
-                (status['overall'] == 'passed' and status[test_type] == 'diff')
-        ):
-            extra_badges += RESULT_BADGE_ICON.format(
-                card_id=card_id,
-                btn_class=BTN_CLASS[status[test_type]],
-                svg=test_type,
-                tooltip=status_dict[status[test_type]],
-            )
-
-    badge = RESULT_BADGE.format(
-        card_id=card_id,
-        status=status['overall'].upper(),
-        btn_class=BTN_CLASS[status['overall']],
-        extra_badges=extra_badges,
-    )
-
-    return status, classes, badge
+    return classes[status]
 
 
-def card(name, item, card_id, warn_missing=None):
-    test_name = name.split('.')[-1]
-    module = '.'.join(name.split('.')[:-1])
+def image_status_msg(status):
+    """Image status to status message."""
+    messages = {
+        'match': 'Baseline image matches',
+        'diff': 'Baseline image differs',
+        'missing': 'Baseline image not found',
+    }
+    return messages[status]
 
-    status, classes, badge = get_status(item, card_id, warn_missing)
-    status_sort = get_status_sort(status)
 
-    if item['diff_image'] is None:
-        image = f'<img src="{item["result_image"]}" class="card-img-top" alt="result image">'
-    else:  # show overlapping diff and result images
-        image = RESULT_DIFFIMAGE.format(diff=item['diff_image'], result=item["result_image"])
-
-    image_html = {}
-    for image_type in ['baseline_image', 'diff_image', 'result_image']:
-        if item[image_type] is not None:
-            image_html[image_type] = f'<img src="{item[image_type]}" class="card-img-top" alt="">'
-        else:
-            image_html[image_type] = ''
-
-    if status['image'] == 'match':
-        rms = '&lt; tolerance'
-        rms_sort = "000000"
-    elif status['image'] == 'diff':
-        rms = item['rms']
-        rms_sort = f"{(item['rms']+2)*1000:06.0f}"
-    else:
-        rms = 'None'
-        rms_sort = "000001"
-
-    offcanvas = RESULT_IMAGES.format(
-
-        id=card_id,
-        test_name=test_name,
-        module=module,
-
-        baseline_image=image_html['baseline_image'],
-        diff_image=image_html['diff_image'],
-        result_image=image_html['result_image'],
-
-        status=status['overall'].upper(),
-        btn_class=BTN_CLASS[status['overall']],
-        status_msg=item['status_msg'],
-
-        image_status=IMAGE_STATUS[status['image']],
-        image_btn_class=BTN_CLASS[status['image']],
-        rms=rms,
-        tolerance=item['tolerance'],
-
-        hash_status=HASH_STATUS[status['hash']],
-        hash_btn_class=BTN_CLASS[status['hash']],
-        baseline_hash=item['baseline_hash'],
-        result_hash=item['result_hash'],
-
-    )
-
-    result_card = RESULT.format(
-
-        classes=" ".join(classes),
-
-        id=card_id,
-        test_name=test_name,
-        module=module,
-        status_sort=status_sort,
-        rms_sort=rms_sort,
-
-        image=image,
-        badge=badge,
-        offcanvas=offcanvas,
-
-    )
-
-    return result_card, status_sort
+def hash_status_msg(status):
+    """Hash status to status message."""
+    messages = {
+        'match': 'Baseline hash matches',
+        'diff': 'Baseline hash differs',
+        'missing': 'Baseline hash not found',
+    }
+    return messages[status]
 
 
 def generate_summary_html(results, results_dir):
-    # If any baseline images or baseline hashes are present,
-    # assume all results should have them
-    warn_missing = {'baseline_image': False, 'baseline_hash': False}
-    for key in warn_missing.keys():
-        for result in results.values():
-            if result[key] is not None:
-                warn_missing[key] = True
-                break
+    """Generate the HTML summary.
 
-    classes = []
-    if warn_missing['baseline_hash'] is False:
-        classes += ['no-hash-test']
+    Parameters
+    ----------
+    results : dict
+        The `pytest_mpl.plugin.ImageComparison._test_results` object.
+    results_dir : Path
+        Path to the output directory.
+    """
 
-    # Generate result cards
-    pad = len(str(len(results.items())))
-    cards = []
-    for collect_n, (name, item) in enumerate(results.items()):
-        card_id = str(collect_n).zfill(pad)  # zero pad for alphanumerical sorting
-        cards += [card(name, item, card_id, warn_missing=warn_missing)]
-    cards = [j[0] for j in sorted(cards, key=lambda i: i[1], reverse=True)]
-
-    # Generate HTML
-    html = BASE.format(
-        title="Image comparison",
-        navbar=NAVBAR,
-        cards="\n".join(cards),
-        filter=FILTER,
-        classes=" ".join(classes),
+    # Initialize Jinja
+    env = Environment(
+        loader=PackageLoader("pytest_mpl.summary.html"),
+        autoescape=select_autoescape()
     )
+
+    # Register additional Jinja filters
+    env.filters["status_class"] = status_class
+    env.filters["image_status_msg"] = image_status_msg
+    env.filters["hash_status_msg"] = hash_status_msg
+
+    # Render HTML starting from the base template
+    template = env.get_template("base.html")
+    html = template.render(results=Results(results))
 
     # Write files
     for file in ['styles.css', 'extra.js', 'hash.svg', 'image.svg']:
@@ -224,6 +231,6 @@ def generate_summary_html(results, results_dir):
         shutil.copy(path, results_dir / file)
     html_file = results_dir / 'fig_comparison.html'
     with open(html_file, 'w') as f:
-        f.write(html)
+        f.write(html + '\n')
 
     return html_file
