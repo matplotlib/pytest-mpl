@@ -42,7 +42,7 @@ div.result div.status-badge button.btn-warning img {
     filter: brightness(0);
 }
 div.mpl-images {
-    height: 1000px;
+    height: auto;
 }
 div.hover-image {
     position: relative;

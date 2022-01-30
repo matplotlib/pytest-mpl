@@ -32,6 +32,8 @@ if (window.location.search.length > 0) {
 } else {  // If no parameters, apply default but don't update the URL
     resultsList.sort('status-sort', {order: "desc"});
 }
+// Show page after initial filtering to prevent flashing
+document.getElementById('resultslist').style.display = null;
 
 // Show a message if no tests match current filters
 var alertPlaceholder = document.getElementById('noResultsAlert');
