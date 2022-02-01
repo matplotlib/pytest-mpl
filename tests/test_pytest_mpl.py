@@ -441,13 +441,17 @@ def test_results_always(tmpdir):
     code = call_pytest(['--mpl', test_file, '--mpl-results-always',
                         rf'--mpl-hash-library={hash_library}',
                         rf'--mpl-baseline-path={baseline_dir_abs}',
-                        '--mpl-generate-summary=html',
+                        '--mpl-generate-summary=html,json',
                         rf'--mpl-results-path={results_path.strpath}'])
     assert code == 0  # hashes correct, so all should pass
 
     comparison_file = results_path.join('fig_comparison.html')
     with open(comparison_file, 'r') as f:
         html = f.read()
+
+    json_file = results_path.join('results.json')
+    with open(json_file, 'r') as f:
+        json_results = json.load(f)
 
     # each test, and which images should exist
     for test, exists in [
@@ -458,14 +462,22 @@ def test_results_always(tmpdir):
 
         test_name = f'test.{test}'
 
-        summary = f'{test_name} (passed)'
+        summary = f'<div class="test-name">{test_name}</div>'
         assert summary in html
+
+        assert test_name in json_results.keys()
+        json_res = json_results[test_name]
+        assert json_res['status'] == 'passed'
 
         for image_type in ['baseline', 'result-failed-diff', 'result']:
             image = f'{test_name}/{image_type}.png'
-            assert image in html  # <img> is present even if 404
             image_exists = results_path.join(*image.split('/')).exists()
+            json_image_key = f"{image_type.split('-')[-1]}_image"
             if image_type in exists:  # assert image so pytest prints it on error
                 assert image and image_exists
+                assert image in html
+                assert json_res[json_image_key] == image
             else:
                 assert image and not image_exists
+                assert image not in html
+                assert json_res[json_image_key] is None
