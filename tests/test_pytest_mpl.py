@@ -441,11 +441,16 @@ def test_results_always(tmpdir):
     code = call_pytest(['--mpl', test_file, '--mpl-results-always',
                         rf'--mpl-hash-library={hash_library}',
                         rf'--mpl-baseline-path={baseline_dir_abs}',
-                        '--mpl-generate-summary=html,json',
+                        '--mpl-generate-summary=html,json,basic-html',
                         rf'--mpl-results-path={results_path.strpath}'])
     assert code == 0  # hashes correct, so all should pass
 
-    comparison_file = results_path.join('fig_comparison.html')
+    # assert files for interactive HTML exist
+    assert results_path.join('fig_comparison.html').exists()
+    assert results_path.join('styles.css').exists()
+    assert results_path.join('extra.js').exists()
+
+    comparison_file = results_path.join('fig_comparison_basic.html')
     with open(comparison_file, 'r') as f:
         html = f.read()
 

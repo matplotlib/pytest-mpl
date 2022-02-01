@@ -43,7 +43,9 @@ from urllib.request import urlopen
 
 import pytest
 
-SUPPORTED_FORMATS = {'html', 'json'}
+from pytest_mpl.summary.html import generate_summary_html
+
+SUPPORTED_FORMATS = {'html', 'json', 'basic-html'}
 
 SHAPE_MISMATCH_ERROR = """Error: Image dimensions did not match.
   Expected shape: {expected_shape}
@@ -162,7 +164,7 @@ def pytest_addoption(parser):
     group.addoption('--mpl-generate-summary', action='store',
                     help="Generate a summary report of any failed tests"
                     ", in --mpl-results-path. The type of the report should be "
-                    "specified. Supported types are `html` and `json`. "
+                    "specified. Supported types are `html`, `json` and `basic-html`. "
                     "Multiple types can be specified separated by commas.")
 
     results_path_help = "directory for test results, relative to location where py.test is run"
@@ -732,11 +734,11 @@ class ImageComparison:
                 raise ValueError(f"Unknown test status '{test['status']}'.")
         self._test_stats = stats
 
-    def generate_summary_html(self):
+    def generate_summary_basic_html(self):
         """
         Generate a simple HTML table of the failed test results
         """
-        html_file = self.results_dir / 'fig_comparison.html'
+        html_file = self.results_dir / 'fig_comparison_basic.html'
         with open(html_file, 'w') as f:
 
             passed = f"{self._test_stats['passed']} passed"
@@ -849,7 +851,10 @@ class ImageComparison:
                 summary = self.generate_summary_json()
                 print(f"A JSON report can be found at: {summary}")
             if 'html' in self.generate_summary:
-                summary = self.generate_summary_html()
+                summary = generate_summary_html(self._test_results, self.results_dir)
+                print(f"A summary of the failed tests can be found at: {summary}")
+            if 'basic-html' in self.generate_summary:
+                summary = self.generate_summary_basic_html()
                 print(f"A summary of the failed tests can be found at: {summary}")
 
 
