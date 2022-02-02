@@ -43,44 +43,15 @@ from urllib.request import urlopen
 
 import pytest
 
-SUPPORTED_FORMATS = {'html', 'json'}
+from pytest_mpl.summary.html import generate_summary_basic_html, generate_summary_html
+
+SUPPORTED_FORMATS = {'html', 'json', 'basic-html'}
 
 SHAPE_MISMATCH_ERROR = """Error: Image dimensions did not match.
   Expected shape: {expected_shape}
     {expected_path}
   Actual shape: {actual_shape}
     {actual_path}"""
-
-HTML_INTRO = """
-<!DOCTYPE html>
-<html>
-<head>
-<style>
-table, th, td {
-    border: 1px solid black;
-}
-.summary > div {
-    padding: 0.5em;
-}
-tr.passed .status, .rms.passed, .hashes.passed {
-    color: green;
-}
-tr.failed .status, .rms.failed, .hashes.failed {
-    color: red;
-}
-</style>
-</head>
-<body>
-<h2>Image test comparison</h2>
-%summary%
-<table>
-  <tr>
-    <th>Test Name</th>
-    <th>Baseline image</th>
-    <th>Diff</th>
-    <th>New image</th>
-  </tr>
-"""
 
 
 def _download_file(baseline, filename):
@@ -162,7 +133,7 @@ def pytest_addoption(parser):
     group.addoption('--mpl-generate-summary', action='store',
                     help="Generate a summary report of any failed tests"
                     ", in --mpl-results-path. The type of the report should be "
-                    "specified. Supported types are `html` and `json`. "
+                    "specified. Supported types are `html`, `json` and `basic-html`. "
                     "Multiple types can be specified separated by commas.")
 
     results_path_help = "directory for test results, relative to location where py.test is run"
@@ -712,105 +683,6 @@ class ImageComparison:
         else:
             item.obj = item_function_wrapper
 
-    def generate_stats(self):
-        """
-        Generate a dictionary of summary statistics.
-        """
-        stats = {'passed': 0, 'failed': 0, 'passed_baseline': 0, 'failed_baseline': 0, 'skipped': 0}
-        for test in self._test_results.values():
-            if test['status'] == 'passed':
-                stats['passed'] += 1
-                if test['rms'] is not None:
-                    stats['failed_baseline'] += 1
-            elif test['status'] == 'failed':
-                stats['failed'] += 1
-                if test['rms'] is None:
-                    stats['passed_baseline'] += 1
-            elif test['status'] == 'skipped':
-                stats['skipped'] += 1
-            else:
-                raise ValueError(f"Unknown test status '{test['status']}'.")
-        self._test_stats = stats
-
-    def generate_summary_html(self):
-        """
-        Generate a simple HTML table of the failed test results
-        """
-        html_file = self.results_dir / 'fig_comparison.html'
-        with open(html_file, 'w') as f:
-
-            passed = f"{self._test_stats['passed']} passed"
-            if self._test_stats['failed_baseline'] > 0:
-                passed += (" hash comparison, although "
-                           f"{self._test_stats['failed_baseline']} "
-                           "of those have a different baseline image")
-
-            failed = f"{self._test_stats['failed']} failed"
-            if self._test_stats['passed_baseline'] > 0:
-                failed += (" hash comparison, although "
-                           f"{self._test_stats['passed_baseline']} "
-                           "of those have a matching baseline image")
-
-            f.write(HTML_INTRO.replace('%summary%', f'<p>{passed}.</p><p>{failed}.</p>'))
-
-            for test_name in sorted(self._test_results.keys()):
-                summary = self._test_results[test_name]
-
-                if not self.results_always and summary['result_image'] is None:
-                    continue  # Don't show test if no result image
-
-                if summary['rms'] is None and summary['tolerance'] is not None:
-                    rms = (f'<div class="rms passed">\n'
-                           f'  <strong>RMS:</strong> '
-                           f'  &lt; <span class="tolerance">{summary["tolerance"]}</span>\n'
-                           f'</div>')
-                elif summary['rms'] is not None:
-                    rms = (f'<div class="rms failed">\n'
-                           f'  <strong>RMS:</strong> '
-                           f'  <span class="rms">{summary["rms"]}</span>\n'
-                           f'</div>')
-                else:
-                    rms = ''
-
-                hashes = ''
-                if summary['baseline_hash'] is not None:
-                    hashes += (f'  <div class="baseline">Baseline: '
-                               f'{summary["baseline_hash"]}</div>\n')
-                if summary['result_hash'] is not None:
-                    hashes += (f'  <div class="result">Result: '
-                               f'{summary["result_hash"]}</div>\n')
-                if len(hashes) > 0:
-                    if summary["baseline_hash"] == summary["result_hash"]:
-                        hash_result = 'passed'
-                    else:
-                        hash_result = 'failed'
-                    hashes = f'<div class="hashes {hash_result}">\n{hashes}</div>'
-
-                images = {}
-                for image_type in ['baseline_image', 'diff_image', 'result_image']:
-                    if summary[image_type] is not None:
-                        images[image_type] = f'<img src="{summary[image_type]}" />'
-                    else:
-                        images[image_type] = ''
-
-                f.write(f'<tr class="{summary["status"]}">\n'
-                        '  <td>\n'
-                        '    <div class="summary">\n'
-                        f'      <div class="test-name">{test_name}</div>\n'
-                        f'      <div class="status">{summary["status"]}</div>\n'
-                        f'      {rms}{hashes}\n'
-                        '  </td>\n'
-                        f'  <td>{images["baseline_image"]}</td>\n'
-                        f'  <td>{images["diff_image"]}</td>\n'
-                        f'  <td>{images["result_image"]}</td>\n'
-                        '</tr>\n\n')
-
-            f.write('</table>\n')
-            f.write('</body>\n')
-            f.write('</html>')
-
-        return html_file
-
     def generate_summary_json(self):
         json_file = self.results_dir / 'results.json'
         with open(json_file, 'w') as f:
@@ -843,13 +715,14 @@ class ImageComparison:
                     if self._test_results[test_name][image_type] == '%EXISTS%':
                         self._test_results[test_name][image_type] = str(directory / filename)
 
-            self.generate_stats()
-
             if 'json' in self.generate_summary:
                 summary = self.generate_summary_json()
                 print(f"A JSON report can be found at: {summary}")
             if 'html' in self.generate_summary:
-                summary = self.generate_summary_html()
+                summary = generate_summary_html(self._test_results, self.results_dir)
+                print(f"A summary of the failed tests can be found at: {summary}")
+            if 'basic-html' in self.generate_summary:
+                summary = generate_summary_basic_html(self._test_results, self.results_dir)
                 print(f"A summary of the failed tests can be found at: {summary}")
 
 

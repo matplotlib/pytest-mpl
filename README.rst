@@ -114,13 +114,24 @@ and the tests will pass if the images are the same. If you omit the
 runs, without checking the output images.
 
 
-Generating a Failure Summary
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Generating a Test Summary
+^^^^^^^^^^^^^^^^^^^^^^^^^
 
 By specifying the ``--mpl-generate-summary=html`` CLI argument, a HTML summary
-page will be generated showing the baseline, diff and result image for each
-failing test. If no baseline images are configured, just the result images will
-be displayed. (See also, the **Results always** section below.)
+page will be generated showing the result, log entry and RMS of each test,
+and the hashes if configured. The baseline, diff and result image for each
+failing test will be shown. If **Results always** is configured
+(see section below), images for passing tests will also be shown.
+If no baseline images are configured, just the result images will
+be displayed.
+
++---------------+---------------+---------------+
+| |html all|    | |html filter| | |html result| |
++---------------+---------------+---------------+
+
+As well as ``html``, ``basic-html`` can be specified for an alternative HTML
+summary which does not rely on JavaScript or external resources. A ``json``
+summary can also be saved. Multiple options can be specified comma-separated.
 
 Options
 -------
@@ -301,6 +312,9 @@ install the latest version of the plugin then do::
 The reason for having to install the plugin first is to ensure that the
 plugin is correctly loaded as part of the test suite.
 
+.. |html all| image:: images/html_all.png
+.. |html filter| image:: images/html_filter.png
+.. |html result| image:: images/html_result.png
 .. |expected| image:: images/baseline-coords_overlay_auto_coord_meta.png
 .. |actual| image:: images/coords_overlay_auto_coord_meta.png
 .. |diff| image:: images/coords_overlay_auto_coord_meta-failed-diff.png

@@ -1,0 +1,57 @@
+<div class="offcanvas offcanvas-bottom mpl-images" tabindex="-1" id="offcanvas{{ r.id }}"
+     aria-labelledby="offcanvas{{ r.id }}Label">
+    <div class="offcanvas-header">
+        <h6><small class="text-muted">{{ r.module }}</small></h6>
+        <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body">
+        <h5 class="card-title">{{ r.name }}</h5>
+        <div class="row row-cols-1 row-cols-md-3 g-4 mt-3">
+            {% macro image_card(file, name) -%}
+            <div class="col py-3 m-0">
+                <div class="card h-100">
+                    <div class="card-header">{{ name }}</div>
+                    {% if file -%}
+                    <img src="{{ file }}" class="card-img-top" alt="">
+                    {%- endif %}
+                </div>
+            </div>
+            {%- endmacro -%}
+            {{ image_card(r.baseline_image, 'Baseline') }}
+            {{ image_card(r.diff_image, 'Diff') }}
+            {{ image_card(r.result_image, 'Result') }}
+        </div>
+        <div class="row row-cols-1 row-cols-md-2 g-4">
+            <div class="col">
+                <div class="card text-white bg-{{ r.status | status_class }}">
+                    <div class="card-header">{{ r.status | upper }}</div>
+                    <div class="card-body">
+                        <pre class="card-text">{{ r.status_msg }}</pre>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card text-white bg-{{ r.image_status | status_class }} mb-3 mpl-image">
+                    <div class="card-header">{{ r.image_status | image_status_msg }}</div>
+                    <div class="card-body">
+                        {% macro pre_data(id, value, name) -%}
+                        <div class="mb-3 {{ id | replace('_', '-') }}">
+                            <label for="{{ id }}" class="form-label">{{ name }}</label>
+                            <pre class="form-control {{ id | replace('_', '-') }}-value" id="{{ id }}">{{ value }}</pre>
+                        </div>
+                        {%- endmacro -%}
+                        {{ pre_data('rms', r.rms_str, 'RMS') }}
+                        {{ pre_data('tolerance', r.tolerance, 'Tolerance') }}
+                    </div>
+                </div>
+                <div class="card text-white bg-{{ r.hash_status | status_class }} mb-3 mpl-hash">
+                    <div class="card-header">{{ r.hash_status | hash_status_msg }}</div>
+                    <div class="card-body">
+                        {{ pre_data('baseline_hash', r.baseline_hash, 'Baseline') }}
+                        {{ pre_data('result_hash', r.result_hash, 'Result') }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
