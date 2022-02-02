@@ -43,7 +43,7 @@ from urllib.request import urlopen
 
 import pytest
 
-from pytest_mpl.summary.html import generate_summary_html, generate_summary_basic_html
+from pytest_mpl.summary.html import generate_summary_basic_html, generate_summary_html
 
 SUPPORTED_FORMATS = {'html', 'json', 'basic-html'}
 
