@@ -1,5 +1,18 @@
+0.14 (unreleased)
+-----------------
+
+- Add `--mpl-results-always` flag which disables removing of test images for
+  tests which pass. Test images are also stored and generated for hash tests
+  when a baseline dir is also provided. [#108]
+
+- Add a `--mpl-generate-summary=json` option which saves a JSON summary of the
+  image comparison results. [#127]
+
+- Add a significantly improved HTML summary page, and rename the old simple
+  summary page to `basic-html`. [#128]
+
 0.13 (2021-07-02)
----------------------
+-----------------
 
 - Ensure all test files are included in the sdist. [#109]
 
