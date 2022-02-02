@@ -1,6 +1,11 @@
 import os
+import sys
 import shutil
-from functools import cached_property
+
+if sys.version_info >= (3, 8):
+    from functools import cached_property
+else:
+    cached_property = property
 
 from jinja2 import Environment, PackageLoader, select_autoescape
 
