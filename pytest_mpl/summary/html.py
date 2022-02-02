@@ -4,7 +4,7 @@ from functools import cached_property
 
 from jinja2 import Environment, PackageLoader, select_autoescape
 
-__all__ = ['generate_summary_html']
+__all__ = ['generate_summary_html', 'generate_summary_basic_html']
 
 
 class Results:
@@ -42,6 +42,24 @@ class Results:
             card_id = str(collect_n).zfill(pad)  # zero pad for alphanumerical sorting
             self.cards += [Result(name, item, card_id, self.warn_missing)]
         self.cards = sorted(self.cards, key=lambda i: i.indexes['status'], reverse=True)
+
+    @cached_property
+    def statistics(self):
+        """Generate a dictionary of summary statistics."""
+        stats = {'passed': 0, 'failed': 0, 'passed_baseline': 0,
+                 'failed_baseline': 0, 'skipped': 0}
+        for test in self.cards:
+            if test.status == 'passed':
+                stats['passed'] += 1
+                if test.image_status != 'match':
+                    stats['failed_baseline'] += 1
+            elif test.status == 'failed':
+                stats['failed'] += 1
+                if test.image_status == 'match':
+                    stats['passed_baseline'] += 1
+            elif test.status == 'skipped':
+                stats['skipped'] += 1
+        return stats
 
 
 class Result:
@@ -230,6 +248,35 @@ def generate_summary_html(results, results_dir):
         path = os.path.join(os.path.dirname(__file__), 'templates', file)
         shutil.copy(path, results_dir / file)
     html_file = results_dir / 'fig_comparison.html'
+    with open(html_file, 'w') as f:
+        f.write(html + '\n')
+
+    return html_file
+
+
+def generate_summary_basic_html(results, results_dir):
+    """Generate the basic HTML summary.
+
+    Parameters
+    ----------
+    results : dict
+        The `pytest_mpl.plugin.ImageComparison._test_results` object.
+    results_dir : Path
+        Path to the output directory.
+    """
+
+    # Initialize Jinja
+    env = Environment(
+        loader=PackageLoader("pytest_mpl.summary.html"),
+        autoescape=select_autoescape()
+    )
+
+    # Render HTML starting from the base template
+    template = env.get_template("basic.html")
+    html = template.render(results=Results(results))
+
+    # Write files
+    html_file = results_dir / 'fig_comparison_basic.html'
     with open(html_file, 'w') as f:
         f.write(html + '\n')
 

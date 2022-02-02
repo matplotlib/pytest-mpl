@@ -467,7 +467,7 @@ def test_results_always(tmpdir):
 
         test_name = f'test.{test}'
 
-        summary = f'<div class="test-name">{test_name}</div>'
+        summary = f'<div class="test-name">{test_name.split(".")[-1]}</div>'
         assert summary in html
 
         assert test_name in json_results.keys()
