@@ -23,6 +23,8 @@ def diff_summary(baseline, result, hash_library=None):
     # Test names must be identical
     diff_set(baseline_tests, result_tests, error='Test names are not identical.')
 
+    item_match_errors = []  # Raise a MatchError for all mismatched values at the end
+
     for test in baseline_tests:
 
         # Get baseline and result summary for the specific test
@@ -42,7 +44,13 @@ def diff_summary(baseline, result, hash_library=None):
 
         for key in baseline_keys:
             error = f'Summary item {key} for {test} does not match.\n'
-            diff_dict_item(baseline_summary[key], result_summary[key], error=error)
+            try:
+                diff_dict_item(baseline_summary[key], result_summary[key], error=error)
+            except MatchError as e:
+                item_match_errors.append(str(e))
+
+    if len(item_match_errors) > 0:
+        raise MatchError('\n\n----------\n\n'.join(item_match_errors))
 
 
 def diff_set(baseline, result, error=''):
