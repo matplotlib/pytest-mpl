@@ -18,6 +18,8 @@ HASH_LIBRARY = Path(__file__).parent / 'hashes' / (VERSION_ID + ".json")
 RESULT_LIBRARY = Path(__file__).parent / 'result_hashes' / (VERSION_ID + ".json")
 HASH_LIBRARY_FLAG = rf'--mpl-hash-library={HASH_LIBRARY}'
 
+BASELINE_IMAGES_FLAG = '--mpl-baseline-path=baseline'
+
 TEST_FILE = Path(__file__).parent / 'subtest.py'
 
 # Global settings to update baselines when running pytest
@@ -101,3 +103,48 @@ def run_subtest(baseline_summary_name, tmp_path, args, summaries=None, xfail=Tru
 
     # Ensure reported images exist
     assert_existence(result_summary, path=results_path)
+
+
+def test_default(tmp_path):
+    run_subtest('test_default', tmp_path, [])
+
+
+def test_hash(tmp_path):
+    run_subtest('test_hash', tmp_path, [HASH_LIBRARY_FLAG])
+
+
+def test_hybrid(tmp_path):
+    run_subtest('test_hybrid', tmp_path, [HASH_LIBRARY_FLAG, BASELINE_IMAGES_FLAG])
+
+
+def test_results_always(tmp_path):
+    run_subtest('test_results_always', tmp_path,
+                [HASH_LIBRARY_FLAG, BASELINE_IMAGES_FLAG, '--mpl-results-always'])
+
+
+def test_html(tmp_path):
+    run_subtest('test_results_always', tmp_path,
+                [HASH_LIBRARY_FLAG, BASELINE_IMAGES_FLAG], summaries=['html'])
+    assert (tmp_path / 'results' / 'fig_comparison.html').exists()
+    assert (tmp_path / 'results' / 'extra.js').exists()
+    assert (tmp_path / 'results' / 'styles.css').exists()
+
+
+def test_html_hashes_only(tmp_path):
+    run_subtest('test_html_hashes_only', tmp_path, [HASH_LIBRARY_FLAG], summaries=['html'])
+    assert (tmp_path / 'results' / 'fig_comparison.html').exists()
+    assert (tmp_path / 'results' / 'extra.js').exists()
+    assert (tmp_path / 'results' / 'styles.css').exists()
+
+
+def test_html_images_only(tmp_path):
+    run_subtest('test_html_images_only', tmp_path, [], summaries=['html'])
+    assert (tmp_path / 'results' / 'fig_comparison.html').exists()
+    assert (tmp_path / 'results' / 'extra.js').exists()
+    assert (tmp_path / 'results' / 'styles.css').exists()
+
+
+def test_basic_html(tmp_path):
+    run_subtest('test_results_always', tmp_path,
+                [HASH_LIBRARY_FLAG, BASELINE_IMAGES_FLAG], summaries=['basic-html'])
+    assert (tmp_path / 'results' / 'fig_comparison_basic.html').exists()
