@@ -1,15 +1,21 @@
 import re
+import json
 from pathlib import Path
 
-__all__ = ['diff_summary', 'assert_existence']
+__all__ = ['diff_summary', 'assert_existence', 'replace_baseline_hash', 'patch_summary']
 
 
 class MatchError(Exception):
     pass
 
 
-def diff_summary(baseline, result):
+def diff_summary(baseline, result, hash_library=None):
     """Diff a pytest-mpl summary dictionary."""
+    if hash_library and hash_library.exists():
+        # Load "correct" baseline hashes
+        with open(hash_library, 'r') as f:
+            hash_library = json.load(f)
+
     # Get test names
     baseline_tests = set(baseline.keys())
     result_tests = set(result.keys())
@@ -22,6 +28,10 @@ def diff_summary(baseline, result):
         # Get baseline and result summary for the specific test
         baseline_summary = baseline[test]
         result_summary = result[test]
+
+        # Swap the baseline hashes in the summary for the baseline hashes in the hash library
+        if hash_library:
+            baseline_summary = replace_baseline_hash(baseline_summary, hash_library[test])
 
         # Get keys of recorded items
         baseline_keys = set(baseline_summary.keys())
@@ -76,6 +86,46 @@ def diff_dict_item(baseline, result, error=''):
         return
 
     raise MatchError(error)
+
+
+def patch_summary(summary, patch_file):
+    """Replace in `summary` any items defined in `patch_file`."""
+    # By only applying patches, changes between MPL versions are more obvious.
+    with open(patch_file, 'r') as f:
+        patch = json.load(f)
+    for test, test_summary in patch.items():
+        for k, v in test_summary.items():
+            summary[test][k] = v
+    return summary
+
+
+def replace_baseline_hash(summary, new_baseline):
+    """Replace a baseline hash in a pytest-mpl summary with a different baseline.
+
+    Result hashes which match the existing baseline are also updated.
+
+    Parameters
+    ----------
+    summary : dict
+        A single test from a pytest-mpl summary.
+    new_baseline : str
+        The new baseline.
+    """
+    assert isinstance(new_baseline, str)
+    old_baseline = summary['baseline_hash']
+    if not isinstance(old_baseline, str) or old_baseline == new_baseline:
+        return summary  # Either already correct or missing
+
+    # If the old result hash matches the old baseline hash, also update the result hash
+    old_result = summary['result_hash']
+    if isinstance(old_result, str) and old_result == old_baseline:
+        summary['result_hash'] = new_baseline
+
+    # Update the baseline hash
+    summary['baseline_hash'] = new_baseline
+    summary['status_msg'] = summary['status_msg'].replace(old_baseline, new_baseline)
+
+    return summary
 
 
 def assert_existence(summary, items=('baseline_image', 'diff_image', 'result_image'), path=''):
