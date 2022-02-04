@@ -2,19 +2,39 @@ import re
 import json
 from pathlib import Path
 
-__all__ = ['diff_summary', 'assert_existence', 'replace_baseline_hash', 'patch_summary']
+__all__ = ['diff_summary', 'assert_existence', 'patch_summary']
 
 
 class MatchError(Exception):
     pass
 
 
-def diff_summary(baseline, result, hash_library=None):
-    """Diff a pytest-mpl summary dictionary."""
-    if hash_library and hash_library.exists():
+def diff_summary(baseline, result, baseline_hash_library=None, result_hash_library=None):
+    """Diff a pytest-mpl summary dictionary.
+
+    Parameters
+    ----------
+    baseline : dict
+        Baseline pytest-mpl summary.
+    result : dict
+        Generated result pytest-mpl summary.
+    baseline_hash_library : Path, optional, default=None
+        Path to the baseline hash library.
+        Baseline hashes in the baseline summary are updated to these values
+        to handle different Matplotlib versions.
+    result_hash_library : Path, optional, default=None
+        Path to the "baseline" image hash library.
+        Result hashes in the baseline summary are updated to these values
+        to handle different Matplotlib versions.
+    """
+    if baseline_hash_library and baseline_hash_library.exists():
         # Load "correct" baseline hashes
-        with open(hash_library, 'r') as f:
-            hash_library = json.load(f)
+        with open(baseline_hash_library, 'r') as f:
+            baseline_hash_library = json.load(f)
+    if result_hash_library and result_hash_library.exists():
+        # Load "correct" result hashes
+        with open(result_hash_library, 'r') as f:
+            result_hash_library = json.load(f)
 
     # Get test names
     baseline_tests = set(baseline.keys())
@@ -31,9 +51,14 @@ def diff_summary(baseline, result, hash_library=None):
         baseline_summary = baseline[test]
         result_summary = result[test]
 
-        # Swap the baseline hashes in the summary for the baseline hashes in the hash library
-        if hash_library:
-            baseline_summary = replace_baseline_hash(baseline_summary, hash_library[test])
+        # Swap the baseline and result hashes in the summary
+        # for the corresponding hashes in each hash library
+        if baseline_hash_library:
+            baseline_summary = replace_hash(baseline_summary, 'baseline_hash',
+                                            baseline_hash_library[test])
+        if result_hash_library:
+            baseline_summary = replace_hash(baseline_summary, 'result_hash',
+                                            result_hash_library[test])
 
         # Get keys of recorded items
         baseline_keys = set(baseline_summary.keys())
@@ -107,31 +132,26 @@ def patch_summary(summary, patch_file):
     return summary
 
 
-def replace_baseline_hash(summary, new_baseline):
-    """Replace a baseline hash in a pytest-mpl summary with a different baseline.
-
-    Result hashes which match the existing baseline are also updated.
+def replace_hash(summary, hash_key, new_hash):
+    """Replace a hash in a pytest-mpl summary with a different hash.
 
     Parameters
     ----------
     summary : dict
         A single test from a pytest-mpl summary.
-    new_baseline : str
-        The new baseline.
+    hash_key : str
+        Key of the hash. Either `baseline_hash` or `result_hash`.
+    new_hash : str
+        The new hash.
     """
-    assert isinstance(new_baseline, str)
-    old_baseline = summary['baseline_hash']
-    if not isinstance(old_baseline, str) or old_baseline == new_baseline:
+    assert isinstance(new_hash, str)
+    old_hash = summary[hash_key]
+    if not isinstance(old_hash, str) or old_hash == new_hash:
         return summary  # Either already correct or missing
 
-    # If the old result hash matches the old baseline hash, also update the result hash
-    old_result = summary['result_hash']
-    if isinstance(old_result, str) and old_result == old_baseline:
-        summary['result_hash'] = new_baseline
-
-    # Update the baseline hash
-    summary['baseline_hash'] = new_baseline
-    summary['status_msg'] = summary['status_msg'].replace(old_baseline, new_baseline)
+    # Update the hash
+    summary[hash_key] = new_hash
+    summary['status_msg'] = summary['status_msg'].replace(old_hash, new_hash)
 
     return summary
 

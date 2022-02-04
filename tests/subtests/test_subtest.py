@@ -15,6 +15,7 @@ MPL_VERSION = Version(matplotlib.__version__)
 FTV = matplotlib.ft2font.__freetype_version__.replace('.', '')
 VERSION_ID = f"mpl{MPL_VERSION.major}{MPL_VERSION.minor}_ft{FTV}"
 HASH_LIBRARY = Path(__file__).parent / 'hashes' / (VERSION_ID + ".json")
+RESULT_LIBRARY = Path(__file__).parent / 'result_hashes' / (VERSION_ID + ".json")
 HASH_LIBRARY_FLAG = rf'--mpl-hash-library={HASH_LIBRARY}'
 
 TEST_FILE = Path(__file__).parent / 'subtest.py'
@@ -95,7 +96,8 @@ def run_subtest(baseline_summary_name, tmp_path, args, summaries=None, xfail=Tru
     # Note: version specific hashes should be handled by diff_summary instead
 
     # Compare summaries
-    diff_summary(baseline_summary, result_summary, hash_library=HASH_LIBRARY)
+    diff_summary(baseline_summary, result_summary,
+                 baseline_hash_library=HASH_LIBRARY, result_hash_library=RESULT_LIBRARY)
 
     # Ensure reported images exist
     assert_existence(result_summary, path=results_path)
