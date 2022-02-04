@@ -17,6 +17,7 @@ VERSION_ID = f"mpl{MPL_VERSION.major}{MPL_VERSION.minor}_ft{FTV}"
 HASH_LIBRARY = Path(__file__).parent / 'hashes' / (VERSION_ID + ".json")
 RESULT_LIBRARY = Path(__file__).parent / 'result_hashes' / (VERSION_ID + ".json")
 HASH_LIBRARY_FLAG = rf'--mpl-hash-library={HASH_LIBRARY}'
+FULL_BASELINE_PATH = Path(__file__).parent / 'baseline'
 
 BASELINE_IMAGES_FLAG = '--mpl-baseline-path=baseline'
 
@@ -62,7 +63,7 @@ def run_subtest(baseline_summary_name, tmp_path, args, summaries=None, xfail=Tru
     mpl_args = ['--mpl', rf'--mpl-results-path={results_path.as_posix()}',
                 f'--mpl-generate-summary={summaries}']
     if update_baseline:
-        mpl_args += ['--mpl-generate-path=baseline']
+        mpl_args += [rf'--mpl-generate-path={FULL_BASELINE_PATH}']
         if HASH_LIBRARY.exists():
             mpl_args += [rf'--mpl-generate-hash-library={HASH_LIBRARY}']
 
@@ -72,6 +73,9 @@ def run_subtest(baseline_summary_name, tmp_path, args, summaries=None, xfail=Tru
     # If updating baseline, don't check summaries
     if update_baseline:
         assert status == 0
+        if HASH_LIBRARY.exists():
+            # Keep in sync. Use `git add -p` to commit specific lines.
+            shutil.copy(HASH_LIBRARY, RESULT_LIBRARY)
         return
 
     # Ensure exit status is as expected

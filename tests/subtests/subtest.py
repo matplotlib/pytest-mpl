@@ -84,23 +84,24 @@ def test_hdiff_imatch_savefig():
     return plot([1, 2, 3, 4])
 
 
-# Different baseline directory
-# TODO: Test with a remote `baseline_dir`
-@pytest.mark.mpl_image_compare(baseline_dir='baseline/other')
-def test_hdiff_imatch_baselinedir():
-    return plot([4, 2, 1, 4])
-
-
-# Different filename
-@pytest.mark.mpl_image_compare(filename='test_hdiff_imatch_filename_other.png')
-def test_hdiff_imatch_filename():
-    return plot([4, 2, 1, 4])
-
-
-# Different hash library
-@pytest.mark.mpl_image_compare(hash_library='hashes/other/other.json')
-def test_hdiff_imatch_filename():
-    return plot([4, 2, 1, 4])
+# TODO: Implement these path altering tests later
+# # Different baseline directory
+# # TODO: Test with a remote `baseline_dir`
+# @pytest.mark.mpl_image_compare(baseline_dir='baseline/other')
+# def test_hdiff_imatch_baselinedir():
+#     return plot([4, 2, 1, 4])
+#
+#
+# # Different filename
+# @pytest.mark.mpl_image_compare(filename='test_hdiff_imatch_filename_other.png')
+# def test_hdiff_imatch_filename():
+#     return plot([4, 2, 1, 4])
+#
+#
+# # Different hash library
+# @pytest.mark.mpl_image_compare(hash_library='hashes/other/other.json')
+# def test_hdiff_imatch_hashlibrary():
+#     return plot([4, 2, 1, 4])
 
 
 # Different style
