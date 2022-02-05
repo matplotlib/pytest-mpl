@@ -1,0 +1,13 @@
+{
+  "subtests.subtest.test_hmatch_imatch": "4a47c9b7920779cc83eabe2bbb64b9c40745d9d8abfa57857f93a5d8f12a5a03",
+  "subtests.subtest.test_hmatch_idiff": "2b48790b0a2cee4b41cdb9820336acaf229ba811ae21c6a92b4b92838843adfa",
+  "subtests.subtest.test_hmatch_imissing": "e937fa1997d088c904ca35b1ab542e2285ea47b84df976490380f9c5f5b5f8ae",
+  "subtests.subtest.test_hdiff_imatch": "d1ff8f315d44b06de8f45d937af46a67bd1389edd6e4cde32f9feb4b7472284f",
+  "subtests.subtest.test_hdiff_idiff": "d1ff21206ef454a25417e3ba0bd3235c84518cb202c2d1fa7afcfdfcde5fdcde",
+  "subtests.subtest.test_hdiff_imissing": "d1ff11cfa34db3a5819ac4127704e86acf27d24d1ea2410718853d3d7e1d6ae0",
+  "subtests.subtest.test_hdiff_imatch_tolerance": "d1ff3273d63a2a26a27e788ff0f090e86c9df7f9f191b7c566321c57de8266d6",
+  "subtests.subtest.test_hdiff_idiff_tolerance": "d1ff3273d63a2a26a27e788ff0f090e86c9df7f9f191b7c566321c57de8266d6",
+  "subtests.subtest.test_hdiff_imatch_savefig": "d1ff803a4b4026d8c6dc0ab950228793ea255cd9b6c629c39db9e6315a9af6bc",
+  "subtests.subtest.test_hdiff_imatch_style": "d1ffde36c2bad7dca131e4cbbfe229f882b5beec62750fb7da29314fd6a1ff13",
+  "subtests.subtest.test_hdiff_imatch_removetext": "d1ff6cf613c6836c1b1202abaae69cf65bc2232a8e31ab1040454bedc8e31e7a"
+}
