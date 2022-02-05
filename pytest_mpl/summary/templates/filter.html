@@ -37,11 +37,13 @@
                 {{ filter_option('image-diff', 'differing images') }}
                 {{ filter_option('image-missing', 'no baseline image') }}
             </div>
+            {% if results.warn_missing['baseline_hash'] -%}
             <div class="list-group m-2 mpl-hash">
                 {{ filter_option('hash-match', 'matching hashes') }}
                 {{ filter_option('hash-diff', 'differing hashes') }}
                 {{ filter_option('hash-missing', 'no baseline hash') }}
             </div>
+            {%- endif %}
             <div class="d-flex">
                 <button type="submit" class="btn btn-primary m-2" data-bs-dismiss="offcanvas">Apply</button>
                 <button type="submit" class="btn btn-outline-secondary m-2" onclick="resetFilters()">Reset</button>

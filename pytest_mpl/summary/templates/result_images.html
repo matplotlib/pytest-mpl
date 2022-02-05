@@ -44,6 +44,7 @@
                         {{ pre_data('tolerance', r.tolerance, 'Tolerance') }}
                     </div>
                 </div>
+                {% if results.warn_missing['baseline_hash'] -%}
                 <div class="card text-white bg-{{ r.hash_status | status_class }} mb-3 mpl-hash">
                     <div class="card-header">{{ r.hash_status | hash_status_msg }}</div>
                     <div class="card-body">
@@ -51,6 +52,7 @@
                         {{ pre_data('result_hash', r.result_hash, 'Result') }}
                     </div>
                 </div>
+                {%- endif %}
             </div>
         </div>
     </div>
