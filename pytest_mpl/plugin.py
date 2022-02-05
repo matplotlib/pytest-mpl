@@ -140,7 +140,7 @@ def pytest_addoption(parser):
     group.addoption('--mpl-results-path', help=results_path_help, action='store')
     parser.addini('mpl-results-path', help=results_path_help)
 
-    results_always_help = ("Always generate result images, not just for failed tests. "
+    results_always_help = ("Always compare to baseline images and save result images, even for passing tests. "
                            "This option is automatically applied when generating a HTML summary.")
     group.addoption('--mpl-results-always', action='store_true',
                     help=results_always_help)
@@ -272,7 +272,7 @@ class ImageComparison:
             if len(unsupported_formats) > 0:
                 raise ValueError(f"The mpl summary type(s) '{sorted(unsupported_formats)}' "
                                  "are not supported.")
-            # Ignore `results_always` and always save result images for HTML output
+            # When generating HTML always apply `results_always`
             if generate_summary & {'html', 'basic-html'}:
                 results_always = True
         self.generate_summary = generate_summary
