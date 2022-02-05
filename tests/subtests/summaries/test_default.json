@@ -1,0 +1,156 @@
+{
+  "subtests.subtest.test_hmatch_imatch": {
+    "status": "passed",
+    "status_msg": "Image comparison passed.",
+    "baseline_image": null,
+    "diff_image": null,
+    "rms": null,
+    "tolerance": 2,
+    "result_image": null,
+    "baseline_hash": null,
+    "result_hash": null
+  },
+  "subtests.subtest.test_hmatch_idiff": {
+    "status": "failed",
+    "status_msg": "Error: Image files did not match.\n  RMS Value: 11.100353848213828\n  Expected:  \n    /private/var/folders/28/h4xnr2f56qbcdlrntr3z54f80000gp/T/pytest-of-conor/pytest-124/test_default0/results/subtests.subtest.test_hmatch_idiff/baseline.png\n  Actual:    \n    /private/var/folders/28/h4xnr2f56qbcdlrntr3z54f80000gp/T/pytest-of-conor/pytest-124/test_default0/results/subtests.subtest.test_hmatch_idiff/result.png\n  Difference:\n    /private/var/folders/28/h4xnr2f56qbcdlrntr3z54f80000gp/T/pytest-of-conor/pytest-124/test_default0/results/subtests.subtest.test_hmatch_idiff/result-failed-diff.png\n  Tolerance: \n    2",
+    "baseline_image": "subtests.subtest.test_hmatch_idiff/baseline.png",
+    "diff_image": "subtests.subtest.test_hmatch_idiff/result-failed-diff.png",
+    "rms": 11.100353848213828,
+    "tolerance": 2,
+    "result_image": "subtests.subtest.test_hmatch_idiff/result.png",
+    "baseline_hash": null,
+    "result_hash": null
+  },
+  "subtests.subtest.test_hmatch_imissing": {
+    "status": "failed",
+    "status_msg": "Image file not found for comparison test in: \n\t/Users/conor/Documents/pytest-mpl/tests/subtests/baseline\n(This is expected for new tests.)\nGenerated Image: \n\t/private/var/folders/28/h4xnr2f56qbcdlrntr3z54f80000gp/T/pytest-of-conor/pytest-124/test_default0/results/subtests.subtest.test_hmatch_imissing/result.png",
+    "baseline_image": null,
+    "diff_image": null,
+    "rms": null,
+    "tolerance": null,
+    "result_image": "subtests.subtest.test_hmatch_imissing/result.png",
+    "baseline_hash": null,
+    "result_hash": null
+  },
+  "subtests.subtest.test_hdiff_imatch": {
+    "status": "passed",
+    "status_msg": "Image comparison passed.",
+    "baseline_image": null,
+    "diff_image": null,
+    "rms": null,
+    "tolerance": 2,
+    "result_image": null,
+    "baseline_hash": null,
+    "result_hash": null
+  },
+  "subtests.subtest.test_hdiff_idiff": {
+    "status": "failed",
+    "status_msg": "Error: Image files did not match.\n  RMS Value: 11.182677079602481\n  Expected:  \n    /private/var/folders/28/h4xnr2f56qbcdlrntr3z54f80000gp/T/pytest-of-conor/pytest-124/test_default0/results/subtests.subtest.test_hdiff_idiff/baseline.png\n  Actual:    \n    /private/var/folders/28/h4xnr2f56qbcdlrntr3z54f80000gp/T/pytest-of-conor/pytest-124/test_default0/results/subtests.subtest.test_hdiff_idiff/result.png\n  Difference:\n    /private/var/folders/28/h4xnr2f56qbcdlrntr3z54f80000gp/T/pytest-of-conor/pytest-124/test_default0/results/subtests.subtest.test_hdiff_idiff/result-failed-diff.png\n  Tolerance: \n    2",
+    "baseline_image": "subtests.subtest.test_hdiff_idiff/baseline.png",
+    "diff_image": "subtests.subtest.test_hdiff_idiff/result-failed-diff.png",
+    "rms": 11.182677079602481,
+    "tolerance": 2,
+    "result_image": "subtests.subtest.test_hdiff_idiff/result.png",
+    "baseline_hash": null,
+    "result_hash": null
+  },
+  "subtests.subtest.test_hdiff_imissing": {
+    "status": "failed",
+    "status_msg": "Image file not found for comparison test in: \n\t/Users/conor/Documents/pytest-mpl/tests/subtests/baseline\n(This is expected for new tests.)\nGenerated Image: \n\t/private/var/folders/28/h4xnr2f56qbcdlrntr3z54f80000gp/T/pytest-of-conor/pytest-124/test_default0/results/subtests.subtest.test_hdiff_imissing/result.png",
+    "baseline_image": null,
+    "diff_image": null,
+    "rms": null,
+    "tolerance": null,
+    "result_image": "subtests.subtest.test_hdiff_imissing/result.png",
+    "baseline_hash": null,
+    "result_hash": null
+  },
+  "subtests.subtest.test_hmissing_imatch": {
+    "status": "passed",
+    "status_msg": "Image comparison passed.",
+    "baseline_image": null,
+    "diff_image": null,
+    "rms": null,
+    "tolerance": 2,
+    "result_image": null,
+    "baseline_hash": null,
+    "result_hash": null
+  },
+  "subtests.subtest.test_hmissing_idiff": {
+    "status": "failed",
+    "status_msg": "Error: Image files did not match.\n  RMS Value: 12.12938597648977\n  Expected:  \n    /private/var/folders/28/h4xnr2f56qbcdlrntr3z54f80000gp/T/pytest-of-conor/pytest-124/test_default0/results/subtests.subtest.test_hmissing_idiff/baseline.png\n  Actual:    \n    /private/var/folders/28/h4xnr2f56qbcdlrntr3z54f80000gp/T/pytest-of-conor/pytest-124/test_default0/results/subtests.subtest.test_hmissing_idiff/result.png\n  Difference:\n    /private/var/folders/28/h4xnr2f56qbcdlrntr3z54f80000gp/T/pytest-of-conor/pytest-124/test_default0/results/subtests.subtest.test_hmissing_idiff/result-failed-diff.png\n  Tolerance: \n    2",
+    "baseline_image": "subtests.subtest.test_hmissing_idiff/baseline.png",
+    "diff_image": "subtests.subtest.test_hmissing_idiff/result-failed-diff.png",
+    "rms": 12.12938597648977,
+    "tolerance": 2,
+    "result_image": "subtests.subtest.test_hmissing_idiff/result.png",
+    "baseline_hash": null,
+    "result_hash": null
+  },
+  "subtests.subtest.test_hmissing_imissing": {
+    "status": "failed",
+    "status_msg": "Image file not found for comparison test in: \n\t/Users/conor/Documents/pytest-mpl/tests/subtests/baseline\n(This is expected for new tests.)\nGenerated Image: \n\t/private/var/folders/28/h4xnr2f56qbcdlrntr3z54f80000gp/T/pytest-of-conor/pytest-124/test_default0/results/subtests.subtest.test_hmissing_imissing/result.png",
+    "baseline_image": null,
+    "diff_image": null,
+    "rms": null,
+    "tolerance": null,
+    "result_image": "subtests.subtest.test_hmissing_imissing/result.png",
+    "baseline_hash": null,
+    "result_hash": null
+  },
+  "subtests.subtest.test_hdiff_imatch_tolerance": {
+    "status": "passed",
+    "status_msg": "Image comparison passed.",
+    "baseline_image": null,
+    "diff_image": null,
+    "rms": null,
+    "tolerance": 200,
+    "result_image": null,
+    "baseline_hash": null,
+    "result_hash": null
+  },
+  "subtests.subtest.test_hdiff_idiff_tolerance": {
+    "status": "failed",
+    "status_msg": "Error: Image files did not match.\n  RMS Value: 29.260332173249314\n  Expected:  \n    /private/var/folders/28/h4xnr2f56qbcdlrntr3z54f80000gp/T/pytest-of-conor/pytest-124/test_default0/results/subtests.subtest.test_hdiff_idiff_tolerance/baseline.png\n  Actual:    \n    /private/var/folders/28/h4xnr2f56qbcdlrntr3z54f80000gp/T/pytest-of-conor/pytest-124/test_default0/results/subtests.subtest.test_hdiff_idiff_tolerance/result.png\n  Difference:\n    /private/var/folders/28/h4xnr2f56qbcdlrntr3z54f80000gp/T/pytest-of-conor/pytest-124/test_default0/results/subtests.subtest.test_hdiff_idiff_tolerance/result-failed-diff.png\n  Tolerance: \n    3",
+    "baseline_image": "subtests.subtest.test_hdiff_idiff_tolerance/baseline.png",
+    "diff_image": "subtests.subtest.test_hdiff_idiff_tolerance/result-failed-diff.png",
+    "rms": 29.260332173249314,
+    "tolerance": 3,
+    "result_image": "subtests.subtest.test_hdiff_idiff_tolerance/result.png",
+    "baseline_hash": null,
+    "result_hash": null
+  },
+  "subtests.subtest.test_hdiff_imatch_savefig": {
+    "status": "passed",
+    "status_msg": "Image comparison passed.",
+    "baseline_image": null,
+    "diff_image": null,
+    "rms": null,
+    "tolerance": 2,
+    "result_image": null,
+    "baseline_hash": null,
+    "result_hash": null
+  },
+  "subtests.subtest.test_hdiff_imatch_style": {
+    "status": "passed",
+    "status_msg": "Image comparison passed.",
+    "baseline_image": null,
+    "diff_image": null,
+    "rms": null,
+    "tolerance": 2,
+    "result_image": null,
+    "baseline_hash": null,
+    "result_hash": null
+  },
+  "subtests.subtest.test_hdiff_imatch_removetext": {
+    "status": "passed",
+    "status_msg": "Image comparison passed.",
+    "baseline_image": null,
+    "diff_image": null,
+    "rms": null,
+    "tolerance": 2,
+    "result_image": null,
+    "baseline_hash": null,
+    "result_hash": null
+  }
+}
