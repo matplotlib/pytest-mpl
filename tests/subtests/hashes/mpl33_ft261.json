@@ -1,0 +1,13 @@
+{
+  "subtests.subtest.test_hmatch_imatch": "42c391b37022e2c4edb53f5fd988e94f421905b40cea1544e62ffb3c049292a8",
+  "subtests.subtest.test_hmatch_idiff": "c14ba098dbda0988e35be5724ffb15b8e666253a4b37dec6a21203607c17473d",
+  "subtests.subtest.test_hmatch_imissing": "6c07931bac1a926c88bea5d07c40c8c1ce30648712e3fc963028193863e3ae65",
+  "subtests.subtest.test_hdiff_imatch": "d1ff383721a0c395c856302be7de8a8138a2693651425dc181ede262860aef7b",
+  "subtests.subtest.test_hdiff_idiff": "d1fff55ace5ef7e45dcd9913b54e0d9970028cae59666e937ccb3586d0f76e9a",
+  "subtests.subtest.test_hdiff_imissing": "d1ff35845c5887c034230e02aa4b60e053c779c693867e4803e1d72dde9240f7",
+  "subtests.subtest.test_hdiff_imatch_tolerance": "d1ff6912989a4b47ea910b04edfa58cf5d756d60825ea52ad59dcde8e03d4d8b",
+  "subtests.subtest.test_hdiff_idiff_tolerance": "d1ff6912989a4b47ea910b04edfa58cf5d756d60825ea52ad59dcde8e03d4d8b",
+  "subtests.subtest.test_hdiff_imatch_savefig": "d1ff5dc3f9e8acda06b0097ee893819be62ca9adbbcca7d2300602f079a93b92",
+  "subtests.subtest.test_hdiff_imatch_style": "d1ff7692747ec72d3c8669cdb3d66468426b83ecf49a214cd918b8f5a0752a1f",
+  "subtests.subtest.test_hdiff_imatch_removetext": "d1ff0d60d794a7cdfec884463c4fe14612ab1fe7fda4bc7fa702c8f1615e1539"
+}
