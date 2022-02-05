@@ -188,8 +188,11 @@ running tests by running ``pytest`` with::
 
     pytest --mpl --mpl-baseline-path=baseline_images
 
-This directory will be interpreted as being relative to where the tests
-are run. In addition, if both this option and the ``baseline_dir``
+This directory will be interpreted as being relative to where pytest
+is run. However, if the ``--mpl-baseline-relative`` option is also
+included, this directory will be interpreted as being relative to
+the current test directory.
+In addition, if both this option and the ``baseline_dir``
 option in the ``mpl_image_compare`` decorator are used, the one in the
 decorator takes precedence.
 
