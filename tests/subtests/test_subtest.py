@@ -7,6 +7,7 @@ from pathlib import Path
 import matplotlib
 import matplotlib.ft2font
 from packaging.version import Version
+import pytest
 
 from .helpers import assert_existence, diff_summary, patch_summary
 
@@ -113,19 +114,23 @@ def test_default(tmp_path):
     run_subtest('test_default', tmp_path, [])
 
 
+@pytest.mark.skipif(not HASH_LIBRARY.exists(), reason="No hash library for this mpl version")
 def test_hash(tmp_path):
     run_subtest('test_hash', tmp_path, [HASH_LIBRARY_FLAG])
 
 
+@pytest.mark.skipif(not HASH_LIBRARY.exists(), reason="No hash library for this mpl version")
 def test_hybrid(tmp_path):
     run_subtest('test_hybrid', tmp_path, [HASH_LIBRARY_FLAG, BASELINE_IMAGES_FLAG])
 
 
+@pytest.mark.skipif(not HASH_LIBRARY.exists(), reason="No hash library for this mpl version")
 def test_results_always(tmp_path):
     run_subtest('test_results_always', tmp_path,
                 [HASH_LIBRARY_FLAG, BASELINE_IMAGES_FLAG, '--mpl-results-always'])
 
 
+@pytest.mark.skipif(not HASH_LIBRARY.exists(), reason="No hash library for this mpl version")
 def test_html(tmp_path):
     run_subtest('test_results_always', tmp_path,
                 [HASH_LIBRARY_FLAG, BASELINE_IMAGES_FLAG], summaries=['html'])
@@ -134,6 +139,7 @@ def test_html(tmp_path):
     assert (tmp_path / 'results' / 'styles.css').exists()
 
 
+@pytest.mark.skipif(not HASH_LIBRARY.exists(), reason="No hash library for this mpl version")
 def test_html_hashes_only(tmp_path):
     run_subtest('test_html_hashes_only', tmp_path, [HASH_LIBRARY_FLAG], summaries=['html'])
     assert (tmp_path / 'results' / 'fig_comparison.html').exists()
@@ -148,6 +154,7 @@ def test_html_images_only(tmp_path):
     assert (tmp_path / 'results' / 'styles.css').exists()
 
 
+@pytest.mark.skipif(not HASH_LIBRARY.exists(), reason="No hash library for this mpl version")
 def test_basic_html(tmp_path):
     run_subtest('test_results_always', tmp_path,
                 [HASH_LIBRARY_FLAG, BASELINE_IMAGES_FLAG], summaries=['basic-html'])
