@@ -489,9 +489,7 @@ class ImageComparison:
             return json.load(fp)
 
     def compare_image_to_hash_library(self, item, fig, result_dir, summary=None):
-        new_test = False
         hash_comparison_pass = False
-        baseline_image_path = None
         if summary is None:
             summary = {}
 
@@ -506,85 +504,58 @@ class ImageComparison:
 
         hash_library = self.load_hash_library(hash_library_filename)
         hash_name = self.generate_test_name(item)
+        baseline_hash = hash_library.get(hash_name, None)
+        summary['baseline_hash'] = baseline_hash
 
         test_hash = self.generate_image_hash(item, fig)
         summary['result_hash'] = test_hash
 
-        if hash_name not in hash_library:
-            new_test = True
+        if baseline_hash is None:  # hash-missing
             summary['status'] = 'failed'
-            error_message = (f"Hash for test '{hash_name}' not found in {hash_library_filename}. "
-                             f"Generated hash is {test_hash}.")
-            summary['status_msg'] = error_message
-        else:
-            summary['baseline_hash'] = hash_library[hash_name]
+            summary['status_msg'] = (f"Hash for test '{hash_name}' not found in {hash_library_filename}. "
+                                     f"Generated hash is {test_hash}.")
+        elif test_hash == baseline_hash:  # hash-match
+            hash_comparison_pass = True
+            summary['status'] = 'passed'
+            summary['status_msg'] = 'Test hash matches baseline hash.'
+        else:  # hash-diff
+            summary['status'] = 'failed'
+            summary['status_msg'] = (f"Hash {test_hash} doesn't match hash "
+                                     f"{baseline_hash} in library "
+                                     f"{hash_library_filename} for test {hash_name}.")
 
         # Save the figure for later summary (will be removed later if not needed)
         test_image = (result_dir / "result.png").absolute()
         fig.savefig(str(test_image), **savefig_kwargs)
         summary['result_image'] = str(test_image.relative_to(self.results_dir))
 
-        if not new_test:
-            if test_hash == hash_library[hash_name]:
-                hash_comparison_pass = True
-                summary['status'] = 'passed'
-                summary['status_msg'] = 'Test hash matches baseline hash.'
-            else:
-                error_message = (f"Hash {test_hash} doesn't match hash "
-                                 f"{hash_library[hash_name]} in library "
-                                 f"{hash_library_filename} for test {hash_name}.")
-                summary['status'] = 'failed'
-                summary['status_msg'] = 'Test hash does not match baseline hash.'
+        # Hybrid mode (hash and image comparison)
+        if self.baseline_directory_specified(item):
 
-        # If the compare has only been specified with hash and not baseline
-        # dir, don't attempt to find a baseline image at the default path.
-        if not hash_comparison_pass and not self.baseline_directory_specified(item) or new_test:
-            return error_message
+            # Skip image comparison if hash matches (unless `--mpl-results-always`)
+            if hash_comparison_pass and not self.results_always:
+                return
 
-        # If this is not a new test try and get the baseline image.
-        if not new_test:
-            baseline_error = None
-            baseline_summary = {}
-            # Ignore Errors here as it's possible the reference image dosen't exist yet.
-            try:
-                baseline_image_path = self.obtain_baseline_image(item, result_dir)
-                baseline_image = baseline_image_path
-                if baseline_image and not baseline_image.exists():
-                    baseline_image = None
-                # Get the baseline and generate a diff image, always so that
-                # --mpl-results-always can be respected.
+            # Run image comparison
+            baseline_summary = {}  # summary for image comparison to merge with hash comparison summary
+            try:  # Ignore all errors as success does not influence the overall test result
                 baseline_comparison = self.compare_image_to_baseline(item, fig, result_dir,
                                                                      summary=baseline_summary)
-            except Exception as e:
-                baseline_image = None
-                baseline_error = e
-            for k in ['baseline_image', 'diff_image', 'rms', 'tolerance', 'result_image']:
-                summary[k] = summary[k] or baseline_summary.get(k)
+            except Exception as baseline_error:  # Append to test error later
+                baseline_comparison = str(baseline_error)
+            else:  # Update main summary
+                for k in ['baseline_image', 'diff_image', 'rms', 'tolerance', 'result_image']:
+                    summary[k] = summary[k] or baseline_summary.get(k)
 
-        # If the hash comparison passes then return
-        if hash_comparison_pass:
+            # Append the log from image comparison
+            r = baseline_comparison or "The comparison to the baseline image succeeded."
+            summary['status_msg'] += ("\n\n"
+                                      "Image comparison test\n"
+                                      "---------------------\n") + r
+
+        if hash_comparison_pass:  # Return None to indicate test passed
             return
-
-        if baseline_image is None:
-            error_message += f"\nUnable to find baseline image for {item}."
-            if baseline_error:
-                error_message += f"\n{baseline_error}"
-            summary['status'] = 'failed'
-            summary['status_msg'] = error_message
-            return error_message
-
-        # Override the tolerance (if not explicitly set) to 0 as the hashes are not forgiving
-        tolerance = compare.kwargs.get('tolerance', None)
-        if not tolerance:
-            compare.kwargs['tolerance'] = 0
-
-        comparison_error = (baseline_comparison or
-                            "\nHowever, the comparison to the baseline image succeeded.")
-
-        error_message = f"{error_message}\n{comparison_error}"
-        summary['status'] = 'failed'
-        summary['status_msg'] = error_message
-        return error_message
+        return summary['status_msg']
 
     def pytest_runtest_setup(self, item):  # noqa
 
