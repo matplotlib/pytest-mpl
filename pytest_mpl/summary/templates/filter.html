@@ -16,7 +16,9 @@
             {{ sort_option('status-sort', 'status', 'desc', default=true) }}
             {{ sort_option('collected-sort', 'collected', 'asc') }}
             {{ sort_option('test-name', 'name') }}
+            {% if results.warn_missing['baseline_image'] -%}
             {{ sort_option('rms-sort', 'RMS', 'desc') }}
+            {%- endif %}
         </div>
         <form id="filterForm" onsubmit="return false;">
             <h5>Show tests which have...</h5>
@@ -32,11 +34,13 @@
                 {{ filter_option('overall-failed', 'failed') }}
                 {{ filter_option('overall-skipped', 'skipped') }}
             </div>
+            {% if results.warn_missing['baseline_image'] -%}
             <div class="list-group m-2">
                 {{ filter_option('image-match', 'matching images') }}
                 {{ filter_option('image-diff', 'differing images') }}
                 {{ filter_option('image-missing', 'no baseline image') }}
             </div>
+            {%- endif %}
             {% if results.warn_missing['baseline_hash'] -%}
             <div class="list-group m-2 mpl-hash">
                 {{ filter_option('hash-match', 'matching hashes') }}

@@ -6,6 +6,7 @@
     </div>
     <div class="offcanvas-body">
         <h5 class="card-title">{{ r.name }}</h5>
+        {% if results.warn_missing['baseline_image'] -%}
         <div class="row row-cols-1 row-cols-md-3 g-4 mt-3">
             {% macro image_card(file, name) -%}
             <div class="col py-3 m-0">
@@ -21,6 +22,7 @@
             {{ image_card(r.diff_image, 'Diff') }}
             {{ image_card(r.result_image, 'Result') }}
         </div>
+        {%- endif %}
         <div class="row row-cols-1 row-cols-md-2 g-4">
             <div class="col">
                 <div class="card text-white bg-{{ r.status | status_class }}">
@@ -31,19 +33,23 @@
                 </div>
             </div>
             <div class="col">
+                {% macro pre_data(id, value, name) -%}
+                {% filter indent(width=8) -%}
+                <div class="mb-3 {{ id | replace('_', '-') }}">
+                    <label for="{{ id }}" class="form-label">{{ name }}</label>
+                    <pre class="form-control {{ id | replace('_', '-') }}-value" id="{{ id }}">{{ value }}</pre>
+                </div>
+                {%- endfilter %}
+                {%- endmacro -%}
+                {% if results.warn_missing['baseline_image'] -%}
                 <div class="card text-white bg-{{ r.image_status | status_class }} mb-3 mpl-image">
                     <div class="card-header">{{ r.image_status | image_status_msg }}</div>
                     <div class="card-body">
-                        {% macro pre_data(id, value, name) -%}
-                        <div class="mb-3 {{ id | replace('_', '-') }}">
-                            <label for="{{ id }}" class="form-label">{{ name }}</label>
-                            <pre class="form-control {{ id | replace('_', '-') }}-value" id="{{ id }}">{{ value }}</pre>
-                        </div>
-                        {%- endmacro -%}
                         {{ pre_data('rms', r.rms_str, 'RMS') }}
                         {{ pre_data('tolerance', r.tolerance, 'Tolerance') }}
                     </div>
                 </div>
+                {%- endif %}
                 {% if results.warn_missing['baseline_hash'] -%}
                 <div class="card text-white bg-{{ r.hash_status | status_class }} mb-3 mpl-hash">
                     <div class="card-header">{{ r.hash_status | hash_status_msg }}</div>
