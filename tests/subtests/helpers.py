@@ -2,7 +2,7 @@ import re
 import json
 from pathlib import Path
 
-__all__ = ['diff_summary', 'assert_existence', 'patch_summary']
+__all__ = ['diff_summary', 'assert_existence', 'patch_summary', 'apply_regex']
 
 
 class MatchError(Exception):
@@ -31,10 +31,14 @@ def diff_summary(baseline, result, baseline_hash_library=None, result_hash_libra
         # Load "correct" baseline hashes
         with open(baseline_hash_library, 'r') as f:
             baseline_hash_library = json.load(f)
+    else:
+        baseline_hash_library = {}
     if result_hash_library and result_hash_library.exists():
         # Load "correct" result hashes
         with open(result_hash_library, 'r') as f:
             result_hash_library = json.load(f)
+    else:
+        result_hash_library = {}
 
     # Get test names
     baseline_tests = set(baseline.keys())
@@ -176,3 +180,71 @@ def assert_existence(summary, items=('baseline_image', 'diff_image', 'result_ima
         for item in items:
             if test[item] is not None:
                 assert (Path(path) / test[item]).exists()
+
+
+def _escape_regex(msg):
+    if not msg.startswith('REGEX:'):
+        msg = msg.replace('.', r'\.').replace('(', r'\(').replace(')', r'\)')
+        msg = 'REGEX:' + msg
+    return msg
+
+
+def _escape_path(msg, path):
+    pattern = (rf"({path}[A-Za-z0-9_\-\/.\\]*)" +
+               r"(baseline\\.png|result-failed-diff\\.png|result\\.png|\\.json)")
+    msg = re.sub(pattern, r".*\2", msg)
+    pattern = rf"({path}[A-Za-z0-9_\-\/.\\]*)"
+    msg = re.sub(pattern, r".*", msg)
+    return msg
+
+
+def _escape_float(msg, key):
+    pattern = rf"({key}[0-9]+\\\.[0-9]{{1}})([0-9]+)"
+    msg = re.sub(pattern, r"\1[0-9]*", msg)
+    return msg
+
+
+def apply_regex(file, regex_paths, regex_strs):
+    """Convert all `status_msg` entries in JSON summary file to regex.
+
+    Use in your own script to assist with updating baseline summaries.
+
+    Parameters
+    ----------
+    file : Path
+        JSON summary file to convert `status_msg` to regex in. Overwritten.
+    regex_paths : list of str
+        List of path beginnings to identify paths that need to be converted to regex.
+        E.g. `['/home/user/']`
+        Does: `aaa /home/user/pytest/tmp/result\\.png bbb` -> `aaa .*result\\.png bbb`
+    regex_strs : list of str
+        List of keys to convert following floats to 1 d.p.
+        E.g. ['RMS Value: ']
+        Does: `aaa RMS Value: 12\\.432644 bbb` -> `aaa RMS Value: 12\\.4[0-9]* bbb`
+    """
+
+    with open(file, 'r') as f:
+        summary = json.load(f)
+
+    for test in summary.keys():
+
+        msg = summary[test]['status_msg']
+
+        for signal in [*regex_paths, *regex_strs]:
+            if signal in msg:
+                msg = _escape_regex(msg)
+        if not msg.startswith('REGEX:'):
+            continue
+
+        for signal in regex_paths:
+            if signal in msg:
+                msg = _escape_path(msg, path=signal)
+
+        for signal in regex_strs:
+            if signal in msg:
+                msg = _escape_float(msg, key=signal)
+
+        summary[test]['status_msg'] = msg
+
+    with open(file, 'w') as f:
+        json.dump(summary, f, indent=2)
