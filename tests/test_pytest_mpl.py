@@ -343,7 +343,7 @@ def test_hash_fail_hybrid(tmpdir):
     output = assert_pytest_fails_with(['--mpl', test_file,
                                        rf'--mpl-baseline-path={hash_baseline_dir_abs / "succeed"}'],
                                       "doesn't match hash FAIL in library")
-    assert "However, the comparison to the baseline image succeeded." in output, output
+    assert "The comparison to the baseline image succeeded." in output, output
 
     # If we don't use --mpl option, the test should succeed
     code = call_pytest([test_file])
