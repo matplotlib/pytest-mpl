@@ -53,7 +53,7 @@ def diff_summary(baseline, result, baseline_hash_library=None, result_hash_libra
 
         # Swap the baseline and result hashes in the summary
         # for the corresponding hashes in each hash library
-        if baseline_hash_library:
+        if baseline_hash_library and test in baseline_hash_library:
             baseline_summary = replace_hash(baseline_summary, 'baseline_hash',
                                             baseline_hash_library[test])
         if result_hash_library:
@@ -114,7 +114,11 @@ def diff_dict_item(baseline, result, error=''):
     if isinstance(baseline, (bool, type(None))) and baseline is result:
         return
 
-    # Handle str, int and float
+    # Handle float
+    if isinstance(baseline, float) and abs(baseline - result) < 1e-4:
+        return
+
+    # Handle str and int
     if baseline == result:
         return
 

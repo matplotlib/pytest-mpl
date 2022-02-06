@@ -6,8 +6,8 @@ from pathlib import Path
 
 import matplotlib
 import matplotlib.ft2font
-from packaging.version import Version
 import pytest
+from packaging.version import Version
 
 from .helpers import assert_existence, diff_summary, patch_summary
 
@@ -20,7 +20,8 @@ RESULT_LIBRARY = Path(__file__).parent / 'result_hashes' / (VERSION_ID + ".json"
 HASH_LIBRARY_FLAG = rf'--mpl-hash-library={HASH_LIBRARY}'
 FULL_BASELINE_PATH = Path(__file__).parent / 'baseline'
 
-BASELINE_IMAGES_FLAG = '--mpl-baseline-path=baseline'
+BASELINE_IMAGES_FLAG_REL = ['--mpl-baseline-path=baseline', '--mpl-baseline-relative']
+BASELINE_IMAGES_FLAG_ABS = rf'--mpl-baseline-path={FULL_BASELINE_PATH}'
 
 TEST_FILE = Path(__file__).parent / 'subtest.py'
 
@@ -121,19 +122,19 @@ def test_hash(tmp_path):
 
 @pytest.mark.skipif(not HASH_LIBRARY.exists(), reason="No hash library for this mpl version")
 def test_hybrid(tmp_path):
-    run_subtest('test_hybrid', tmp_path, [HASH_LIBRARY_FLAG, BASELINE_IMAGES_FLAG])
+    run_subtest('test_hybrid', tmp_path, [HASH_LIBRARY_FLAG, BASELINE_IMAGES_FLAG_ABS])
 
 
 @pytest.mark.skipif(not HASH_LIBRARY.exists(), reason="No hash library for this mpl version")
 def test_results_always(tmp_path):
     run_subtest('test_results_always', tmp_path,
-                [HASH_LIBRARY_FLAG, BASELINE_IMAGES_FLAG, '--mpl-results-always'])
+                [HASH_LIBRARY_FLAG, BASELINE_IMAGES_FLAG_ABS, '--mpl-results-always'])
 
 
 @pytest.mark.skipif(not HASH_LIBRARY.exists(), reason="No hash library for this mpl version")
 def test_html(tmp_path):
     run_subtest('test_results_always', tmp_path,
-                [HASH_LIBRARY_FLAG, BASELINE_IMAGES_FLAG], summaries=['html'])
+                [HASH_LIBRARY_FLAG, BASELINE_IMAGES_FLAG_ABS], summaries=['html'])
     assert (tmp_path / 'results' / 'fig_comparison.html').exists()
     assert (tmp_path / 'results' / 'extra.js').exists()
     assert (tmp_path / 'results' / 'styles.css').exists()
@@ -157,5 +158,5 @@ def test_html_images_only(tmp_path):
 @pytest.mark.skipif(not HASH_LIBRARY.exists(), reason="No hash library for this mpl version")
 def test_basic_html(tmp_path):
     run_subtest('test_results_always', tmp_path,
-                [HASH_LIBRARY_FLAG, BASELINE_IMAGES_FLAG], summaries=['basic-html'])
+                [HASH_LIBRARY_FLAG, *BASELINE_IMAGES_FLAG_REL], summaries=['basic-html'])
     assert (tmp_path / 'results' / 'fig_comparison_basic.html').exists()
