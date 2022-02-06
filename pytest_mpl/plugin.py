@@ -431,7 +431,7 @@ class ImageComparison:
 
         test_image = (result_dir / "result.png").absolute()
         fig.savefig(str(test_image), **savefig_kwargs)
-        summary['result_image'] = '%EXISTS%'
+        summary['result_image'] = str(test_image.relative_to(self.results_dir))
 
         if not os.path.exists(baseline_image_ref):
             summary['status'] = 'failed'
@@ -447,7 +447,7 @@ class ImageComparison:
         # copy to our tmpdir to be sure to keep them in case of failure
         baseline_image = (result_dir / "baseline.png").absolute()
         shutil.copyfile(baseline_image_ref, baseline_image)
-        summary['baseline_image'] = '%EXISTS%'
+        summary['baseline_image'] = str(baseline_image.relative_to(self.results_dir))
 
         # Compare image size ourselves since the Matplotlib
         # exception is a bit cryptic in this case and doesn't show
@@ -472,7 +472,8 @@ class ImageComparison:
         else:
             summary['status'] = 'failed'
             summary['rms'] = results['rms']
-            summary['diff_image'] = '%EXISTS%'
+            diff_image = (result_dir / 'result-failed-diff.png').absolute()
+            summary['diff_image'] = str(diff_image.relative_to(self.results_dir))
             template = ['Error: Image files did not match.',
                         'RMS Value: {rms}',
                         'Expected:  \n    {expected}',
@@ -521,7 +522,7 @@ class ImageComparison:
         # Save the figure for later summary (will be removed later if not needed)
         test_image = (result_dir / "result.png").absolute()
         fig.savefig(str(test_image), **savefig_kwargs)
-        summary['result_image'] = '%EXISTS%'
+        summary['result_image'] = str(test_image.relative_to(self.results_dir))
 
         if not new_test:
             if test_hash == hash_library[hash_name]:
@@ -571,8 +572,6 @@ class ImageComparison:
             summary['status'] = 'failed'
             summary['status_msg'] = error_message
             return error_message
-
-        summary['baseline_image'] = '%EXISTS%'
 
         # Override the tolerance (if not explicitly set) to 0 as the hashes are not forgiving
         tolerance = compare.kwargs.get('tolerance', None)
@@ -673,7 +672,7 @@ class ImageComparison:
                         if not self.results_always:
                             shutil.rmtree(result_dir)
                             for image_type in ['baseline_image', 'diff_image', 'result_image']:
-                                summary[image_type] = None  # image no longer %EXISTS%
+                                summary[image_type] = None  # image no longer exists
                     else:
                         self._test_results[str(pathify(test_name))] = summary
                         pytest.fail(msg, pytrace=False)
@@ -704,21 +703,6 @@ class ImageComparison:
                 json.dump(self._generated_hash_library, fp, indent=2)
 
         if self.generate_summary:
-            # Generate a list of test directories
-            dir_list = [p.relative_to(self.results_dir)
-                        for p in self.results_dir.iterdir() if p.is_dir()]
-
-            # Resolve image paths
-            for directory in dir_list:
-                test_name = directory.parts[-1]
-                for image_type, filename in [
-                    ('baseline_image', 'baseline.png'),
-                    ('diff_image', 'result-failed-diff.png'),
-                    ('result_image', 'result.png'),
-                ]:
-                    if self._test_results[test_name][image_type] == '%EXISTS%':
-                        self._test_results[test_name][image_type] = str(directory / filename)
-
             if 'json' in self.generate_summary:
                 summary = self.generate_summary_json()
                 print(f"A JSON report can be found at: {summary}")
