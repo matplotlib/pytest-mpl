@@ -431,7 +431,7 @@ class ImageComparison:
 
         test_image = (result_dir / "result.png").absolute()
         fig.savefig(str(test_image), **savefig_kwargs)
-        summary['result_image'] = str(test_image.relative_to(self.results_dir))
+        summary['result_image'] = test_image.relative_to(self.results_dir).as_posix()
 
         if not os.path.exists(baseline_image_ref):
             summary['status'] = 'failed'
@@ -447,7 +447,7 @@ class ImageComparison:
         # copy to our tmpdir to be sure to keep them in case of failure
         baseline_image = (result_dir / "baseline.png").absolute()
         shutil.copyfile(baseline_image_ref, baseline_image)
-        summary['baseline_image'] = str(baseline_image.relative_to(self.results_dir))
+        summary['baseline_image'] = baseline_image.relative_to(self.results_dir).as_posix()
 
         # Compare image size ourselves since the Matplotlib
         # exception is a bit cryptic in this case and doesn't show
@@ -473,7 +473,7 @@ class ImageComparison:
             summary['status'] = 'failed'
             summary['rms'] = results['rms']
             diff_image = (result_dir / 'result-failed-diff.png').absolute()
-            summary['diff_image'] = str(diff_image.relative_to(self.results_dir))
+            summary['diff_image'] = diff_image.relative_to(self.results_dir).as_posix()
             template = ['Error: Image files did not match.',
                         'RMS Value: {rms}',
                         'Expected:  \n    {expected}',
@@ -527,7 +527,7 @@ class ImageComparison:
         # Save the figure for later summary (will be removed later if not needed)
         test_image = (result_dir / "result.png").absolute()
         fig.savefig(str(test_image), **savefig_kwargs)
-        summary['result_image'] = str(test_image.relative_to(self.results_dir))
+        summary['result_image'] = test_image.relative_to(self.results_dir).as_posix()
 
         # Hybrid mode (hash and image comparison)
         if self.baseline_directory_specified(item):
