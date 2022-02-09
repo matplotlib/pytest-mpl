@@ -1,4 +1,4 @@
-0.14 (unreleased)
+0.14 (2022-02-09)
 -----------------
 
 - Add `--mpl-results-always` flag which disables removing of test images for
