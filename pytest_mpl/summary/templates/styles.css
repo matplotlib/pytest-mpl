@@ -33,7 +33,7 @@ body.no-hash-test .mpl-hash {
     display: none;
 }
 pre {
-    white-space: pre-wrap;
+    white-space: pre-line;
 }
 div.result div.status-badge button img {
     vertical-align: sub;

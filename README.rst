@@ -75,8 +75,8 @@ directly in the right directory.
 With a Hash Library
 ^^^^^^^^^^^^^^^^^^^
 
-Instead of comparing to baseline images, you can instead compare against a json
-library of sha256 hashes. This has the advantage of not having to check baseline
+Instead of comparing to baseline images, you can instead compare against a JSON
+library of SHA-256 hashes. This has the advantage of not having to check baseline
 images into the repository with the tests, or download them from a remote
 source.
 
@@ -91,8 +91,11 @@ Hybrid Mode: Hashes and Images
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 It is possible to configure both hashes and baseline images. In this scenario
-the hashes will be compared first, with the baseline images only used if the hash
-comparison fails.
+only the hash comparison can determine the test result. If the hash comparison
+fails, the test will fail, however a comparison to the baseline image will be
+carried out so the actual difference can be seen. If the hash comparison passes,
+the comparison to the baseline image is skipped (unless **results always** is
+configured).
 
 This is especially useful if the baseline images are external to the repository
 containing the tests, and are accessed via HTTP. In this situation, if the hashes
@@ -104,7 +107,7 @@ without having to modify the external images.
 Running Tests
 ^^^^^^^^^^^^^
 
-Once tests are written with either baseline images or a hash library to compare
+Once tests are written with baseline images, a hash library, or both to compare
 against, the tests can be run with::
 
     pytest --mpl
@@ -118,12 +121,15 @@ Generating a Test Summary
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
 By specifying the ``--mpl-generate-summary=html`` CLI argument, a HTML summary
-page will be generated showing the result, log entry and RMS of each test,
-and the hashes if configured. The baseline, diff and result image for each
-failing test will be shown. If **Results always** is configured
-(see section below), images for passing tests will also be shown.
-If no baseline images are configured, just the result images will
-be displayed.
+page will be generated showing the test result, log entry and generated result
+image. When in the (default) image comparison mode, the baseline image, diff
+image and RMS (if any), and tolerance of each test will also be shown.
+When in the hash comparison mode, the baseline hash and result hash will
+also be shown. When in hybrid mode, all of these are included.
+
+When generating a HTML summary, the ``--mpl-results-always`` option is
+automatically applied (see section below). Therefore images for passing
+tests will also be shown.
 
 +---------------+---------------+---------------+
 | |html all|    | |html filter| | |html result| |
@@ -188,28 +194,36 @@ running tests by running ``pytest`` with::
 
     pytest --mpl --mpl-baseline-path=baseline_images
 
-This directory will be interpreted as being relative to where the tests
-are run. In addition, if both this option and the ``baseline_dir``
+This directory will be interpreted as being relative to where pytest
+is run. However, if the ``--mpl-baseline-relative`` option is also
+included, this directory will be interpreted as being relative to
+the current test directory.
+In addition, if both this option and the ``baseline_dir``
 option in the ``mpl_image_compare`` decorator are used, the one in the
 decorator takes precedence.
 
 Results always
 ^^^^^^^^^^^^^^
 
-By default, result images are only generated for tests that fail.
+By default, result images are only saved for tests that fail.
 Passing ``--mpl-results-always`` to pytest will force result images
-to be generated for all tests, even for tests that pass.
-If a baseline image exists, a diff image will also be generated.
-All of these images will be shown in the summary (if requested).
+to be saved for all tests, even for tests that pass.
 
-This option is useful for always *comparing* the result images again
+When in **hybrid mode**, even if a test passes hash comparison,
+a comparison to the baseline image will also be carried out,
+with the baseline image and diff image (if image comparison fails)
+saved for all tests. This secondary comparison will not affect
+the success status of the test.
+
+This option is useful for always *comparing* the result images against
 the baseline images, while only *assessing* the tests against the
 hash library.
 If you only update your baseline images after merging a PR, this
 option means that the generated summary will always show how the
 PR affects the baseline images, with the success status of each
 test (based on the hash library) also shown in the generated
-summary.
+summary. This option is applied automatically when generating
+a HTML summary.
 
 Base style
 ^^^^^^^^^^

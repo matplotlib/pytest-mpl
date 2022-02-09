@@ -1,0 +1,156 @@
+{
+  "subtests.subtest.test_hmatch_imatch": {
+    "status": "passed",
+    "status_msg": "Test hash matches baseline hash.\n\nImage comparison test\n---------------------\nThe comparison to the baseline image succeeded.",
+    "baseline_image": "subtests.subtest.test_hmatch_imatch/baseline.png",
+    "diff_image": null,
+    "rms": null,
+    "tolerance": 2,
+    "result_image": "subtests.subtest.test_hmatch_imatch/result.png",
+    "baseline_hash": "573f4c1482192b7b15bbe4f2bd370ae3b5ab40c9afa441543b87e15a71e9f672",
+    "result_hash": "573f4c1482192b7b15bbe4f2bd370ae3b5ab40c9afa441543b87e15a71e9f672"
+  },
+  "subtests.subtest.test_hmatch_idiff": {
+    "status": "passed",
+    "status_msg": "REGEX:Test hash matches baseline hash\\.\n\nImage comparison test\n---------------------\nError: Image files did not match\\.\n  RMS Value: 11\\.1[0-9]*\n  Expected:  \n    .*baseline\\.png\n  Actual:    \n    .*result\\.png\n  Difference:\n    .*result-failed-diff\\.png\n  Tolerance: \n    2",
+    "baseline_image": "subtests.subtest.test_hmatch_idiff/baseline.png",
+    "diff_image": "subtests.subtest.test_hmatch_idiff/result-failed-diff.png",
+    "rms": 11.100353848213828,
+    "tolerance": 2,
+    "result_image": "subtests.subtest.test_hmatch_idiff/result.png",
+    "baseline_hash": "8b5c00365e6f784d5c8947091f09a92fd7d222e790431f297b4848f173e64857",
+    "result_hash": "8b5c00365e6f784d5c8947091f09a92fd7d222e790431f297b4848f173e64857"
+  },
+  "subtests.subtest.test_hmatch_imissing": {
+    "status": "passed",
+    "status_msg": "REGEX:Test hash matches baseline hash\\.\n\nImage comparison test\n---------------------\nImage file not found for comparison test in: \n\t.*\n\\(This is expected for new tests\\.\\)\nGenerated Image: \n\t.*result\\.png",
+    "baseline_image": null,
+    "diff_image": null,
+    "rms": null,
+    "tolerance": null,
+    "result_image": "subtests.subtest.test_hmatch_imissing/result.png",
+    "baseline_hash": "fd069e642e3b154c24077a4996b545e1c4dbffdbed34ea5ad34c7b36873af68f",
+    "result_hash": "fd069e642e3b154c24077a4996b545e1c4dbffdbed34ea5ad34c7b36873af68f"
+  },
+  "subtests.subtest.test_hdiff_imatch": {
+    "status": "failed",
+    "status_msg": "REGEX:Hash 6e2fdde5a6682dc6abba7121f5df702c3664b1ce09593534fc0d7c3514eb07e1 doesn't match hash d1ffdde5a6682dc6abba7121f5df702c3664b1ce09593534fc0d7c3514eb07e1 in library .*\\.json for test subtests\\.subtest\\.test_hdiff_imatch\\.\n\nImage comparison test\n---------------------\nThe comparison to the baseline image succeeded\\.",
+    "baseline_image": "subtests.subtest.test_hdiff_imatch/baseline.png",
+    "diff_image": null,
+    "rms": null,
+    "tolerance": 2,
+    "result_image": "subtests.subtest.test_hdiff_imatch/result.png",
+    "baseline_hash": "d1ffdde5a6682dc6abba7121f5df702c3664b1ce09593534fc0d7c3514eb07e1",
+    "result_hash": "6e2fdde5a6682dc6abba7121f5df702c3664b1ce09593534fc0d7c3514eb07e1"
+  },
+  "subtests.subtest.test_hdiff_idiff": {
+    "status": "failed",
+    "status_msg": "REGEX:Hash 443361bdd0efd1cdd343eabf73af6f20439d4834ab5503a574ac7ec28e0c2b43 doesn't match hash d1ff61bdd0efd1cdd343eabf73af6f20439d4834ab5503a574ac7ec28e0c2b43 in library .*\\.json for test subtests\\.subtest\\.test_hdiff_idiff\\.\n\nImage comparison test\n---------------------\nError: Image files did not match\\.\n  RMS Value: 11\\.1[0-9]*\n  Expected:  \n    .*baseline\\.png\n  Actual:    \n    .*result\\.png\n  Difference:\n    .*result-failed-diff\\.png\n  Tolerance: \n    2",
+    "baseline_image": "subtests.subtest.test_hdiff_idiff/baseline.png",
+    "diff_image": "subtests.subtest.test_hdiff_idiff/result-failed-diff.png",
+    "rms": 11.182677079602481,
+    "tolerance": 2,
+    "result_image": "subtests.subtest.test_hdiff_idiff/result.png",
+    "baseline_hash": "d1ff61bdd0efd1cdd343eabf73af6f20439d4834ab5503a574ac7ec28e0c2b43",
+    "result_hash": "443361bdd0efd1cdd343eabf73af6f20439d4834ab5503a574ac7ec28e0c2b43"
+  },
+  "subtests.subtest.test_hdiff_imissing": {
+    "status": "failed",
+    "status_msg": "REGEX:Hash 301e63d656d7a586cc4e498bc32b970f8cb7c7c47bbd2fec33b931219fc0690e doesn't match hash d1ff63d656d7a586cc4e498bc32b970f8cb7c7c47bbd2fec33b931219fc0690e in library .*\\.json for test subtests\\.subtest\\.test_hdiff_imissing\\.\n\nImage comparison test\n---------------------\nImage file not found for comparison test in: \n\t.*\n\\(This is expected for new tests\\.\\)\nGenerated Image: \n\t.*result\\.png",
+    "baseline_image": null,
+    "diff_image": null,
+    "rms": null,
+    "tolerance": null,
+    "result_image": "subtests.subtest.test_hdiff_imissing/result.png",
+    "baseline_hash": "d1ff63d656d7a586cc4e498bc32b970f8cb7c7c47bbd2fec33b931219fc0690e",
+    "result_hash": "301e63d656d7a586cc4e498bc32b970f8cb7c7c47bbd2fec33b931219fc0690e"
+  },
+  "subtests.subtest.test_hmissing_imatch": {
+    "status": "failed",
+    "status_msg": "REGEX:Hash for test 'subtests\\.subtest\\.test_hmissing_imatch' not found in .*\\.json\\. Generated hash is eabd8a2e22afd88682990bfb8e4a0700a942fe68e5114e8da4ab6bd93c47b824\\.\n\nImage comparison test\n---------------------\nThe comparison to the baseline image succeeded\\.",
+    "baseline_image": "subtests.subtest.test_hmissing_imatch/baseline.png",
+    "diff_image": null,
+    "rms": null,
+    "tolerance": 2,
+    "result_image": "subtests.subtest.test_hmissing_imatch/result.png",
+    "baseline_hash": null,
+    "result_hash": "eabd8a2e22afd88682990bfb8e4a0700a942fe68e5114e8da4ab6bd93c47b824"
+  },
+  "subtests.subtest.test_hmissing_idiff": {
+    "status": "failed",
+    "status_msg": "REGEX:Hash for test 'subtests\\.subtest\\.test_hmissing_idiff' not found in .*\\.json\\. Generated hash is e69570c4a70b2cc88ddee0f0a82312cae4f394b7f62e5760245feda1364c03ab\\.\n\nImage comparison test\n---------------------\nError: Image files did not match\\.\n  RMS Value: 12\\.1[0-9]*\n  Expected:  \n    .*baseline\\.png\n  Actual:    \n    .*result\\.png\n  Difference:\n    .*result-failed-diff\\.png\n  Tolerance: \n    2",
+    "baseline_image": "subtests.subtest.test_hmissing_idiff/baseline.png",
+    "diff_image": "subtests.subtest.test_hmissing_idiff/result-failed-diff.png",
+    "rms": 12.12938597648977,
+    "tolerance": 2,
+    "result_image": "subtests.subtest.test_hmissing_idiff/result.png",
+    "baseline_hash": null,
+    "result_hash": "e69570c4a70b2cc88ddee0f0a82312cae4f394b7f62e5760245feda1364c03ab"
+  },
+  "subtests.subtest.test_hmissing_imissing": {
+    "status": "failed",
+    "status_msg": "REGEX:Hash for test 'subtests\\.subtest\\.test_hmissing_imissing' not found in .*\\.json\\. Generated hash is 5c8a9c7412e4e098f6f2683ee247c08bd50805a93df4d4b6d8fccf3579b4c56b\\.\n\nImage comparison test\n---------------------\nImage file not found for comparison test in: \n\t.*\n\\(This is expected for new tests\\.\\)\nGenerated Image: \n\t.*result\\.png",
+    "baseline_image": null,
+    "diff_image": null,
+    "rms": null,
+    "tolerance": null,
+    "result_image": "subtests.subtest.test_hmissing_imissing/result.png",
+    "baseline_hash": null,
+    "result_hash": "5c8a9c7412e4e098f6f2683ee247c08bd50805a93df4d4b6d8fccf3579b4c56b"
+  },
+  "subtests.subtest.test_hdiff_imatch_tolerance": {
+    "status": "failed",
+    "status_msg": "REGEX:Hash aaf4e85fda98298347c274adae98ca7728f9bb2444ca8a49295145b0727b8c96 doesn't match hash d1ffe85fda98298347c274adae98ca7728f9bb2444ca8a49295145b0727b8c96 in library .*\\.json for test subtests\\.subtest\\.test_hdiff_imatch_tolerance\\.\n\nImage comparison test\n---------------------\nThe comparison to the baseline image succeeded\\.",
+    "baseline_image": "subtests.subtest.test_hdiff_imatch_tolerance/baseline.png",
+    "diff_image": null,
+    "rms": null,
+    "tolerance": 200,
+    "result_image": "subtests.subtest.test_hdiff_imatch_tolerance/result.png",
+    "baseline_hash": "d1ffe85fda98298347c274adae98ca7728f9bb2444ca8a49295145b0727b8c96",
+    "result_hash": "aaf4e85fda98298347c274adae98ca7728f9bb2444ca8a49295145b0727b8c96"
+  },
+  "subtests.subtest.test_hdiff_idiff_tolerance": {
+    "status": "failed",
+    "status_msg": "REGEX:Hash aaf4e85fda98298347c274adae98ca7728f9bb2444ca8a49295145b0727b8c96 doesn't match hash d1ffe85fda98298347c274adae98ca7728f9bb2444ca8a49295145b0727b8c96 in library .*\\.json for test subtests\\.subtest\\.test_hdiff_idiff_tolerance\\.\n\nImage comparison test\n---------------------\nError: Image files did not match\\.\n  RMS Value: 29\\.2[0-9]*\n  Expected:  \n    .*baseline\\.png\n  Actual:    \n    .*result\\.png\n  Difference:\n    .*result-failed-diff\\.png\n  Tolerance: \n    3",
+    "baseline_image": "subtests.subtest.test_hdiff_idiff_tolerance/baseline.png",
+    "diff_image": "subtests.subtest.test_hdiff_idiff_tolerance/result-failed-diff.png",
+    "rms": 29.260332173249314,
+    "tolerance": 3,
+    "result_image": "subtests.subtest.test_hdiff_idiff_tolerance/result.png",
+    "baseline_hash": "d1ffe85fda98298347c274adae98ca7728f9bb2444ca8a49295145b0727b8c96",
+    "result_hash": "aaf4e85fda98298347c274adae98ca7728f9bb2444ca8a49295145b0727b8c96"
+  },
+  "subtests.subtest.test_hdiff_imatch_savefig": {
+    "status": "failed",
+    "status_msg": "REGEX:Hash 5dc1c2c68c2d34c03a89ab394e3c11349b76594d0c8837374daef299ac227568 doesn't match hash d1ffc2c68c2d34c03a89ab394e3c11349b76594d0c8837374daef299ac227568 in library .*\\.json for test subtests\\.subtest\\.test_hdiff_imatch_savefig\\.\n\nImage comparison test\n---------------------\nThe comparison to the baseline image succeeded\\.",
+    "baseline_image": "subtests.subtest.test_hdiff_imatch_savefig/baseline.png",
+    "diff_image": null,
+    "rms": null,
+    "tolerance": 2,
+    "result_image": "subtests.subtest.test_hdiff_imatch_savefig/result.png",
+    "baseline_hash": "d1ffc2c68c2d34c03a89ab394e3c11349b76594d0c8837374daef299ac227568",
+    "result_hash": "5dc1c2c68c2d34c03a89ab394e3c11349b76594d0c8837374daef299ac227568"
+  },
+  "subtests.subtest.test_hdiff_imatch_style": {
+    "status": "failed",
+    "status_msg": "REGEX:Hash 185ed1b702c7bbd810370b12e46ecea4b9c9eb87b743397f1d4a50177e7ba7f7 doesn't match hash d1ffd1b702c7bbd810370b12e46ecea4b9c9eb87b743397f1d4a50177e7ba7f7 in library .*\\.json for test subtests\\.subtest\\.test_hdiff_imatch_style\\.\n\nImage comparison test\n---------------------\nThe comparison to the baseline image succeeded\\.",
+    "baseline_image": "subtests.subtest.test_hdiff_imatch_style/baseline.png",
+    "diff_image": null,
+    "rms": null,
+    "tolerance": 2,
+    "result_image": "subtests.subtest.test_hdiff_imatch_style/result.png",
+    "baseline_hash": "d1ffd1b702c7bbd810370b12e46ecea4b9c9eb87b743397f1d4a50177e7ba7f7",
+    "result_hash": "185ed1b702c7bbd810370b12e46ecea4b9c9eb87b743397f1d4a50177e7ba7f7"
+  },
+  "subtests.subtest.test_hdiff_imatch_removetext": {
+    "status": "failed",
+    "status_msg": "REGEX:Hash be5af83a43cb89f5e13923f532fe5c9bedbf7d13585533efef2f4051c4968b5e doesn't match hash d1fff83a43cb89f5e13923f532fe5c9bedbf7d13585533efef2f4051c4968b5e in library .*\\.json for test subtests\\.subtest\\.test_hdiff_imatch_removetext\\.\n\nImage comparison test\n---------------------\nThe comparison to the baseline image succeeded\\.",
+    "baseline_image": "subtests.subtest.test_hdiff_imatch_removetext/baseline.png",
+    "diff_image": null,
+    "rms": null,
+    "tolerance": 2,
+    "result_image": "subtests.subtest.test_hdiff_imatch_removetext/result.png",
+    "baseline_hash": "d1fff83a43cb89f5e13923f532fe5c9bedbf7d13585533efef2f4051c4968b5e",
+    "result_hash": "be5af83a43cb89f5e13923f532fe5c9bedbf7d13585533efef2f4051c4968b5e"
+  }
+}
