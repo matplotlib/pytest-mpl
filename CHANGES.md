@@ -14,6 +14,8 @@
 - Add a significantly improved HTML summary page, and rename the old simple
   summary page to `basic-html`. [#128]
 
+- Various bugfixes, test improvements and documentation updates [#134]
+
 0.13 (2021-07-02)
 -----------------
 
