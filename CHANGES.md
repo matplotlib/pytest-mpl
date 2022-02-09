@@ -5,6 +5,9 @@
   tests which pass. Test images are also stored and generated for hash tests
   when a baseline dir is also provided. [#108]
 
+- When generating a HTML summary page, the `--mpl-results-always` flag is
+  automatically applied. [#131]
+
 - Add a `--mpl-generate-summary=json` option which saves a JSON summary of the
   image comparison results. [#127]
 
