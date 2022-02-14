@@ -6,7 +6,7 @@
     </div>
     <div class="offcanvas-body">
         <h5 class="card-title">{{ r.name }}</h5>
-        {% if results.warn_missing['baseline_image'] -%}
+        {% if results.warn_missing['baseline_image'] and r.image_status != 'generated' -%}
         <div class="row row-cols-1 row-cols-md-3 g-4 mt-3">
             {% macro image_card(file, name) -%}
             <div class="col py-3 m-0">

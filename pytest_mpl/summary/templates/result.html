@@ -17,8 +17,10 @@
                     <img src="{{ r.result_image }}" class="card-img-top" alt="result image">
                 </div>
             </div>
-            {%- else -%}
+            {%- elif r.result_image -%}
             <img src="{{ r.result_image }}" class="card-img-top" alt="result image">
+            {%- elif r.baseline_image -%}
+            <img src="{{ r.baseline_image }}" class="card-img-top" alt="baseline image">
             {%- endif %}
         </a>
         {% filter indent(width=8) -%}

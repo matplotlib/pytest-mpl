@@ -390,10 +390,13 @@ class ImageComparison:
         if not os.path.exists(self.generate_dir):
             os.makedirs(self.generate_dir)
 
-        fig.savefig(str((self.generate_dir / self.generate_filename(item)).absolute()),
-                    **savefig_kwargs)
+        baseline_filename = self.generate_filename(item)
+        baseline_path = (self.generate_dir / baseline_filename).absolute()
+        fig.savefig(str(baseline_path), **savefig_kwargs)
 
         close_mpl_figure(fig)
+
+        return baseline_path
 
     def generate_image_hash(self, item, fig):
         """
@@ -597,6 +600,7 @@ class ImageComparison:
                     remove_ticks_and_titles(fig)
 
                 test_name = self.generate_test_name(item)
+                result_dir = self.make_test_results_dir(item)
 
                 summary = {
                     'status': None,
@@ -615,20 +619,20 @@ class ImageComparison:
                 if self.generate_dir is not None:
                     summary['status'] = 'skipped'
                     summary['status_msg'] = 'Skipped test, since generating image.'
-                    self.generate_baseline_image(item, fig)
-                    if self.generate_hash_library is None:
-                        self._test_results[str(pathify(test_name))] = summary
-                        pytest.skip("Skipping test, since generating image.")
+                    generate_image = self.generate_baseline_image(item, fig)
+                    if self.results_always:  # Make baseline image available in HTML
+                        result_image = (result_dir / "baseline.png").absolute()
+                        shutil.copy(generate_image, result_image)
+                        summary['baseline_image'] = \
+                            result_image.relative_to(self.results_dir).as_posix()
 
                 if self.generate_hash_library is not None:
                     image_hash = self.generate_image_hash(item, fig)
                     self._generated_hash_library[test_name] = image_hash
-                    summary['result_hash'] = image_hash
+                    summary['baseline_hash'] = image_hash
 
                 # Only test figures if not generating images
                 if self.generate_dir is None:
-                    result_dir = self.make_test_results_dir(item)
-
                     # Compare to hash library
                     if self.hash_library or compare.kwargs.get('hash_library', None):
                         msg = self.compare_image_to_hash_library(item, fig, result_dir, summary=summary)
@@ -645,12 +649,15 @@ class ImageComparison:
                             for image_type in ['baseline_image', 'diff_image', 'result_image']:
                                 summary[image_type] = None  # image no longer exists
                     else:
-                        self._test_results[str(pathify(test_name))] = summary
+                        self._test_results[test_name] = summary
                         pytest.fail(msg, pytrace=False)
 
                 close_mpl_figure(fig)
 
-                self._test_results[str(pathify(test_name))] = summary
+                self._test_results[test_name] = summary
+
+                if summary['status'] == 'skipped':
+                    pytest.skip(summary['status_msg'])
 
         if item.cls is not None:
             setattr(item.cls, item.function.__name__, item_function_wrapper)

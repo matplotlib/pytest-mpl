@@ -117,7 +117,7 @@ class Result:
         elif self.baseline_image is None:
             return 'missing'
         else:
-            raise ValueError('Unknown image result.')
+            return 'generated'
 
     @cached_property
     def hash_status(self):
@@ -125,6 +125,8 @@ class Result:
         if self.baseline_hash is not None or self.result_hash is not None:
             if self.baseline_hash is None:
                 return 'missing'
+            elif self.result_hash is None:
+                return 'generated'
             elif self.baseline_hash == self.result_hash:
                 return 'match'
             else:
@@ -198,6 +200,7 @@ def status_class(status):
         'match': 'success',
         'diff': 'danger',
         'missing': 'warning',
+        'generated': 'warning',
     }
     return classes[status]
 
@@ -208,6 +211,7 @@ def image_status_msg(status):
         'match': 'Baseline image matches',
         'diff': 'Baseline image differs',
         'missing': 'Baseline image not found',
+        'generated': 'Baseline image was generated',
     }
     return messages[status]
 
@@ -218,6 +222,7 @@ def hash_status_msg(status):
         'match': 'Baseline hash matches',
         'diff': 'Baseline hash differs',
         'missing': 'Baseline hash not found',
+        'generated': 'Baseline hash was generated',
     }
     return messages[status]
 
