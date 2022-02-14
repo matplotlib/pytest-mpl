@@ -86,6 +86,10 @@ can either be specified via the ``--mpl-hash-library=`` command line argument,
 or via the ``hash_library=`` keyword argument to the
 ``@pytest.mark.mpl_image_compare`` decorator.
 
+When generating a hash library, the tests will also be run as usual against the
+existing hash library specified by ``--mpl-hash-library`` or the keyword argument.
+However, generating baseline images will always result in the tests being skipped.
+
 
 Hybrid Mode: Hashes and Images
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
