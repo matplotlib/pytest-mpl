@@ -16,7 +16,7 @@ section below.
 Installing
 ----------
 
-This plugin is compatible with Python 2.7, and 3.6 and later, and
+This plugin is compatible with Python 3.6 and later, and
 requires `pytest <http://pytest.org>`__ and
 `matplotlib <http://www.matplotlib.org>`__ to be installed.
 
