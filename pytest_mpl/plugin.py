@@ -181,8 +181,6 @@ def pytest_configure(config):
         if generate_dir is not None:
             if baseline_dir is not None:
                 warnings.warn("Ignoring --mpl-baseline-path since --mpl-generate-path is set")
-            if results_dir is not None and generate_dir is not None:
-                warnings.warn("Ignoring --mpl-result-path since --mpl-generate-path is set")
 
         if baseline_dir is not None and not baseline_dir.startswith(("https", "http")):
             baseline_dir = os.path.abspath(baseline_dir)
