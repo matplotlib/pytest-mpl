@@ -283,6 +283,12 @@ class ImageComparison:
             self.results_dir = Path(tempfile.mkdtemp(dir=self.results_dir))
         self.results_dir.mkdir(parents=True, exist_ok=True)
 
+        # Decide what to call the downloadable results hash library
+        if self.hash_library is not None:
+            self.results_hash_library_name = self.hash_library.name
+        else:  # Use the first filename encountered in a `hash_library=` kwarg
+            self.results_hash_library_name = None
+
         # We need global state to store all the hashes generated over the run
         self._generated_hash_library = {}
         self._test_results = {}
@@ -499,6 +505,10 @@ class ImageComparison:
         compare = self.get_compare(item)
         savefig_kwargs = compare.kwargs.get('savefig_kwargs', {})
 
+        if not self.results_hash_library_name:
+            # Use hash library name of current test as results hash library name
+            self.results_hash_library_name = Path(compare.kwargs.get("hash_library", "")).name
+
         hash_library_filename = self.hash_library or compare.kwargs.get('hash_library', None)
         hash_library_filename = (Path(item.fspath).parent / hash_library_filename).absolute()
 
@@ -674,11 +684,21 @@ class ImageComparison:
         """
         Save out the hash library at the end of the run.
         """
+        result_hash_library = self.results_dir / (self.results_hash_library_name or "temp.json")
         if self.generate_hash_library is not None:
             hash_library_path = Path(config.rootdir) / self.generate_hash_library
             hash_library_path.parent.mkdir(parents=True, exist_ok=True)
             with open(hash_library_path, "w") as fp:
                 json.dump(self._generated_hash_library, fp, indent=2)
+            if self.results_always:  # Make accessible in results directory
+                result_hash_library.name = hash_library_path.name  # use same name as generated
+                shutil.copy(hash_library_path, result_hash_library)
+        elif self.results_always and self.results_hash_library_name:
+            result_hashes = {k: v['result_hash'] for k, v in self._test_results.items()
+                             if v['result_hash']}
+            if len(result_hashes) > 0:  # At least one hash comparison test
+                with open(result_hash_library, "w") as fp:
+                    json.dump(result_hashes, fp, indent=2)
 
         if self.generate_summary:
             if 'json' in self.generate_summary:

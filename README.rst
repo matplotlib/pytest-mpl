@@ -229,6 +229,12 @@ test (based on the hash library) also shown in the generated
 summary. This option is applied automatically when generating
 a HTML summary.
 
+When the ``--mpl-results-always`` option is active, and some hash
+comparison tests are performed, a hash library containing all the
+result hashes will also be saved to the root of the results directory.
+The filename will be extracted from ``--mpl-generate-hash-library``,
+``--mpl-hash-library`` or ``hash_library=`` in that order.
+
 Base style
 ^^^^^^^^^^
 
