@@ -35,6 +35,9 @@ body.no-hash-test .mpl-hash {
 pre {
     white-space: pre-line;
 }
+.tooltip-inner pre {
+    margin: 0;
+}
 div.result div.status-badge button img {
     vertical-align: sub;
 }

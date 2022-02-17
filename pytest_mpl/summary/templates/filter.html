@@ -62,5 +62,12 @@
                 </div>
             </div>
         </form>
+        {% if hash_library -%}
+        <hr>
+        <a download="{{ hash_library }}" href="{{ hash_library }}" class="btn btn-light"
+           data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
+           title="<pre>{{ hash_library }}</pre>"
+           role="button">Download generated hash library</a>
+        {%- endif %}
     </div>
 </div>

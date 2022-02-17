@@ -227,7 +227,7 @@ def hash_status_msg(status):
     return messages[status]
 
 
-def generate_summary_html(results, results_dir):
+def generate_summary_html(results, results_dir, hash_library=None):
     """Generate the HTML summary.
 
     Parameters
@@ -236,6 +236,9 @@ def generate_summary_html(results, results_dir):
         The `pytest_mpl.plugin.ImageComparison._test_results` object.
     results_dir : Path
         Path to the output directory.
+    hash_library : str, optional, default=None
+        Filename of the generated hash library at the root of `results_dir`.
+        Will be linked to in HTML if not None.
     """
 
     # Initialize Jinja
@@ -251,7 +254,7 @@ def generate_summary_html(results, results_dir):
 
     # Render HTML starting from the base template
     template = env.get_template("base.html")
-    html = template.render(results=Results(results))
+    html = template.render(results=Results(results), hash_library=hash_library)
 
     # Write files
     for file in ['styles.css', 'extra.js', 'hash.svg', 'image.svg']:
@@ -264,7 +267,7 @@ def generate_summary_html(results, results_dir):
     return html_file
 
 
-def generate_summary_basic_html(results, results_dir):
+def generate_summary_basic_html(results, results_dir, hash_library=None):
     """Generate the basic HTML summary.
 
     Parameters
@@ -273,6 +276,9 @@ def generate_summary_basic_html(results, results_dir):
         The `pytest_mpl.plugin.ImageComparison._test_results` object.
     results_dir : Path
         Path to the output directory.
+    hash_library : str, optional, default=None
+        Filename of the generated hash library at the root of `results_dir`.
+        Will be linked to in HTML if not None.
     """
 
     # Initialize Jinja
@@ -283,7 +289,7 @@ def generate_summary_basic_html(results, results_dir):
 
     # Render HTML starting from the base template
     template = env.get_template("basic.html")
-    html = template.render(results=Results(results))
+    html = template.render(results=Results(results), hash_library=hash_library)
 
     # Write files
     html_file = results_dir / 'fig_comparison_basic.html'

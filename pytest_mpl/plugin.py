@@ -700,14 +700,18 @@ class ImageComparison:
                     json.dump(result_hashes, fp, indent=2)
 
         if self.generate_summary:
+            kwargs = {}
             if 'json' in self.generate_summary:
                 summary = self.generate_summary_json()
                 print(f"A JSON report can be found at: {summary}")
+            if result_hash_library.exists():  # link to it in the HTML
+                kwargs["hash_library"] = result_hash_library.name
             if 'html' in self.generate_summary:
-                summary = generate_summary_html(self._test_results, self.results_dir)
+                summary = generate_summary_html(self._test_results, self.results_dir, **kwargs)
                 print(f"A summary of the failed tests can be found at: {summary}")
             if 'basic-html' in self.generate_summary:
-                summary = generate_summary_basic_html(self._test_results, self.results_dir)
+                summary = generate_summary_basic_html(self._test_results, self.results_dir,
+                                                      **kwargs)
                 print(f"A summary of the failed tests can be found at: {summary}")
 
 
