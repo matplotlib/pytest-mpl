@@ -9,7 +9,8 @@ class MatchError(Exception):
     pass
 
 
-def diff_summary(baseline, result, baseline_hash_library=None, result_hash_library=None):
+def diff_summary(baseline, result, baseline_hash_library=None, result_hash_library=None,
+                 generating_hashes=False):
     """Diff a pytest-mpl summary dictionary.
 
     Parameters
@@ -26,6 +27,9 @@ def diff_summary(baseline, result, baseline_hash_library=None, result_hash_libra
         Path to the "baseline" image hash library.
         Result hashes in the baseline summary are updated to these values
         to handle different Matplotlib versions.
+    generating_hashes : bool, optional, default=False
+        Whether `--mpl-generate-hash-library` was specified and
+        both of `--mpl-hash-library` and `hash_library=` were not.
     """
     if baseline_hash_library and baseline_hash_library.exists():
         # Load "correct" baseline hashes
@@ -57,10 +61,13 @@ def diff_summary(baseline, result, baseline_hash_library=None, result_hash_libra
 
         # Swap the baseline and result hashes in the summary
         # for the corresponding hashes in each hash library
-        if baseline_hash_library and test in baseline_hash_library:
+        if baseline_hash_library and test in baseline_hash_library and not generating_hashes:
             baseline_summary = replace_hash(baseline_summary, 'baseline_hash',
                                             baseline_hash_library[test])
         if result_hash_library:
+            if generating_hashes:  # Newly generate result will appear as baseline_hash
+                baseline_summary = replace_hash(baseline_summary, 'baseline_hash',
+                                                result_hash_library[test])
             baseline_summary = replace_hash(baseline_summary, 'result_hash',
                                             result_hash_library[test])
 

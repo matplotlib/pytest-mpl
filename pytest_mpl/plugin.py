@@ -689,7 +689,8 @@ class ImageComparison:
             with open(hash_library_path, "w") as fp:
                 json.dump(self._generated_hash_library, fp, indent=2)
             if self.results_always:  # Make accessible in results directory
-                result_hash_library.name = hash_library_path.name  # use same name as generated
+                # Use same name as generated
+                result_hash_library = self.results_dir / hash_library_path.name
                 shutil.copy(hash_library_path, result_hash_library)
         elif self.results_always and self.results_hash_library_name:
             result_hashes = {k: v['result_hash'] for k, v in self._test_results.items()
