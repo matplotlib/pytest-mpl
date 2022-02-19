@@ -442,6 +442,7 @@ class ImageComparison:
 
         if not os.path.exists(baseline_image_ref):
             summary['status'] = 'failed'
+            summary['image_status'] = 'missing'
             error_message = ("Image file not found for comparison test in: \n\t"
                              f"{self.get_baseline_directory(item)}\n"
                              "(This is expected for new tests.)\n"
@@ -463,6 +464,7 @@ class ImageComparison:
         actual_shape = imread(str(test_image)).shape[:2]
         if expected_shape != actual_shape:
             summary['status'] = 'failed'
+            summary['image_status'] = 'diff'
             error_message = SHAPE_MISMATCH_ERROR.format(expected_path=baseline_image,
                                                         expected_shape=expected_shape,
                                                         actual_path=test_image,
@@ -474,10 +476,12 @@ class ImageComparison:
         summary['tolerance'] = tolerance
         if results is None:
             summary['status'] = 'passed'
+            summary['image_status'] = 'match'
             summary['status_msg'] = 'Image comparison passed.'
             return None
         else:
             summary['status'] = 'failed'
+            summary['image_status'] = 'diff'
             summary['rms'] = results['rms']
             diff_image = (result_dir / 'result-failed-diff.png').absolute()
             summary['diff_image'] = diff_image.relative_to(self.results_dir).as_posix()
@@ -523,14 +527,17 @@ class ImageComparison:
 
         if baseline_hash is None:  # hash-missing
             summary['status'] = 'failed'
+            summary['hash_status'] = 'missing'
             summary['status_msg'] = (f"Hash for test '{hash_name}' not found in {hash_library_filename}. "
                                      f"Generated hash is {test_hash}.")
         elif test_hash == baseline_hash:  # hash-match
             hash_comparison_pass = True
             summary['status'] = 'passed'
+            summary['hash_status'] = 'match'
             summary['status_msg'] = 'Test hash matches baseline hash.'
         else:  # hash-diff
             summary['status'] = 'failed'
+            summary['hash_status'] = 'diff'
             summary['status_msg'] = (f"Hash {test_hash} doesn't match hash "
                                      f"{baseline_hash} in library "
                                      f"{hash_library_filename} for test {hash_name}.")
@@ -555,7 +562,8 @@ class ImageComparison:
             except Exception as baseline_error:  # Append to test error later
                 baseline_comparison = str(baseline_error)
             else:  # Update main summary
-                for k in ['baseline_image', 'diff_image', 'rms', 'tolerance', 'result_image']:
+                for k in ['image_status', 'baseline_image', 'diff_image',
+                          'rms', 'tolerance', 'result_image']:
                     summary[k] = summary[k] or baseline_summary.get(k)
 
             # Append the log from image comparison
@@ -612,6 +620,8 @@ class ImageComparison:
 
                 summary = {
                     'status': None,
+                    'image_status': None,
+                    'hash_status': None,
                     'status_msg': None,
                     'baseline_image': None,
                     'diff_image': None,
@@ -626,6 +636,7 @@ class ImageComparison:
                 # reference images or simply running the test.
                 if self.generate_dir is not None:
                     summary['status'] = 'skipped'
+                    summary['image_status'] = 'generated'
                     summary['status_msg'] = 'Skipped test, since generating image.'
                     generate_image = self.generate_baseline_image(item, fig)
                     if self.results_always:  # Make baseline image available in HTML
@@ -635,6 +646,7 @@ class ImageComparison:
                             result_image.relative_to(self.results_dir).as_posix()
 
                 if self.generate_hash_library is not None:
+                    summary['hash_status'] = 'generated'
                     image_hash = self.generate_image_hash(item, fig)
                     self._generated_hash_library[test_name] = image_hash
                     summary['baseline_hash'] = image_hash

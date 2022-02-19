@@ -1,6 +1,8 @@
 {
   "subtests.subtest.test_hmatch_imatch": {
     "status": "passed",
+    "image_status": "match",
+    "hash_status": null,
     "status_msg": "Image comparison passed.",
     "baseline_image": "subtests.subtest.test_hmatch_imatch/baseline.png",
     "diff_image": null,
@@ -12,6 +14,8 @@
   },
   "subtests.subtest.test_hmatch_idiff": {
     "status": "failed",
+    "image_status": "diff",
+    "hash_status": null,
     "status_msg": "REGEX:Error: Image files did not match\\.\n  RMS Value: 11\\.1[0-9]*\n  Expected:  \n    .*baseline\\.png\n  Actual:    \n    .*result\\.png\n  Difference:\n    .*result-failed-diff\\.png\n  Tolerance: \n    2",
     "baseline_image": "subtests.subtest.test_hmatch_idiff/baseline.png",
     "diff_image": "subtests.subtest.test_hmatch_idiff/result-failed-diff.png",
@@ -23,6 +27,8 @@
   },
   "subtests.subtest.test_hmatch_imissing": {
     "status": "failed",
+    "image_status": "missing",
+    "hash_status": null,
     "status_msg": "REGEX:Image file not found for comparison test in: \n\t.*\n\\(This is expected for new tests\\.\\)\nGenerated Image: \n\t.*result\\.png",
     "baseline_image": null,
     "diff_image": null,
@@ -34,6 +40,8 @@
   },
   "subtests.subtest.test_hdiff_imatch": {
     "status": "passed",
+    "image_status": "match",
+    "hash_status": null,
     "status_msg": "Image comparison passed.",
     "baseline_image": "subtests.subtest.test_hdiff_imatch/baseline.png",
     "diff_image": null,
@@ -45,6 +53,8 @@
   },
   "subtests.subtest.test_hdiff_idiff": {
     "status": "failed",
+    "image_status": "diff",
+    "hash_status": null,
     "status_msg": "REGEX:Error: Image files did not match\\.\n  RMS Value: 11\\.1[0-9]*\n  Expected:  \n    .*baseline\\.png\n  Actual:    \n    .*result\\.png\n  Difference:\n    .*result-failed-diff\\.png\n  Tolerance: \n    2",
     "baseline_image": "subtests.subtest.test_hdiff_idiff/baseline.png",
     "diff_image": "subtests.subtest.test_hdiff_idiff/result-failed-diff.png",
@@ -56,6 +66,8 @@
   },
   "subtests.subtest.test_hdiff_imissing": {
     "status": "failed",
+    "image_status": "missing",
+    "hash_status": null,
     "status_msg": "REGEX:Image file not found for comparison test in: \n\t.*\n\\(This is expected for new tests\\.\\)\nGenerated Image: \n\t.*result\\.png",
     "baseline_image": null,
     "diff_image": null,
@@ -67,6 +79,8 @@
   },
   "subtests.subtest.test_hmissing_imatch": {
     "status": "passed",
+    "image_status": "match",
+    "hash_status": null,
     "status_msg": "Image comparison passed.",
     "baseline_image": "subtests.subtest.test_hmissing_imatch/baseline.png",
     "diff_image": null,
@@ -78,6 +92,8 @@
   },
   "subtests.subtest.test_hmissing_idiff": {
     "status": "failed",
+    "image_status": "diff",
+    "hash_status": null,
     "status_msg": "REGEX:Error: Image files did not match\\.\n  RMS Value: 12\\.1[0-9]*\n  Expected:  \n    .*baseline\\.png\n  Actual:    \n    .*result\\.png\n  Difference:\n    .*result-failed-diff\\.png\n  Tolerance: \n    2",
     "baseline_image": "subtests.subtest.test_hmissing_idiff/baseline.png",
     "diff_image": "subtests.subtest.test_hmissing_idiff/result-failed-diff.png",
@@ -89,6 +105,8 @@
   },
   "subtests.subtest.test_hmissing_imissing": {
     "status": "failed",
+    "image_status": "missing",
+    "hash_status": null,
     "status_msg": "REGEX:Image file not found for comparison test in: \n\t.*\n\\(This is expected for new tests\\.\\)\nGenerated Image: \n\t.*result\\.png",
     "baseline_image": null,
     "diff_image": null,
@@ -100,6 +118,8 @@
   },
   "subtests.subtest.test_hdiff_imatch_tolerance": {
     "status": "passed",
+    "image_status": "match",
+    "hash_status": null,
     "status_msg": "Image comparison passed.",
     "baseline_image": "subtests.subtest.test_hdiff_imatch_tolerance/baseline.png",
     "diff_image": null,
@@ -111,6 +131,8 @@
   },
   "subtests.subtest.test_hdiff_idiff_tolerance": {
     "status": "failed",
+    "image_status": "diff",
+    "hash_status": null,
     "status_msg": "REGEX:Error: Image files did not match\\.\n  RMS Value: 29\\.2[0-9]*\n  Expected:  \n    .*baseline\\.png\n  Actual:    \n    .*result\\.png\n  Difference:\n    .*result-failed-diff\\.png\n  Tolerance: \n    3",
     "baseline_image": "subtests.subtest.test_hdiff_idiff_tolerance/baseline.png",
     "diff_image": "subtests.subtest.test_hdiff_idiff_tolerance/result-failed-diff.png",
@@ -122,6 +144,8 @@
   },
   "subtests.subtest.test_hdiff_imatch_savefig": {
     "status": "passed",
+    "image_status": "match",
+    "hash_status": null,
     "status_msg": "Image comparison passed.",
     "baseline_image": "subtests.subtest.test_hdiff_imatch_savefig/baseline.png",
     "diff_image": null,
@@ -133,6 +157,8 @@
   },
   "subtests.subtest.test_hdiff_imatch_style": {
     "status": "passed",
+    "image_status": "match",
+    "hash_status": null,
     "status_msg": "Image comparison passed.",
     "baseline_image": "subtests.subtest.test_hdiff_imatch_style/baseline.png",
     "diff_image": null,
@@ -144,6 +170,8 @@
   },
   "subtests.subtest.test_hdiff_imatch_removetext": {
     "status": "passed",
+    "image_status": "match",
+    "hash_status": null,
     "status_msg": "Image comparison passed.",
     "baseline_image": "subtests.subtest.test_hdiff_imatch_removetext/baseline.png",
     "diff_image": null,

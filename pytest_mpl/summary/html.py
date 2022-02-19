@@ -108,32 +108,6 @@ class Result:
         ]]
 
     @cached_property
-    def image_status(self):
-        """Status of the image comparison test."""
-        if self.rms is None and self.tolerance is not None:
-            return 'match'
-        elif self.rms is not None:
-            return 'diff'
-        elif self.baseline_image is None:
-            return 'missing'
-        else:
-            return 'generated'
-
-    @cached_property
-    def hash_status(self):
-        """Status of the hash comparison test."""
-        if self.baseline_hash is not None or self.result_hash is not None:
-            if self.baseline_hash is None:
-                return 'missing'
-            elif self.result_hash is None:
-                return 'generated'
-            elif self.baseline_hash == self.result_hash:
-                return 'match'
-            else:
-                return 'diff'
-        return None
-
-    @cached_property
     def indexes(self):
         """Dictionary with strings optimized for sorting."""
         return {'status': self._status_sort, 'rms': self._rms_sort}
