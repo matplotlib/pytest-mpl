@@ -8,7 +8,7 @@
           integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
     <title>{{ results.title }}</title>
 </head>
-<body{% if results.classes | length %} class="{{ results.classes | join(' ') }}"{% endif %} id="results">
+<body id="results">
 {% include 'navbar.html' %}
 <div class="album bg-light">
     <div class="container-fluid">

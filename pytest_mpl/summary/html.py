@@ -26,26 +26,12 @@ class Results:
     def __init__(self, results, title="Image comparison"):
         self.title = title  # HTML <title>
 
-        # If any baseline images or baseline hashes are present,
-        # assume all results should have them
-        self.warn_missing = {'baseline_image': False, 'baseline_hash': False}
-        for key in self.warn_missing.keys():
-            for result in results.values():
-                if result[key] is not None:
-                    self.warn_missing[key] = True
-                    break
-
-        # Additional <body> classes
-        self.classes = []
-        if self.warn_missing['baseline_hash'] is False:
-            self.classes += ['no-hash-test']
-
         # Generate sorted list of results
         self.cards = []
         pad = len(str(len(results.items())))  # maximum length of a result index
         for collect_n, (name, item) in enumerate(results.items()):
             card_id = str(collect_n).zfill(pad)  # zero pad for alphanumerical sorting
-            self.cards += [Result(name, item, card_id, self.warn_missing)]
+            self.cards += [Result(name, item, card_id)]
         self.cards = sorted(self.cards, key=lambda i: i.indexes['status'], reverse=True)
 
     @cached_property
@@ -66,6 +52,22 @@ class Results:
                 stats['skipped'] += 1
         return stats
 
+    @cached_property
+    def image_comparison(self):
+        """Whether at least one image comparison test or generation was performed."""
+        for result in self.cards:
+            if result.image_status:
+                return True
+        return False
+
+    @cached_property
+    def hash_comparison(self):
+        """Whether at least one hash comparison test or generation was performed."""
+        for result in self.cards:
+            if result.hash_status:
+                return True
+        return False
+
 
 class Result:
     """
@@ -81,19 +83,13 @@ class Result:
     id : str
         The test number in order collected. Numbers must be
         zero padded due to alphanumerical sorting.
-    warn_missing : dict
-        Whether to include relevant status badges for images and/or hashes.
-        Must have keys ``baseline_image`` and ``baseline_hash``.
     """
-    def __init__(self, name, item, id, warn_missing):
+    def __init__(self, name, item, id):
         # Make the summary dictionary available as attributes
         self.__dict__ = item
 
         # Sort index for collection order
         self.id = id
-
-        # Whether to show image and/or hash status badges
-        self.warn_missing = warn_missing
 
         # Name of test with module and test function together and separate
         self.full_name = name
@@ -154,8 +150,6 @@ class Result:
         """Additional badges to show beside overall status badge."""
         for test_type, status_getter in [('image', image_status_msg), ('hash', hash_status_msg)]:
             status = getattr(self, f'{test_type}_status')
-            if not self.warn_missing[f'baseline_{test_type}']:
-                continue  # not expected to exist
             if (
                     (status == 'missing') or
                     (self.status == 'failed' and status == 'match') or
