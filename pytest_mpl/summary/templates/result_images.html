@@ -6,14 +6,14 @@
     </div>
     <div class="offcanvas-body">
         <h5 class="card-title">{{ r.name }}</h5>
-        {% if results.warn_missing['baseline_image'] -%}
+        {% if r.image_status and r.image_status != 'generated' -%}
         <div class="row row-cols-1 row-cols-md-3 g-4 mt-3">
             {% macro image_card(file, name) -%}
             <div class="col py-3 m-0">
                 <div class="card h-100">
                     <div class="card-header">{{ name }}</div>
                     {% if file -%}
-                    <img src="{{ file }}" class="card-img-top" alt="">
+                    <img src="{{ file }}" class="card-img-top" alt="{{ name }}">
                     {%- endif %}
                 </div>
             </div>
@@ -41,21 +41,25 @@
                 </div>
                 {%- endfilter %}
                 {%- endmacro -%}
-                {% if results.warn_missing['baseline_image'] -%}
-                <div class="card text-white bg-{{ r.image_status | status_class }} mb-3 mpl-image">
+                {% if r.image_status -%}
+                <div class="card text-white bg-{{ r.image_status | status_class }} mb-3">
                     <div class="card-header">{{ r.image_status | image_status_msg }}</div>
+                    {% if r.image_status == 'match' or r.image_status == 'diff' -%}
                     <div class="card-body">
                         {{ pre_data('rms', r.rms_str, 'RMS') }}
                         {{ pre_data('tolerance', r.tolerance, 'Tolerance') }}
                     </div>
+                    {%- endif %}
                 </div>
                 {%- endif %}
-                {% if results.warn_missing['baseline_hash'] -%}
-                <div class="card text-white bg-{{ r.hash_status | status_class }} mb-3 mpl-hash">
+                {% if r.hash_status -%}
+                <div class="card text-white bg-{{ r.hash_status | status_class }} mb-3">
                     <div class="card-header">{{ r.hash_status | hash_status_msg }}</div>
                     <div class="card-body">
                         {{ pre_data('baseline_hash', r.baseline_hash, 'Baseline') }}
+                        {% if r.hash_status != 'generated' -%}
                         {{ pre_data('result_hash', r.result_hash, 'Result') }}
+                        {%- endif %}
                     </div>
                 </div>
                 {%- endif %}

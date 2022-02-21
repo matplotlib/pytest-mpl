@@ -181,8 +181,6 @@ def pytest_configure(config):
         if generate_dir is not None:
             if baseline_dir is not None:
                 warnings.warn("Ignoring --mpl-baseline-path since --mpl-generate-path is set")
-            if results_dir is not None and generate_dir is not None:
-                warnings.warn("Ignoring --mpl-result-path since --mpl-generate-path is set")
 
         if baseline_dir is not None and not baseline_dir.startswith(("https", "http")):
             baseline_dir = os.path.abspath(baseline_dir)
@@ -282,6 +280,12 @@ class ImageComparison:
         if not self.results_dir:
             self.results_dir = Path(tempfile.mkdtemp(dir=self.results_dir))
         self.results_dir.mkdir(parents=True, exist_ok=True)
+
+        # Decide what to call the downloadable results hash library
+        if self.hash_library is not None:
+            self.results_hash_library_name = self.hash_library.name
+        else:  # Use the first filename encountered in a `hash_library=` kwarg
+            self.results_hash_library_name = None
 
         # We need global state to store all the hashes generated over the run
         self._generated_hash_library = {}
@@ -390,10 +394,13 @@ class ImageComparison:
         if not os.path.exists(self.generate_dir):
             os.makedirs(self.generate_dir)
 
-        fig.savefig(str((self.generate_dir / self.generate_filename(item)).absolute()),
-                    **savefig_kwargs)
+        baseline_filename = self.generate_filename(item)
+        baseline_path = (self.generate_dir / baseline_filename).absolute()
+        fig.savefig(str(baseline_path), **savefig_kwargs)
 
         close_mpl_figure(fig)
+
+        return baseline_path
 
     def generate_image_hash(self, item, fig):
         """
@@ -435,6 +442,7 @@ class ImageComparison:
 
         if not os.path.exists(baseline_image_ref):
             summary['status'] = 'failed'
+            summary['image_status'] = 'missing'
             error_message = ("Image file not found for comparison test in: \n\t"
                              f"{self.get_baseline_directory(item)}\n"
                              "(This is expected for new tests.)\n"
@@ -456,6 +464,7 @@ class ImageComparison:
         actual_shape = imread(str(test_image)).shape[:2]
         if expected_shape != actual_shape:
             summary['status'] = 'failed'
+            summary['image_status'] = 'diff'
             error_message = SHAPE_MISMATCH_ERROR.format(expected_path=baseline_image,
                                                         expected_shape=expected_shape,
                                                         actual_path=test_image,
@@ -467,10 +476,12 @@ class ImageComparison:
         summary['tolerance'] = tolerance
         if results is None:
             summary['status'] = 'passed'
+            summary['image_status'] = 'match'
             summary['status_msg'] = 'Image comparison passed.'
             return None
         else:
             summary['status'] = 'failed'
+            summary['image_status'] = 'diff'
             summary['rms'] = results['rms']
             diff_image = (result_dir / 'result-failed-diff.png').absolute()
             summary['diff_image'] = diff_image.relative_to(self.results_dir).as_posix()
@@ -496,6 +507,10 @@ class ImageComparison:
         compare = self.get_compare(item)
         savefig_kwargs = compare.kwargs.get('savefig_kwargs', {})
 
+        if not self.results_hash_library_name:
+            # Use hash library name of current test as results hash library name
+            self.results_hash_library_name = Path(compare.kwargs.get("hash_library", "")).name
+
         hash_library_filename = self.hash_library or compare.kwargs.get('hash_library', None)
         hash_library_filename = (Path(item.fspath).parent / hash_library_filename).absolute()
 
@@ -512,14 +527,17 @@ class ImageComparison:
 
         if baseline_hash is None:  # hash-missing
             summary['status'] = 'failed'
+            summary['hash_status'] = 'missing'
             summary['status_msg'] = (f"Hash for test '{hash_name}' not found in {hash_library_filename}. "
                                      f"Generated hash is {test_hash}.")
         elif test_hash == baseline_hash:  # hash-match
             hash_comparison_pass = True
             summary['status'] = 'passed'
+            summary['hash_status'] = 'match'
             summary['status_msg'] = 'Test hash matches baseline hash.'
         else:  # hash-diff
             summary['status'] = 'failed'
+            summary['hash_status'] = 'diff'
             summary['status_msg'] = (f"Hash {test_hash} doesn't match hash "
                                      f"{baseline_hash} in library "
                                      f"{hash_library_filename} for test {hash_name}.")
@@ -544,7 +562,8 @@ class ImageComparison:
             except Exception as baseline_error:  # Append to test error later
                 baseline_comparison = str(baseline_error)
             else:  # Update main summary
-                for k in ['baseline_image', 'diff_image', 'rms', 'tolerance', 'result_image']:
+                for k in ['image_status', 'baseline_image', 'diff_image',
+                          'rms', 'tolerance', 'result_image']:
                     summary[k] = summary[k] or baseline_summary.get(k)
 
             # Append the log from image comparison
@@ -597,9 +616,12 @@ class ImageComparison:
                     remove_ticks_and_titles(fig)
 
                 test_name = self.generate_test_name(item)
+                result_dir = self.make_test_results_dir(item)
 
                 summary = {
                     'status': None,
+                    'image_status': None,
+                    'hash_status': None,
                     'status_msg': None,
                     'baseline_image': None,
                     'diff_image': None,
@@ -614,21 +636,23 @@ class ImageComparison:
                 # reference images or simply running the test.
                 if self.generate_dir is not None:
                     summary['status'] = 'skipped'
+                    summary['image_status'] = 'generated'
                     summary['status_msg'] = 'Skipped test, since generating image.'
-                    self.generate_baseline_image(item, fig)
-                    if self.generate_hash_library is None:
-                        self._test_results[str(pathify(test_name))] = summary
-                        pytest.skip("Skipping test, since generating image.")
+                    generate_image = self.generate_baseline_image(item, fig)
+                    if self.results_always:  # Make baseline image available in HTML
+                        result_image = (result_dir / "baseline.png").absolute()
+                        shutil.copy(generate_image, result_image)
+                        summary['baseline_image'] = \
+                            result_image.relative_to(self.results_dir).as_posix()
 
                 if self.generate_hash_library is not None:
+                    summary['hash_status'] = 'generated'
                     image_hash = self.generate_image_hash(item, fig)
                     self._generated_hash_library[test_name] = image_hash
-                    summary['result_hash'] = image_hash
+                    summary['baseline_hash'] = image_hash
 
                 # Only test figures if not generating images
                 if self.generate_dir is None:
-                    result_dir = self.make_test_results_dir(item)
-
                     # Compare to hash library
                     if self.hash_library or compare.kwargs.get('hash_library', None):
                         msg = self.compare_image_to_hash_library(item, fig, result_dir, summary=summary)
@@ -645,12 +669,15 @@ class ImageComparison:
                             for image_type in ['baseline_image', 'diff_image', 'result_image']:
                                 summary[image_type] = None  # image no longer exists
                     else:
-                        self._test_results[str(pathify(test_name))] = summary
+                        self._test_results[test_name] = summary
                         pytest.fail(msg, pytrace=False)
 
                 close_mpl_figure(fig)
 
-                self._test_results[str(pathify(test_name))] = summary
+                self._test_results[test_name] = summary
+
+                if summary['status'] == 'skipped':
+                    pytest.skip(summary['status_msg'])
 
         if item.cls is not None:
             setattr(item.cls, item.function.__name__, item_function_wrapper)
@@ -667,21 +694,36 @@ class ImageComparison:
         """
         Save out the hash library at the end of the run.
         """
+        result_hash_library = self.results_dir / (self.results_hash_library_name or "temp.json")
         if self.generate_hash_library is not None:
             hash_library_path = Path(config.rootdir) / self.generate_hash_library
             hash_library_path.parent.mkdir(parents=True, exist_ok=True)
             with open(hash_library_path, "w") as fp:
                 json.dump(self._generated_hash_library, fp, indent=2)
+            if self.results_always:  # Make accessible in results directory
+                # Use same name as generated
+                result_hash_library = self.results_dir / hash_library_path.name
+                shutil.copy(hash_library_path, result_hash_library)
+        elif self.results_always and self.results_hash_library_name:
+            result_hashes = {k: v['result_hash'] for k, v in self._test_results.items()
+                             if v['result_hash']}
+            if len(result_hashes) > 0:  # At least one hash comparison test
+                with open(result_hash_library, "w") as fp:
+                    json.dump(result_hashes, fp, indent=2)
 
         if self.generate_summary:
+            kwargs = {}
             if 'json' in self.generate_summary:
                 summary = self.generate_summary_json()
                 print(f"A JSON report can be found at: {summary}")
+            if result_hash_library.exists():  # link to it in the HTML
+                kwargs["hash_library"] = result_hash_library.name
             if 'html' in self.generate_summary:
-                summary = generate_summary_html(self._test_results, self.results_dir)
+                summary = generate_summary_html(self._test_results, self.results_dir, **kwargs)
                 print(f"A summary of the failed tests can be found at: {summary}")
             if 'basic-html' in self.generate_summary:
-                summary = generate_summary_basic_html(self._test_results, self.results_dir)
+                summary = generate_summary_basic_html(self._test_results, self.results_dir,
+                                                      **kwargs)
                 print(f"A summary of the failed tests can be found at: {summary}")
 
 

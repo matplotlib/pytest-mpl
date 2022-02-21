@@ -1,6 +1,10 @@
 0.15 (unreleased)
 -----------------
 
+- An updated hash library will be saved to the results directory when
+  generating a HTML summary page or when the `--mpl-results-always` flag is
+  set. A button to download this file is included in the HTML summary.
+  Various bugfixes, test improvements and documentation updates. [#138]
 
 0.14 (2022-02-09)
 -----------------

@@ -26,26 +26,12 @@ class Results:
     def __init__(self, results, title="Image comparison"):
         self.title = title  # HTML <title>
 
-        # If any baseline images or baseline hashes are present,
-        # assume all results should have them
-        self.warn_missing = {'baseline_image': False, 'baseline_hash': False}
-        for key in self.warn_missing.keys():
-            for result in results.values():
-                if result[key] is not None:
-                    self.warn_missing[key] = True
-                    break
-
-        # Additional <body> classes
-        self.classes = []
-        if self.warn_missing['baseline_hash'] is False:
-            self.classes += ['no-hash-test']
-
         # Generate sorted list of results
         self.cards = []
         pad = len(str(len(results.items())))  # maximum length of a result index
         for collect_n, (name, item) in enumerate(results.items()):
             card_id = str(collect_n).zfill(pad)  # zero pad for alphanumerical sorting
-            self.cards += [Result(name, item, card_id, self.warn_missing)]
+            self.cards += [Result(name, item, card_id)]
         self.cards = sorted(self.cards, key=lambda i: i.indexes['status'], reverse=True)
 
     @cached_property
@@ -66,6 +52,22 @@ class Results:
                 stats['skipped'] += 1
         return stats
 
+    @cached_property
+    def image_comparison(self):
+        """Whether at least one image comparison test or generation was performed."""
+        for result in self.cards:
+            if result.image_status:
+                return True
+        return False
+
+    @cached_property
+    def hash_comparison(self):
+        """Whether at least one hash comparison test or generation was performed."""
+        for result in self.cards:
+            if result.hash_status:
+                return True
+        return False
+
 
 class Result:
     """
@@ -81,19 +83,13 @@ class Result:
     id : str
         The test number in order collected. Numbers must be
         zero padded due to alphanumerical sorting.
-    warn_missing : dict
-        Whether to include relevant status badges for images and/or hashes.
-        Must have keys ``baseline_image`` and ``baseline_hash``.
     """
-    def __init__(self, name, item, id, warn_missing):
+    def __init__(self, name, item, id):
         # Make the summary dictionary available as attributes
         self.__dict__ = item
 
         # Sort index for collection order
         self.id = id
-
-        # Whether to show image and/or hash status badges
-        self.warn_missing = warn_missing
 
         # Name of test with module and test function together and separate
         self.full_name = name
@@ -106,30 +102,6 @@ class Result:
             ('image', self.image_status),
             ('hash', self.hash_status),
         ]]
-
-    @cached_property
-    def image_status(self):
-        """Status of the image comparison test."""
-        if self.rms is None and self.tolerance is not None:
-            return 'match'
-        elif self.rms is not None:
-            return 'diff'
-        elif self.baseline_image is None:
-            return 'missing'
-        else:
-            raise ValueError('Unknown image result.')
-
-    @cached_property
-    def hash_status(self):
-        """Status of the hash comparison test."""
-        if self.baseline_hash is not None or self.result_hash is not None:
-            if self.baseline_hash is None:
-                return 'missing'
-            elif self.baseline_hash == self.result_hash:
-                return 'match'
-            else:
-                return 'diff'
-        return None
 
     @cached_property
     def indexes(self):
@@ -178,8 +150,6 @@ class Result:
         """Additional badges to show beside overall status badge."""
         for test_type, status_getter in [('image', image_status_msg), ('hash', hash_status_msg)]:
             status = getattr(self, f'{test_type}_status')
-            if not self.warn_missing[f'baseline_{test_type}']:
-                continue  # not expected to exist
             if (
                     (status == 'missing') or
                     (self.status == 'failed' and status == 'match') or
@@ -198,6 +168,7 @@ def status_class(status):
         'match': 'success',
         'diff': 'danger',
         'missing': 'warning',
+        'generated': 'warning',
     }
     return classes[status]
 
@@ -208,6 +179,7 @@ def image_status_msg(status):
         'match': 'Baseline image matches',
         'diff': 'Baseline image differs',
         'missing': 'Baseline image not found',
+        'generated': 'Baseline image was generated',
     }
     return messages[status]
 
@@ -218,11 +190,12 @@ def hash_status_msg(status):
         'match': 'Baseline hash matches',
         'diff': 'Baseline hash differs',
         'missing': 'Baseline hash not found',
+        'generated': 'Baseline hash was generated',
     }
     return messages[status]
 
 
-def generate_summary_html(results, results_dir):
+def generate_summary_html(results, results_dir, hash_library=None):
     """Generate the HTML summary.
 
     Parameters
@@ -231,6 +204,9 @@ def generate_summary_html(results, results_dir):
         The `pytest_mpl.plugin.ImageComparison._test_results` object.
     results_dir : Path
         Path to the output directory.
+    hash_library : str, optional, default=None
+        Filename of the generated hash library at the root of `results_dir`.
+        Will be linked to in HTML if not None.
     """
 
     # Initialize Jinja
@@ -246,7 +222,7 @@ def generate_summary_html(results, results_dir):
 
     # Render HTML starting from the base template
     template = env.get_template("base.html")
-    html = template.render(results=Results(results))
+    html = template.render(results=Results(results), hash_library=hash_library)
 
     # Write files
     for file in ['styles.css', 'extra.js', 'hash.svg', 'image.svg']:
@@ -259,7 +235,7 @@ def generate_summary_html(results, results_dir):
     return html_file
 
 
-def generate_summary_basic_html(results, results_dir):
+def generate_summary_basic_html(results, results_dir, hash_library=None):
     """Generate the basic HTML summary.
 
     Parameters
@@ -268,6 +244,9 @@ def generate_summary_basic_html(results, results_dir):
         The `pytest_mpl.plugin.ImageComparison._test_results` object.
     results_dir : Path
         Path to the output directory.
+    hash_library : str, optional, default=None
+        Filename of the generated hash library at the root of `results_dir`.
+        Will be linked to in HTML if not None.
     """
 
     # Initialize Jinja
@@ -278,7 +257,7 @@ def generate_summary_basic_html(results, results_dir):
 
     # Render HTML starting from the base template
     template = env.get_template("basic.html")
-    html = template.render(results=Results(results))
+    html = template.render(results=Results(results), hash_library=hash_library)
 
     # Write files
     html_file = results_dir / 'fig_comparison_basic.html'

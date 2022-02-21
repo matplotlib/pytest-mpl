@@ -1,6 +1,3 @@
-body.no-hash-test .mpl-hash {
-    display: none;
-}
 .navbar-brand span.repo {
     font-weight: bold;
 }
@@ -13,6 +10,9 @@ body.no-hash-test .mpl-hash {
 }
 .nav-filtertools .nav-searchbar {
     flex: 10;
+}
+.nav-filtertools svg {
+    vertical-align: text-bottom;
 }
 #filterForm .spacer {
     flex: 1;
@@ -29,11 +29,11 @@ body.no-hash-test .mpl-hash {
         max-width: 400px;
     }
 }
-.image-missing .mpl-image .card-body {
-    display: none;
-}
 pre {
     white-space: pre-line;
+}
+.tooltip-inner pre {
+    margin: 0;
 }
 div.result div.status-badge button img {
     vertical-align: sub;

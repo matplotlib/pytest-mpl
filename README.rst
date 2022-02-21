@@ -86,6 +86,10 @@ can either be specified via the ``--mpl-hash-library=`` command line argument,
 or via the ``hash_library=`` keyword argument to the
 ``@pytest.mark.mpl_image_compare`` decorator.
 
+When generating a hash library, the tests will also be run as usual against the
+existing hash library specified by ``--mpl-hash-library`` or the keyword argument.
+However, generating baseline images will always result in the tests being skipped.
+
 
 Hybrid Mode: Hashes and Images
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -224,6 +228,12 @@ PR affects the baseline images, with the success status of each
 test (based on the hash library) also shown in the generated
 summary. This option is applied automatically when generating
 a HTML summary.
+
+When the ``--mpl-results-always`` option is active, and some hash
+comparison tests are performed, a hash library containing all the
+result hashes will also be saved to the root of the results directory.
+The filename will be extracted from ``--mpl-generate-hash-library``,
+``--mpl-hash-library`` or ``hash_library=`` in that order.
 
 Base style
 ^^^^^^^^^^
