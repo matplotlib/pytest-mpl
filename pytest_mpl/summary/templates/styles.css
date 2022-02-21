@@ -11,6 +11,9 @@
 .nav-filtertools .nav-searchbar {
     flex: 10;
 }
+.nav-filtertools svg {
+    vertical-align: text-bottom;
+}
 #filterForm .spacer {
     flex: 1;
 }
