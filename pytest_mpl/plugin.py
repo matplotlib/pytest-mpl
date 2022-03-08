@@ -62,7 +62,7 @@ def _download_file(baseline, filename):
             u = urlopen(base_url + filename)
             content = u.read()
         except Exception as e:
-            warnings.warn('Downloading {0} failed: {1}'.format(base_url + filename, e))
+            pass
         else:
             break
     else:
