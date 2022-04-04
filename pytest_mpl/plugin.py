@@ -34,6 +34,7 @@ import json
 import shutil
 import hashlib
 import inspect
+import logging
 import tempfile
 import warnings
 import contextlib
@@ -52,27 +53,6 @@ SHAPE_MISMATCH_ERROR = """Error: Image dimensions did not match.
     {expected_path}
   Actual shape: {actual_shape}
     {actual_path}"""
-
-
-def _download_file(baseline, filename):
-    # Note that baseline can be a comma-separated list of URLs that we can
-    # then treat as mirrors
-    for base_url in baseline.split(','):
-        try:
-            u = urlopen(base_url + filename)
-            content = u.read()
-        except Exception as e:
-            pass
-        else:
-            break
-    else:
-        raise Exception("Could not download baseline image from any of the "
-                        "available URLs")
-    result_dir = Path(tempfile.mkdtemp())
-    filename = result_dir / 'downloaded'
-    with open(str(filename), 'wb') as tmpfile:
-        tmpfile.write(content)
-    return Path(filename)
 
 
 def _hash_file(in_stream):
@@ -292,6 +272,12 @@ class ImageComparison:
         self._test_results = {}
         self._test_stats = None
 
+        # https://stackoverflow.com/questions/51737378/how-should-i-log-in-my-pytest-plugin
+        # turn debug prints on only if "-vv" or more passed
+        level = logging.DEBUG if config.option.verbose > 1 else logging.INFO
+        logging.basicConfig(level=level)
+        self.logger = logging.getLogger('pytest-mpl')
+
     def get_compare(self, item):
         """
         Return the mpl_image_compare marker for the given item.
@@ -364,6 +350,26 @@ class ImageComparison:
 
         return baseline_dir
 
+    def _download_file(self, baseline, filename):
+        # Note that baseline can be a comma-separated list of URLs that we can
+        # then treat as mirrors
+        for base_url in baseline.split(','):
+            try:
+                u = urlopen(base_url + filename)
+                content = u.read()
+            except Exception as e:
+                self.logger.debug(f'Downloading {base_url + filename} failed: {repr(e)}')
+            else:
+                break
+        else:
+            raise Exception("Could not download baseline image from any of the "
+                            "available URLs")
+        result_dir = Path(tempfile.mkdtemp())
+        filename = result_dir / 'downloaded'
+        with open(str(filename), 'wb') as tmpfile:
+            tmpfile.write(content)
+        return Path(filename)
+
     def obtain_baseline_image(self, item, target_dir):
         """
         Copy the baseline image to our working directory.
@@ -378,7 +384,7 @@ class ImageComparison:
         if baseline_remote:
             # baseline_dir can be a list of URLs when remote, so we have to
             # pass base and filename to download
-            baseline_image = _download_file(baseline_dir, filename)
+            baseline_image = self._download_file(baseline_dir, filename)
         else:
             baseline_image = (baseline_dir / filename).absolute()
 
