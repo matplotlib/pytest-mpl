@@ -358,7 +358,7 @@ class ImageComparison:
                 u = urlopen(base_url + filename)
                 content = u.read()
             except Exception as e:
-                self.logger.debug(f'Downloading {base_url + filename} failed: {repr(e)}')
+                self.logger.info(f'Downloading {base_url + filename} failed: {repr(e)}')
             else:
                 break
         else:
