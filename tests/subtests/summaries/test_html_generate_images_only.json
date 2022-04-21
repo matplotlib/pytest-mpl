@@ -25,6 +25,19 @@
     "baseline_hash": null,
     "result_hash": null
   },
+  "subtests.subtest.test_hmatch_idiffshape": {
+    "status": "skipped",
+    "image_status": "generated",
+    "hash_status": null,
+    "status_msg": "Skipped test, since generating image.",
+    "baseline_image": "subtests.subtest.test_hmatch_idiffshape/baseline.png",
+    "diff_image": null,
+    "rms": null,
+    "tolerance": null,
+    "result_image": null,
+    "baseline_hash": null,
+    "result_hash": null
+  },
   "subtests.subtest.test_hmatch_imissing": {
     "status": "skipped",
     "image_status": "generated",
@@ -64,6 +77,19 @@
     "baseline_hash": null,
     "result_hash": null
   },
+  "subtests.subtest.test_hdiff_idiffshape": {
+    "status": "skipped",
+    "image_status": "generated",
+    "hash_status": null,
+    "status_msg": "Skipped test, since generating image.",
+    "baseline_image": "subtests.subtest.test_hdiff_idiffshape/baseline.png",
+    "diff_image": null,
+    "rms": null,
+    "tolerance": null,
+    "result_image": null,
+    "baseline_hash": null,
+    "result_hash": null
+  },
   "subtests.subtest.test_hdiff_imissing": {
     "status": "skipped",
     "image_status": "generated",
@@ -96,6 +122,19 @@
     "hash_status": null,
     "status_msg": "Skipped test, since generating image.",
     "baseline_image": "subtests.subtest.test_hmissing_idiff/baseline.png",
+    "diff_image": null,
+    "rms": null,
+    "tolerance": null,
+    "result_image": null,
+    "baseline_hash": null,
+    "result_hash": null
+  },
+  "subtests.subtest.test_hmissing_idiffshape": {
+    "status": "skipped",
+    "image_status": "generated",
+    "hash_status": null,
+    "status_msg": "Skipped test, since generating image.",
+    "baseline_image": "subtests.subtest.test_hmissing_idiffshape/baseline.png",
     "diff_image": null,
     "rms": null,
     "tolerance": null,

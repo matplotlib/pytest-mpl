@@ -25,6 +25,19 @@
     "baseline_hash": "2b48790b0a2cee4b41cdb9820336acaf229ba811ae21c6a92b4b92838843adfa",
     "result_hash": null
   },
+  "subtests.subtest.test_hmatch_idiffshape": {
+    "status": "skipped",
+    "image_status": "generated",
+    "hash_status": "generated",
+    "status_msg": "Skipped test, since generating image.",
+    "baseline_image": "subtests.subtest.test_hmatch_idiffshape/baseline.png",
+    "diff_image": null,
+    "rms": null,
+    "tolerance": null,
+    "result_image": null,
+    "baseline_hash": "e3fed4ad2d22aff2cd771c5503dcb30c6161b21d154430ededa5faa1ec54366e",
+    "result_hash": null
+  },
   "subtests.subtest.test_hmatch_imissing": {
     "status": "skipped",
     "image_status": "generated",
@@ -64,6 +77,19 @@
     "baseline_hash": "927521206ef454a25417e3ba0bd3235c84518cb202c2d1fa7afcfdfcde5fdcde",
     "result_hash": null
   },
+  "subtests.subtest.test_hdiff_idiffshape": {
+    "status": "skipped",
+    "image_status": "generated",
+    "hash_status": "generated",
+    "status_msg": "Skipped test, since generating image.",
+    "baseline_image": "subtests.subtest.test_hdiff_idiffshape/baseline.png",
+    "diff_image": null,
+    "rms": null,
+    "tolerance": null,
+    "result_image": null,
+    "baseline_hash": "5d37745bbdf2aac6743dbd830afb1877c2ac25a5f926d4f6483c1e24d19a0580",
+    "result_hash": null
+  },
   "subtests.subtest.test_hdiff_imissing": {
     "status": "skipped",
     "image_status": "generated",
@@ -101,6 +127,19 @@
     "tolerance": null,
     "result_image": null,
     "baseline_hash": "4eeda1d349f4b0f26df97df41ba5410dce2b1c7ed520062d58f3c5f0e3790ebd",
+    "result_hash": null
+  },
+  "subtests.subtest.test_hmissing_idiffshape": {
+    "status": "skipped",
+    "image_status": "generated",
+    "hash_status": "generated",
+    "status_msg": "Skipped test, since generating image.",
+    "baseline_image": "subtests.subtest.test_hmissing_idiffshape/baseline.png",
+    "diff_image": null,
+    "rms": null,
+    "tolerance": null,
+    "result_image": null,
+    "baseline_hash": "204d43b643538cafafa2d0fb7dafac9cf7009dbb421d4b32c71da2e400ceb59d",
     "result_hash": null
   },
   "subtests.subtest.test_hmissing_imissing": {

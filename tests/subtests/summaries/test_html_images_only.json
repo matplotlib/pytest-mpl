@@ -25,6 +25,19 @@
     "baseline_hash": null,
     "result_hash": null
   },
+  "subtests.subtest.test_hmatch_idiffshape": {
+    "status": "failed",
+    "image_status": "diff",
+    "hash_status": null,
+    "status_msg": "REGEX:Error: Image dimensions did not match\\.\n  Expected shape: \\(400, 400\\)\n    .*baseline\\.png\n  Actual shape: \\(600, 800\\)\n    .*result\\.png",
+    "baseline_image": "subtests.subtest.test_hmatch_idiffshape/baseline.png",
+    "diff_image": null,
+    "rms": null,
+    "tolerance": null,
+    "result_image": "subtests.subtest.test_hmatch_idiffshape/result.png",
+    "baseline_hash": null,
+    "result_hash": null
+  },
   "subtests.subtest.test_hmatch_imissing": {
     "status": "failed",
     "image_status": "missing",
@@ -64,6 +77,19 @@
     "baseline_hash": null,
     "result_hash": null
   },
+  "subtests.subtest.test_hdiff_idiffshape": {
+    "status": "failed",
+    "image_status": "diff",
+    "hash_status": null,
+    "status_msg": "REGEX:Error: Image dimensions did not match\\.\n  Expected shape: \\(400, 400\\)\n    .*baseline\\.png\n  Actual shape: \\(600, 800\\)\n    .*result\\.png",
+    "baseline_image": "subtests.subtest.test_hdiff_idiffshape/baseline.png",
+    "diff_image": null,
+    "rms": null,
+    "tolerance": null,
+    "result_image": "subtests.subtest.test_hdiff_idiffshape/result.png",
+    "baseline_hash": null,
+    "result_hash": null
+  },
   "subtests.subtest.test_hdiff_imissing": {
     "status": "failed",
     "image_status": "missing",
@@ -100,6 +126,19 @@
     "rms": 12.12938597648977,
     "tolerance": 2,
     "result_image": "subtests.subtest.test_hmissing_idiff/result.png",
+    "baseline_hash": null,
+    "result_hash": null
+  },
+  "subtests.subtest.test_hmissing_idiffshape": {
+    "status": "failed",
+    "image_status": "diff",
+    "hash_status": null,
+    "status_msg": "REGEX:Error: Image dimensions did not match\\.\n  Expected shape: \\(400, 400\\)\n    .*baseline\\.png\n  Actual shape: \\(600, 800\\)\n    .*result\\.png",
+    "baseline_image": "subtests.subtest.test_hmissing_idiffshape/baseline.png",
+    "diff_image": null,
+    "rms": null,
+    "tolerance": null,
+    "result_image": "subtests.subtest.test_hmissing_idiffshape/result.png",
     "baseline_hash": null,
     "result_hash": null
   },
