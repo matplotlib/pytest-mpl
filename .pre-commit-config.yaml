@@ -80,11 +80,14 @@ repos:
       - id: check-ast
       - id: check-case-conflict
       - id: trailing-whitespace
+        exclude: CHANGES.md
       - id: check-yaml
       - id: debug-statements
       - id: check-added-large-files
       - id: end-of-file-fixer
       - id: mixed-line-ending
+      - id: check-toml
+
 
 ci:
   autofix_prs: false
