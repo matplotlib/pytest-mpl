@@ -12,13 +12,6 @@
 
 **Full Changelog**: https://github.com/matplotlib/pytest-mpl/compare/v0.14.0...v0.15.0
 
-## 0.15 (unreleased)
-
-- An updated hash library will be saved to the results directory when
-- generating a HTML summary page or when the `--mpl-results-always` flag is
-- set. A button to download this file is included in the HTML summary.
-- Various bugfixes, test improvements and documentation updates. [#138]
-
 ## 0.14 (2022-02-09)
 
 - Add `--mpl-results-always` flag which disables removing of test images for
