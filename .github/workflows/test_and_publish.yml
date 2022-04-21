@@ -1,0 +1,45 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - master
+    tags:
+      - 'v*'
+      - '!*dev*'
+      - '!*pre*'
+      - '!*post*'
+  pull_request:
+  # Allow manual runs through the web UI
+  workflow_dispatch:
+
+jobs:
+  test:
+    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@v1
+    with:
+      envs: |
+        # Test the oldest and newest configuration on Mac and Windows
+        - macos: py36-test-mpl20
+        - macos: py310-test-mpl35
+        - windows: py36-test-mpl20
+        - windows: py310-test-mpl35
+        # Test all configurations on Linux
+        - linux: py36-test-mpl20
+        - linux: py36-test-mpl21
+        - linux: py36-test-mpl22
+        - linux: py37-test-mpl30
+        - linux: py37-test-mpl31
+        - linux: py37-test-mpl32
+        - linux: py38-test-mpl33
+        - linux: py39-test-mpl34
+        - linux: py310-test-mpl35
+      coverage: 'codecov'
+
+  publish:
+    if: github.event_name != 'pull_request'
+    needs: [test]
+    uses: OpenAstronomy/github-actions-workflows/.github/workflows/publish_pure_python.yml@v1
+    with:
+      test_command: pytest $GITHUB_WORKSPACE/tests; pytest --mpl $GITHUB_WORKSPACE/tests
+    secrets:
+      pypi_token: ${{ secrets.pypi_password }}
