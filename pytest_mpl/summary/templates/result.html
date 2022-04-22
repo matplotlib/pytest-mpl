@@ -8,14 +8,18 @@
     <div class="card">
         <a class="btn" data-bs-toggle="offcanvas" href="#offcanvas{{ r.id }}" role="button"
            aria-controls="offcanvas{{ r.id }}">
-            {% if r.diff_image -%}
+            {% if r.image_status and r.image_status == "diff" -%}
             <div class="hover-image">
+                {% if r.diff_image -%}
                 <div class="diff-image">
                     <img src="{{ r.diff_image }}" class="card-img-top" alt="diff image">
                 </div>
                 <div class="result-image">
                     <img src="{{ r.result_image }}" class="card-img-top" alt="result image">
                 </div>
+                {%- else -%}
+                <img src="{{ r.result_image }}" class="card-img-top" alt="result image">
+                {%- endif %}
             </div>
             {%- elif r.result_image -%}
             <img src="{{ r.result_image }}" class="card-img-top" alt="result image">

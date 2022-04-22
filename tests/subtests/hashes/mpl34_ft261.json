@@ -1,9 +1,11 @@
 {
   "subtests.subtest.test_hmatch_imatch": "573f4c1482192b7b15bbe4f2bd370ae3b5ab40c9afa441543b87e15a71e9f672",
   "subtests.subtest.test_hmatch_idiff": "8b5c00365e6f784d5c8947091f09a92fd7d222e790431f297b4848f173e64857",
+  "subtests.subtest.test_hmatch_idiffshape": "2ee75301c4de2dcb9f839b278c6371be2e751de40b131213e375d4dcc5542382",
   "subtests.subtest.test_hmatch_imissing": "fd069e642e3b154c24077a4996b545e1c4dbffdbed34ea5ad34c7b36873af68f",
   "subtests.subtest.test_hdiff_imatch": "d1ffdde5a6682dc6abba7121f5df702c3664b1ce09593534fc0d7c3514eb07e1",
   "subtests.subtest.test_hdiff_idiff": "d1ff61bdd0efd1cdd343eabf73af6f20439d4834ab5503a574ac7ec28e0c2b43",
+  "subtests.subtest.test_hdiff_idiffshape": "d1ffae8ab2b65de3fa297be17ce973ff871e703c9550679e9566179dd785f6eb",
   "subtests.subtest.test_hdiff_imissing": "d1ff63d656d7a586cc4e498bc32b970f8cb7c7c47bbd2fec33b931219fc0690e",
   "subtests.subtest.test_hdiff_imatch_tolerance": "d1ffe85fda98298347c274adae98ca7728f9bb2444ca8a49295145b0727b8c96",
   "subtests.subtest.test_hdiff_idiff_tolerance": "d1ffe85fda98298347c274adae98ca7728f9bb2444ca8a49295145b0727b8c96",

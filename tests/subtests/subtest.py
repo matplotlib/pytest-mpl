@@ -26,6 +26,11 @@ def test_hmatch_idiff():
 
 
 @pytest.mark.mpl_image_compare()
+def test_hmatch_idiffshape():
+    return plot([4, 2, 3, 1, 2])
+
+
+@pytest.mark.mpl_image_compare()
 def test_hmatch_imissing():
     return plot([4, 3, 2, 1])
 
@@ -43,6 +48,11 @@ def test_hdiff_idiff():
 
 
 @pytest.mark.mpl_image_compare()
+def test_hdiff_idiffshape():
+    return plot([4, 2, 3, 1, 3])
+
+
+@pytest.mark.mpl_image_compare()
 def test_hdiff_imissing():
     return plot([3, 2, 4, 1])
 
@@ -57,6 +67,11 @@ def test_hmissing_imatch():
 @pytest.mark.mpl_image_compare()
 def test_hmissing_idiff():
     return plot([1, 4, 3, 2])
+
+
+@pytest.mark.mpl_image_compare()
+def test_hmissing_idiffshape():
+    return plot([4, 2, 3, 1, 4])
 
 
 @pytest.mark.mpl_image_compare()

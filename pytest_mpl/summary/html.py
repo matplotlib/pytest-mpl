@@ -130,6 +130,8 @@ class Result:
         if self.image_status == 'match':
             return "000000"
         elif self.image_status == 'diff':
+            if self.rms is None:  # Shape mismatch
+                return "999999"
             # RMS will be in [0, 255]
             return f"{(self.rms + 2) * 1000:06.0f}"
         else:  # Missing baseline image

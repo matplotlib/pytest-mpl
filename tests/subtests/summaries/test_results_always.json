@@ -25,6 +25,19 @@
     "baseline_hash": "8b5c00365e6f784d5c8947091f09a92fd7d222e790431f297b4848f173e64857",
     "result_hash": "8b5c00365e6f784d5c8947091f09a92fd7d222e790431f297b4848f173e64857"
   },
+  "subtests.subtest.test_hmatch_idiffshape": {
+    "status": "passed",
+    "image_status": "diff",
+    "hash_status": "match",
+    "status_msg": "REGEX:Test hash matches baseline hash\\.\n\nImage comparison test\n---------------------\nError: Image dimensions did not match\\.\n  Expected shape: \\(400, 400\\)\n    .*baseline\\.png\n  Actual shape: \\(600, 800\\)\n    .*result\\.png",
+    "baseline_image": "subtests.subtest.test_hmatch_idiffshape/baseline.png",
+    "diff_image": null,
+    "rms": null,
+    "tolerance": null,
+    "result_image": "subtests.subtest.test_hmatch_idiffshape/result.png",
+    "baseline_hash": "e3fed4ad2d22aff2cd771c5503dcb30c6161b21d154430ededa5faa1ec54366e",
+    "result_hash": "e3fed4ad2d22aff2cd771c5503dcb30c6161b21d154430ededa5faa1ec54366e"
+  },
   "subtests.subtest.test_hmatch_imissing": {
     "status": "passed",
     "image_status": "missing",
@@ -64,6 +77,19 @@
     "baseline_hash": "d1ff61bdd0efd1cdd343eabf73af6f20439d4834ab5503a574ac7ec28e0c2b43",
     "result_hash": "443361bdd0efd1cdd343eabf73af6f20439d4834ab5503a574ac7ec28e0c2b43"
   },
+  "subtests.subtest.test_hdiff_idiffshape": {
+    "status": "failed",
+    "image_status": "diff",
+    "hash_status": "diff",
+    "status_msg": "REGEX:Hash 5d37745bbdf2aac6743dbd830afb1877c2ac25a5f926d4f6483c1e24d19a0580 doesn't match hash d1ff745bbdf2aac6743dbd830afb1877c2ac25a5f926d4f6483c1e24d19a0580 in library .*\\.json for test subtests\\.subtest\\.test_hdiff_idiffshape\\.\n\nImage comparison test\n---------------------\nError: Image dimensions did not match\\.\n  Expected shape: \\(400, 400\\)\n    .*baseline\\.png\n  Actual shape: \\(600, 800\\)\n    .*result\\.png",
+    "baseline_image": "subtests.subtest.test_hdiff_idiffshape/baseline.png",
+    "diff_image": null,
+    "rms": null,
+    "tolerance": null,
+    "result_image": "subtests.subtest.test_hdiff_idiffshape/result.png",
+    "baseline_hash": "d1ff745bbdf2aac6743dbd830afb1877c2ac25a5f926d4f6483c1e24d19a0580",
+    "result_hash": "5d37745bbdf2aac6743dbd830afb1877c2ac25a5f926d4f6483c1e24d19a0580"
+  },
   "subtests.subtest.test_hdiff_imissing": {
     "status": "failed",
     "status_msg": "REGEX:Hash 301e63d656d7a586cc4e498bc32b970f8cb7c7c47bbd2fec33b931219fc0690e doesn't match hash d1ff63d656d7a586cc4e498bc32b970f8cb7c7c47bbd2fec33b931219fc0690e in library .*\\.json for test subtests\\.subtest\\.test_hdiff_imissing\\.\n\nImage comparison test\n---------------------\nImage file not found for comparison test in: \n\t.*\n\\(This is expected for new tests\\.\\)\nGenerated Image: \n\t.*result\\.png",
@@ -102,6 +128,19 @@
     "result_image": "subtests.subtest.test_hmissing_idiff/result.png",
     "baseline_hash": null,
     "result_hash": "e69570c4a70b2cc88ddee0f0a82312cae4f394b7f62e5760245feda1364c03ab"
+  },
+  "subtests.subtest.test_hmissing_idiffshape": {
+    "status": "failed",
+    "image_status": "diff",
+    "hash_status": "missing",
+    "status_msg": "REGEX:Hash for test 'subtests\\.subtest\\.test_hmissing_idiffshape' not found in .*\\.json\\. Generated hash is 204d43b643538cafafa2d0fb7dafac9cf7009dbb421d4b32c71da2e400ceb59d\\.\n\nImage comparison test\n---------------------\nError: Image dimensions did not match\\.\n  Expected shape: \\(400, 400\\)\n    .*baseline\\.png\n  Actual shape: \\(600, 800\\)\n    .*result\\.png",
+    "baseline_image": "subtests.subtest.test_hmissing_idiffshape/baseline.png",
+    "diff_image": null,
+    "rms": null,
+    "tolerance": null,
+    "result_image": "subtests.subtest.test_hmissing_idiffshape/result.png",
+    "baseline_hash": null,
+    "result_hash": "204d43b643538cafafa2d0fb7dafac9cf7009dbb421d4b32c71da2e400ceb59d"
   },
   "subtests.subtest.test_hmissing_imissing": {
     "status": "failed",
