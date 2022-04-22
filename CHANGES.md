@@ -1,3 +1,11 @@
+## v0.15.1 - 2022-04-22
+
+### Fixes
+
+- Add test for image shape mismatch and fix bug by @ConorMacBride in https://github.com/matplotlib/pytest-mpl/pull/145
+
+**Full Changelog**: https://github.com/matplotlib/pytest-mpl/compare/v0.15.0...v0.15.1
+
 ## v0.15.0 - 2022-04-21
 
 ### Features
