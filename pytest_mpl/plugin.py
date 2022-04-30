@@ -726,11 +726,11 @@ class ImageComparison:
                 kwargs["hash_library"] = result_hash_library.name
             if 'html' in self.generate_summary:
                 summary = generate_summary_html(self._test_results, self.results_dir, **kwargs)
-                print(f"A summary of the failed tests can be found at: {summary}")
+                print(f"A summary of test results can be found at: {summary}")
             if 'basic-html' in self.generate_summary:
                 summary = generate_summary_basic_html(self._test_results, self.results_dir,
                                                       **kwargs)
-                print(f"A summary of the failed tests can be found at: {summary}")
+                print(f"A summary of test results can be found at: {summary}")
 
 
 class FigureCloser:
