@@ -297,7 +297,7 @@ def test_hash_fails(tmpdir):
     output = assert_pytest_fails_with(['--mpl', test_file, '--mpl-generate-summary=html'],
                                       "doesn't match hash FAIL in library")
     # We didn't specify a baseline dir so we shouldn't attempt to find one
-    print_message = "A summary of the failed tests can be found at:"
+    print_message = "A summary of test results can be found at:"
     assert print_message in output, output
     printed_path = Path(output.split(print_message)[1].strip())
     assert printed_path.exists()
