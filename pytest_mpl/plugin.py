@@ -32,7 +32,6 @@ import io
 import os
 import json
 import shutil
-import hashlib
 import inspect
 import logging
 import tempfile
@@ -44,7 +43,8 @@ from urllib.request import urlopen
 
 import pytest
 
-from pytest_mpl.summary.html import generate_summary_basic_html, generate_summary_html
+from .kernels import KERNEL_SHA256, kernel_factory
+from .summary.html import generate_summary_basic_html, generate_summary_html
 
 SUPPORTED_FORMATS = {'html', 'json', 'basic-html'}
 
@@ -54,16 +54,29 @@ SHAPE_MISMATCH_ERROR = """Error: Image dimensions did not match.
   Actual shape: {actual_shape}
     {actual_path}"""
 
+#: The default matplotlib backend.
+DEFAULT_BACKEND = "agg"
 
-def _hash_file(in_stream):
-    """
-    Hashes an already opened file.
-    """
-    in_stream.seek(0)
-    buf = in_stream.read()
-    hasher = hashlib.sha256()
-    hasher.update(buf)
-    return hasher.hexdigest()
+#: The default hamming distance bit tolerance for "similar" imagehash hashes.
+DEFAULT_HAMMING_TOLERANCE = 2
+
+#: The default imagehash hash size (N), resulting in a hash of N**2 bits.
+DEFAULT_HASH_SIZE = 16
+
+#: The default algorithm to use for image hashing.
+DEFAULT_KERNEL = KERNEL_SHA256
+
+#: The default pytest-mpl marker.
+DEFAULT_MARKER = "mpl_image_compare"
+
+#: The default option to remove text from matplotlib plot.
+DEFAULT_REMOVE_TEXT = False
+
+#: The default image RMS tolerance.
+DEFAULT_RMS_TOLERANCE = 2
+
+#: The default matplotlib plot style.
+DEFAULT_STYLE = "classic"
 
 
 def pathify(path):
@@ -92,48 +105,69 @@ def pytest_report_header(config, startdir):
 
 def pytest_addoption(parser):
     group = parser.getgroup("matplotlib image comparison")
-    group.addoption('--mpl', action='store_true',
-                    help="Enable comparison of matplotlib figures to reference files")
-    group.addoption('--mpl-generate-path',
-                    help="directory to generate reference images in, relative "
-                    "to location where py.test is run", action='store')
-    group.addoption('--mpl-generate-hash-library',
-                    help="filepath to save a generated hash library, relative "
-                    "to location where py.test is run", action='store')
-    group.addoption('--mpl-baseline-path',
-                    help="directory containing baseline images, relative to "
-                    "location where py.test is run unless --mpl-baseline-relative is given. "
-                    "This can also be a URL or a set of comma-separated URLs (in case "
-                    "mirrors are specified)", action='store')
-    group.addoption("--mpl-baseline-relative", help="interpret the baseline directory as "
-                    "relative to the test location.", action="store_true")
-    group.addoption('--mpl-hash-library',
-                    help="json library of image hashes, relative to "
-                    "location where py.test is run", action='store')
-    group.addoption('--mpl-generate-summary', action='store',
-                    help="Generate a summary report of any failed tests"
-                    ", in --mpl-results-path. The type of the report should be "
-                    "specified. Supported types are `html`, `json` and `basic-html`. "
-                    "Multiple types can be specified separated by commas.")
 
-    results_path_help = "directory for test results, relative to location where py.test is run"
-    group.addoption('--mpl-results-path', help=results_path_help, action='store')
-    parser.addini('mpl-results-path', help=results_path_help)
+    msg = 'Enable comparison of matplotlib figures to reference files.'
+    group.addoption('--mpl', help=msg, action='store_true')
 
-    results_always_help = ("Always compare to baseline images and save result images, even for passing tests. "
-                           "This option is automatically applied when generating a HTML summary.")
-    group.addoption('--mpl-results-always', action='store_true',
-                    help=results_always_help)
-    parser.addini('mpl-results-always', help=results_always_help)
+    msg = ('Directory to generate reference images in, relative to '
+           'location where py.test is run.')
+    group.addoption('--mpl-generate-path', help=msg, action='store')
 
-    parser.addini('mpl-use-full-test-name', help="use fully qualified test name as the filename.",
-                  type='bool')
+    msg = ('Filepath to save a generated hash library, relative to '
+           'location where py.test is run.')
+    group.addoption('--mpl-generate-hash-library', help=msg, action='store')
+
+    msg = ('Directory containing baseline images, relative to location '
+           'where py.test is run unless --mpl-baseline-relative is given. '
+           'This can also be a URL or a set of comma-separated URLs '
+           '(in case mirrors are specified).')
+    group.addoption('--mpl-baseline-path', help=msg, action='store')
+
+    msg = 'Interpret the baseline directory as relative to the test location.'
+    group.addoption("--mpl-baseline-relative", help=msg, action="store_true")
+
+    msg = ('JSON library of image hashes, relative to location where '
+           'py.test is run.')
+    group.addoption('--mpl-hash-library', help=msg, action='store')
+
+    msg = ('Generate a summary report of any failed tests, in '
+           '--mpl-results-path. The type of the report should be specified. '
+           'Supported types are `html`, `json` and `basic-html`. '
+           'Multiple types can be specified separated by commas.')
+    group.addoption('--mpl-generate-summary', help=msg, action='store')
+
+    msg = ('Directory for test results, relative to location where py.test '
+           'is run.')
+    group.addoption('--mpl-results-path', help=msg, action='store')
+    parser.addini('mpl-results-path', help=msg)
+
+    msg = ('Always compare to baseline images and save result images, even '
+           'for passing tests. This option is automatically applied when '
+           'generating a HTML summary.')
+    group.addoption('--mpl-results-always', help=msg, action='store_true')
+    parser.addini('mpl-results-always', help=msg)
+
+    msg = 'Use fully qualified test name as the filename.'
+    parser.addini('mpl-use-full-test-name', help=msg, type='bool')
+
+    msg = ('Algorithm to be used for hashing images. Supported kernels are '
+           '`sha256` (default) and `phash`.')
+    group.addoption('--mpl-kernel', help=msg, action='store')
+    parser.addini('mpl-kernel', help=msg)
+
+    msg = 'The hash size (N) used to generate a N**2 bit image hash.'
+    group.addoption('--mpl-hash-size', help=msg, action='store')
+    parser.addini('mpl-hash-size', help=msg)
+
+    msg = 'Hamming distance bit tolerance for similar image hashes.'
+    group.addoption('--mpl-hamming-tolerance', help=msg, action='store')
+    parser.addini('mpl-hamming-tolerance', help=msg)
 
 
 def pytest_configure(config):
 
     config.addinivalue_line('markers',
-                            "mpl_image_compare: Compares matplotlib figures "
+                            f"{DEFAULT_MARKER}: Compares matplotlib figures "
                             "against a baseline image")
 
     if (config.getoption("--mpl") or
@@ -143,11 +177,12 @@ def pytest_configure(config):
         baseline_dir = config.getoption("--mpl-baseline-path")
         generate_dir = config.getoption("--mpl-generate-path")
         generate_hash_lib = config.getoption("--mpl-generate-hash-library")
-        results_dir = config.getoption("--mpl-results-path") or config.getini("mpl-results-path")
+        option = "mpl-results-path"
+        results_dir = config.getoption(f"--{option}") or config.getini(option)
         hash_library = config.getoption("--mpl-hash-library")
         generate_summary = config.getoption("--mpl-generate-summary")
-        results_always = (config.getoption("--mpl-results-always") or
-                          config.getini("mpl-results-always"))
+        option = "mpl-results-always"
+        results_always = config.getoption(f"--{option}") or config.getini(option)
 
         if config.getoption("--mpl-baseline-relative"):
             baseline_relative_dir = config.getoption("--mpl-baseline-path")
@@ -160,24 +195,28 @@ def pytest_configure(config):
 
         if generate_dir is not None:
             if baseline_dir is not None:
-                warnings.warn("Ignoring --mpl-baseline-path since --mpl-generate-path is set")
+                wmsg = ("Ignoring --mpl-baseline-path since "
+                        "--mpl-generate-path is set")
+                warnings.warn(wmsg)
 
-        if baseline_dir is not None and not baseline_dir.startswith(("https", "http")):
+        protocols = ("https", "http")
+        if baseline_dir is not None and not baseline_dir.startswith(protocols):
             baseline_dir = os.path.abspath(baseline_dir)
         if generate_dir is not None:
             baseline_dir = os.path.abspath(generate_dir)
         if results_dir is not None:
             results_dir = os.path.abspath(results_dir)
 
-        config.pluginmanager.register(ImageComparison(config,
-                                                      baseline_dir=baseline_dir,
-                                                      baseline_relative_dir=baseline_relative_dir,
-                                                      generate_dir=generate_dir,
-                                                      results_dir=results_dir,
-                                                      hash_library=hash_library,
-                                                      generate_hash_library=generate_hash_lib,
-                                                      generate_summary=generate_summary,
-                                                      results_always=results_always))
+        plugin = ImageComparison(config,
+                                 baseline_dir=baseline_dir,
+                                 baseline_relative_dir=baseline_relative_dir,
+                                 generate_dir=generate_dir,
+                                 results_dir=results_dir,
+                                 hash_library=hash_library,
+                                 generate_hash_library=generate_hash_lib,
+                                 generate_summary=generate_summary,
+                                 results_always=results_always)
+        config.pluginmanager.register(plugin)
 
     else:
 
@@ -235,7 +274,7 @@ class ImageComparison:
                  hash_library=None,
                  generate_hash_library=None,
                  generate_summary=None,
-                 results_always=False
+                 results_always=False,
                  ):
         self.config = config
         self.baseline_dir = baseline_dir
@@ -255,6 +294,32 @@ class ImageComparison:
                 results_always = True
         self.generate_summary = generate_summary
         self.results_always = results_always
+
+        # Configure hashing kernel options.
+        option = "mpl-hash-size"
+        hash_size = int(config.getoption(f"--{option}") or
+                        config.getini(option) or DEFAULT_HASH_SIZE)
+        self.hash_size = hash_size
+
+        option = "mpl-hamming-tolerance"
+        hamming_tolerance = int(config.getoption(f"--{option}") or
+                                config.getini(option) or
+                                DEFAULT_HAMMING_TOLERANCE)
+        self.hamming_tolerance = hamming_tolerance
+
+        # Configure the hashing kernel.
+        option = "mpl-kernel"
+        kernel = config.getoption(f"--{option}") or config.getini(option)
+        if kernel:
+            requested = str(kernel).lower()
+            if requested not in kernel_factory:
+                emsg = f"Unrecognised hashing kernel {kernel!r} not supported."
+                raise ValueError(emsg)
+            kernel = requested
+        else:
+            kernel = DEFAULT_KERNEL
+        print(f"{kernel_factory=}")
+        self.kernel = kernel_factory[kernel](self)
 
         # Generate the containing dir for all test results
         if not self.results_dir:
@@ -282,7 +347,7 @@ class ImageComparison:
         """
         Return the mpl_image_compare marker for the given item.
         """
-        return get_marker(item, 'mpl_image_compare')
+        return get_marker(item, DEFAULT_MARKER)
 
     def generate_filename(self, item):
         """
@@ -410,8 +475,8 @@ class ImageComparison:
 
     def generate_image_hash(self, item, fig):
         """
-        For a `matplotlib.figure.Figure`, returns the SHA256 hash as a hexadecimal
-        string.
+        For a `matplotlib.figure.Figure`, returns the hash generated by the
+        kernel as a hexadecimal string.
         """
         compare = self.get_compare(item)
         savefig_kwargs = compare.kwargs.get('savefig_kwargs', {})
@@ -420,11 +485,11 @@ class ImageComparison:
 
         fig.savefig(imgdata, **savefig_kwargs)
 
-        out = _hash_file(imgdata)
+        hash = self.kernel.generate_hash(imgdata)
         imgdata.close()
 
         close_mpl_figure(fig)
-        return out
+        return hash
 
     def compare_image_to_baseline(self, item, fig, result_dir, summary=None):
         """
@@ -437,7 +502,7 @@ class ImageComparison:
             summary = {}
 
         compare = self.get_compare(item)
-        tolerance = compare.kwargs.get('tolerance', 2)
+        tolerance = compare.kwargs.get('tolerance', DEFAULT_RMS_TOLERANCE)
         savefig_kwargs = compare.kwargs.get('savefig_kwargs', {})
 
         baseline_image_ref = self.obtain_baseline_image(item, result_dir)
@@ -536,17 +601,19 @@ class ImageComparison:
             summary['hash_status'] = 'missing'
             summary['status_msg'] = (f"Hash for test '{hash_name}' not found in {hash_library_filename}. "
                                      f"Generated hash is {test_hash}.")
-        elif test_hash == baseline_hash:  # hash-match
+        elif self.kernel.equivalent_hash(test_hash, baseline_hash):  # hash-match
             hash_comparison_pass = True
             summary['status'] = 'passed'
             summary['hash_status'] = 'match'
             summary['status_msg'] = 'Test hash matches baseline hash.'
+            self.kernel.update_summary(summary)
         else:  # hash-diff
             summary['status'] = 'failed'
             summary['hash_status'] = 'diff'
             summary['status_msg'] = (f"Hash {test_hash} doesn't match hash "
                                      f"{baseline_hash} in library "
                                      f"{hash_library_filename} for test {hash_name}.")
+            self.kernel.update_summary(summary)
 
         # Save the figure for later summary (will be removed later if not needed)
         test_image = (result_dir / "result.png").absolute()
@@ -596,9 +663,9 @@ class ImageComparison:
             from matplotlib.testing.decorators import ImageComparisonTest as MplImageComparisonTest
             remove_ticks_and_titles = MplImageComparisonTest.remove_text
 
-        style = compare.kwargs.get('style', 'classic')
-        remove_text = compare.kwargs.get('remove_text', False)
-        backend = compare.kwargs.get('backend', 'agg')
+        style = compare.kwargs.get('style', DEFAULT_STYLE)
+        remove_text = compare.kwargs.get('remove_text', DEFAULT_REMOVE_TEXT)
+        backend = compare.kwargs.get('backend', DEFAULT_BACKEND)
 
         original = item.function
 
@@ -744,7 +811,7 @@ class FigureCloser:
 
     def pytest_runtest_setup(self, item):
 
-        compare = get_marker(item, 'mpl_image_compare')
+        compare = get_marker(item, DEFAULT_MARKER)
 
         if compare is None:
             return
