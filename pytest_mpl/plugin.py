@@ -46,14 +46,6 @@ import pytest
 from .kernels import DEFAULT_HAMMING_TOLERANCE, DEFAULT_HASH_SIZE, KERNEL_SHA256, kernel_factory
 from .summary.html import generate_summary_basic_html, generate_summary_html
 
-SUPPORTED_FORMATS = {'html', 'json', 'basic-html'}
-
-SHAPE_MISMATCH_ERROR = """Error: Image dimensions did not match.
-  Expected shape: {expected_shape}
-    {expected_path}
-  Actual shape: {actual_shape}
-    {actual_path}"""
-
 #: The default matplotlib backend.
 DEFAULT_BACKEND = "agg"
 
@@ -71,6 +63,32 @@ DEFAULT_RMS_TOLERANCE = 2
 
 #: The default matplotlib plot style.
 DEFAULT_STYLE = "classic"
+
+#: Valid formats for generate summary.
+SUPPORTED_FORMATS = {'html', 'json', 'basic-html'}
+
+#: Template error message for image shape conformance.
+TEMPLATE_SHAPE_MISMATCH = """Error! Image dimensions did not match.
+
+  Baseline Shape:
+    {baseline_shape}
+  Baseline Image:
+    {baseline_image}
+  Result Shape:
+    {result_shape}
+  Result Image:
+    {result_image}"""
+
+TEMPLATE_IMAGE_DIFFERENCE = """Failed! Image files did not match.
+
+  RMS: {rms}
+  Tolerance: {tol}
+  Baseline Image:
+    {expected}
+  Result Image:
+    {actual}
+  Difference Image:
+    {diff}"""
 
 
 def pathify(path):
@@ -501,9 +519,9 @@ class ImageComparison:
 
         baseline_image_ref = self.obtain_baseline_image(item, result_dir)
 
-        test_image = (result_dir / "result.png").absolute()
-        fig.savefig(str(test_image), **savefig_kwargs)
-        summary['result_image'] = test_image.relative_to(self.results_dir).as_posix()
+        result_image = (result_dir / "result.png").absolute()
+        fig.savefig(str(result_image), **savefig_kwargs)
+        summary['result_image'] = result_image.relative_to(self.results_dir).as_posix()
 
         if not os.path.exists(baseline_image_ref):
             summary['status'] = 'failed'
@@ -512,7 +530,7 @@ class ImageComparison:
                              f"{self.get_baseline_directory(item)}\n"
                              "(This is expected for new tests.)\n"
                              "Generated Image: \n\t"
-                             f"{test_image}")
+                             f"{result_image}")
             summary['status_msg'] = error_message
             return error_message
 
@@ -525,19 +543,20 @@ class ImageComparison:
         # Compare image size ourselves since the Matplotlib
         # exception is a bit cryptic in this case and doesn't show
         # the filenames
-        expected_shape = imread(str(baseline_image)).shape[:2]
-        actual_shape = imread(str(test_image)).shape[:2]
-        if expected_shape != actual_shape:
+        baseline_shape = imread(str(baseline_image)).shape[:2]
+        result_shape = imread(str(result_image)).shape[:2]
+        if baseline_shape != result_shape:
             summary['status'] = 'failed'
             summary['image_status'] = 'diff'
-            error_message = SHAPE_MISMATCH_ERROR.format(expected_path=baseline_image,
-                                                        expected_shape=expected_shape,
-                                                        actual_path=test_image,
-                                                        actual_shape=actual_shape)
+            error_message = TEMPLATE_SHAPE_MISMATCH.format(baseline_image=baseline_image,
+                                                           baseline_shape=baseline_shape,
+                                                           result_image=result_image,
+                                                           result_shape=result_shape)
             summary['status_msg'] = error_message
             return error_message
 
-        results = compare_images(str(baseline_image), str(test_image), tol=tolerance, in_decorator=True)
+        # 'in_decorator=True' ensures that a dictionary of results is returned by 'compare_images'
+        results = compare_images(str(baseline_image), str(result_image), tol=tolerance, in_decorator=True)
         summary['tolerance'] = tolerance
         if results is None:
             summary['status'] = 'passed'
@@ -550,13 +569,7 @@ class ImageComparison:
             summary['rms'] = results['rms']
             diff_image = (result_dir / 'result-failed-diff.png').absolute()
             summary['diff_image'] = diff_image.relative_to(self.results_dir).as_posix()
-            template = ['Error: Image files did not match.',
-                        'RMS Value: {rms}',
-                        'Expected:  \n    {expected}',
-                        'Actual:    \n    {actual}',
-                        'Difference:\n    {diff}',
-                        'Tolerance: \n    {tol}', ]
-            error_message = '\n  '.join([line.format(**results) for line in template])
+            error_message = TEMPLATE_IMAGE_DIFFERENCE.format(**results)
             summary['status_msg'] = error_message
             return error_message
 
@@ -601,12 +614,12 @@ class ImageComparison:
             hash_comparison_pass = True
             summary['status'] = 'passed'
             summary['hash_status'] = 'match'
-            summary['status_msg'] = 'Test hash matches baseline hash.'
+            summary['status_msg'] = 'Result hash matches baseline hash.'
             self.kernel.update_summary(summary)
         else:  # hash-diff
             summary['status'] = 'failed'
             summary['hash_status'] = 'diff'
-            msg = (f"Test hash {test_hash!r} doesn't match baseline hash "
+            msg = (f'Result hash {test_hash!r} does not match baseline hash '
                    f'{baseline_hash!r} in library {str(hash_library_filename)!r} '
                    f'for test {hash_name!r}.')
             summary['status_msg'] = self.kernel.update_status(msg)
@@ -639,7 +652,7 @@ class ImageComparison:
             # Append the log from image comparison
             r = baseline_comparison or "The comparison to the baseline image succeeded."
             summary['status_msg'] += ("\n\n"
-                                      "Image comparison test\n"
+                                      "Image Comparison Test\n"
                                       "---------------------\n") + r
 
         if hash_comparison_pass:  # Return None to indicate test passed
