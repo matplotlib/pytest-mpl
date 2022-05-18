@@ -14,6 +14,9 @@ DEFAULT_HAMMING_TOLERANCE = 2
 #: The default imagehash hash size (N), resulting in a hash of N**2 bits.
 DEFAULT_HASH_SIZE = 16
 
+#: Level of image detail (high) or structure (low) represented by phash .
+DEFAULT_HIGH_FREQUENCY_FACTOR = 4
+
 #: Registered kernel names.
 KERNEL_SHA256 = "sha256"
 KERNEL_PHASH = "phash"
@@ -21,6 +24,7 @@ KERNEL_PHASH = "phash"
 __all__ = [
     "DEFAULT_HAMMING_TOLERANCE",
     "DEFAULT_HASH_SIZE",
+    "DEFAULT_HIGH_FREQUENCY_FACTOR",
     "KERNEL_PHASH",
     "KERNEL_SHA256",
     "KernelPHash",
@@ -36,7 +40,7 @@ class Kernel(ABC):
     """
 
     def __init__(self, plugin):
-        # Containment (read-only) of the plugin allows the kernel to cherry-pick state that it requires
+        # Containment of the plugin allows the kernel to cherry-pick required state
         self._plugin = plugin
 
     @abstractmethod
@@ -104,6 +108,7 @@ class Kernel(ABC):
         Parameters
         ----------
         summary : dict
+            Image comparison test report summary.
 
         Returns
         -------
@@ -127,15 +132,22 @@ class KernelPHash(Kernel):
 
     def __init__(self, plugin):
         super().__init__(plugin)
-        self.hash_size = self._plugin.hash_size
-        # py.test marker kwarg
-        self.option = "hamming_tolerance"
-        # value may be overridden by py.test marker kwarg
-        self.hamming_tolerance = self._plugin.hamming_tolerance or DEFAULT_HAMMING_TOLERANCE
-        # keep state of hash hamming distance (whole number) result
-        self.hamming_distance = None
         # keep state of equivalence result
         self.equivalent = None
+        # keep state of hash hamming distance (whole number) result
+        self.hamming_distance = None
+        # value may be overridden by py.test marker kwarg
+        self.hamming_tolerance = (
+            self._plugin.hamming_tolerance or DEFAULT_HAMMING_TOLERANCE
+        )
+        # the hash-size (N) defines the resultant N**2 bits hash size
+        self.hash_size = self._plugin.hash_size
+        # the level of image detail or structure represented by perceptual hash
+        self.high_freq_factor = (
+            self._plugin.high_freq_factor or DEFAULT_HIGH_FREQUENCY_FACTOR
+        )
+        # py.test marker kwarg
+        self.option = "hamming_tolerance"
 
     def equivalent_hash(self, actual, expected, marker=None):
         if marker:
@@ -149,14 +161,18 @@ class KernelPHash(Kernel):
     def generate_hash(self, buffer):
         buffer.seek(0)
         data = Image.open(buffer)
-        phash = imagehash.phash(data, hash_size=self.hash_size)
+        phash = imagehash.phash(
+            data, hash_size=self.hash_size, highfreq_factor=self.high_freq_factor
+        )
         return str(phash)
 
     def update_status(self, message):
         result = str() if message is None else str(message)
         if self.equivalent is False:
-            msg = (f"Hash hamming distance of {self.hamming_distance} bits > "
-                   f"hamming tolerance of {self.hamming_tolerance} bits.")
+            msg = (
+                f"Hash hamming distance of {self.hamming_distance} bits > "
+                f"hamming tolerance of {self.hamming_tolerance} bits."
+            )
             result = f"{message} {msg}" if len(result) else msg
         return result
 

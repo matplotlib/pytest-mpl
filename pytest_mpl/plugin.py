@@ -43,7 +43,8 @@ from urllib.request import urlopen
 
 import pytest
 
-from .kernels import DEFAULT_HAMMING_TOLERANCE, DEFAULT_HASH_SIZE, KERNEL_SHA256, kernel_factory
+from .kernels import (DEFAULT_HAMMING_TOLERANCE, DEFAULT_HASH_SIZE,
+                      DEFAULT_HIGH_FREQUENCY_FACTOR, KERNEL_SHA256, kernel_factory)
 from .summary.html import generate_summary_basic_html, generate_summary_html
 
 #: The default matplotlib backend.
@@ -66,6 +67,9 @@ DEFAULT_STYLE = "classic"
 
 #: Valid formats for generate summary.
 SUPPORTED_FORMATS = {'html', 'json', 'basic-html'}
+
+#: Supported INET protocols.
+PROTOCOLS = ('http://', 'https://')
 
 #: Template error message for image shape conformance.
 TEMPLATE_SHAPE_MISMATCH = """Error! Image dimensions did not match.
@@ -150,22 +154,31 @@ def pytest_addoption(parser):
 
     msg = ('Directory for test results, relative to location where py.test '
            'is run.')
-    group.addoption('--mpl-results-path', help=msg, action='store')
-    parser.addini('mpl-results-path', help=msg)
+    option = 'mpl-results-path'
+    group.addoption(f'--{option}', help=msg, action='store')
+    parser.addini(option, help=msg)
 
     msg = ('Always compare to baseline images and save result images, even '
            'for passing tests. This option is automatically applied when '
            'generating a HTML summary.')
-    group.addoption('--mpl-results-always', help=msg, action='store_true')
-    parser.addini('mpl-results-always', help=msg)
+    option = 'mpl-results-always'
+    group.addoption(f'--{option}', help=msg, action='store_true')
+    parser.addini(option, help=msg)
 
     msg = 'Use fully qualified test name as the filename.'
     parser.addini('mpl-use-full-test-name', help=msg, type='bool')
 
     msg = ('Algorithm to be used for hashing images. Supported kernels are '
            '`sha256` (default) and `phash`.')
-    group.addoption('--mpl-kernel', help=msg, action='store')
-    parser.addini('mpl-kernel', help=msg)
+    option = 'mpl-kernel'
+    group.addoption(f'--{option}', help=msg, action='store')
+    parser.addini(option, help=msg)
+
+    msg = ('Determine the level of image detail (high) or structure (low)'
+           'represented in the perceptual hash.')
+    option = 'mpl-high-freq-factor'
+    group.addoption(f'--{option}', help=msg, action='store')
+    parser.addini(option, help=msg)
 
     msg = 'The hash size (N) used to generate a N**2 bit image hash.'
     group.addoption('--mpl-hash-size', help=msg, action='store')
@@ -211,8 +224,7 @@ def pytest_configure(config):
                         "--mpl-generate-path is set")
                 warnings.warn(wmsg)
 
-        protocols = ("https", "http")
-        if baseline_dir is not None and not baseline_dir.startswith(protocols):
+        if baseline_dir is not None and not baseline_dir.startswith(PROTOCOLS):
             baseline_dir = os.path.abspath(baseline_dir)
         if generate_dir is not None:
             baseline_dir = os.path.abspath(generate_dir)
@@ -249,8 +261,9 @@ def switch_backend(backend):
 
 
 def close_mpl_figure(fig):
-    "Close a given matplotlib Figure. Any other type of figure is ignored"
-
+    """
+    Close a given matplotlib Figure. Any other type of figure is ignored
+    """
     import matplotlib.pyplot as plt
     from matplotlib.figure import Figure
 
@@ -264,11 +277,12 @@ def close_mpl_figure(fig):
 
 def get_marker(item, marker_name):
     if hasattr(item, 'get_closest_marker'):
-        return item.get_closest_marker(marker_name)
+        result = item.get_closest_marker(marker_name)
     else:
         # "item.keywords.get" was deprecated in pytest 3.6
         # See https://docs.pytest.org/en/latest/mark.html#updating-code
-        return item.keywords.get(marker_name)
+        result = item.keywords.get(marker_name)
+    return result
 
 
 def path_is_not_none(apath):
@@ -308,24 +322,30 @@ class ImageComparison:
         self.results_always = results_always
 
         # Configure hashing kernel options.
-        option = "mpl-hash-size"
-        hash_size = int(config.getoption(f"--{option}") or
+        option = 'mpl-hash-size'
+        hash_size = int(config.getoption(f'--{option}') or
                         config.getini(option) or DEFAULT_HASH_SIZE)
         self.hash_size = hash_size
 
-        option = "mpl-hamming-tolerance"
-        hamming_tolerance = int(config.getoption(f"--{option}") or
+        option = 'mpl-hamming-tolerance'
+        hamming_tolerance = int(config.getoption(f'--{option}') or
                                 config.getini(option) or
                                 DEFAULT_HAMMING_TOLERANCE)
         self.hamming_tolerance = hamming_tolerance
 
+        option = 'mpl-high-freq-factor'
+        high_freq_factor = int(config.getoption(f'--{option}') or
+                               config.getini(option) or
+                               DEFAULT_HIGH_FREQUENCY_FACTOR)
+        self.high_freq_factor = high_freq_factor
+
         # Configure the hashing kernel - must be done *after* kernel options.
-        option = "mpl-kernel"
-        kernel = config.getoption(f"--{option}") or config.getini(option)
+        option = 'mpl-kernel'
+        kernel = config.getoption(f'--{option}') or config.getini(option)
         if kernel:
             requested = str(kernel).lower()
             if requested not in kernel_factory:
-                emsg = f"Unrecognised hashing kernel {kernel!r} not supported."
+                emsg = f'Unrecognised hashing kernel {kernel!r} not supported.'
                 raise ValueError(emsg)
             kernel = requested
         else:
@@ -421,7 +441,7 @@ class ImageComparison:
                     baseline_dir = self.baseline_dir
 
         baseline_remote = (isinstance(baseline_dir, str) and  # noqa
-                           baseline_dir.startswith(('http://', 'https://')))
+                           baseline_dir.startswith(PROTOCOLS))
         if not baseline_remote:
             return Path(item.fspath).parent / baseline_dir
 
@@ -457,7 +477,7 @@ class ImageComparison:
         filename = self.generate_filename(item)
         baseline_dir = self.get_baseline_directory(item)
         baseline_remote = (isinstance(baseline_dir, str) and  # noqa
-                           baseline_dir.startswith(('http://', 'https://')))
+                           baseline_dir.startswith(PROTOCOLS))
         if baseline_remote:
             # baseline_dir can be a list of URLs when remote, so we have to
             # pass base and filename to download
