@@ -2,16 +2,25 @@
 This module contains the supported hashing kernel implementations.
 
 """
-from PIL import Image
-from abc import ABC, abstractmethod
 import hashlib
+from abc import ABC, abstractmethod
+
 import imagehash
+from PIL import Image
 
+#: The default hamming distance bit tolerance for "similar" imagehash hashes.
+DEFAULT_HAMMING_TOLERANCE = 2
 
+#: The default imagehash hash size (N), resulting in a hash of N**2 bits.
+DEFAULT_HASH_SIZE = 16
+
+#: Registered kernel names.
 KERNEL_SHA256 = "sha256"
 KERNEL_PHASH = "phash"
 
 __all__ = [
+    "DEFAULT_HAMMING_TOLERANCE",
+    "DEFAULT_HASH_SIZE",
     "KERNEL_PHASH",
     "KERNEL_SHA256",
     "KernelPHash",
@@ -22,30 +31,13 @@ __all__ = [
 
 class Kernel(ABC):
     """
-    Kernel abstract base class (ABC) which defines a common kernel API.
+    Kernel abstract base class (ABC) which defines a simple common kernel API.
 
     """
 
     def __init__(self, plugin):
+        # Containment (read-only) of the plugin allows the kernel to cherry-pick state that it requires
         self._plugin = plugin
-
-    @abstractmethod
-    def generate_hash(self, buffer):
-        """
-        Computes the hash of the image from the in-memory/open byte stream
-        buffer.
-
-        Parameters
-        ----------
-        buffer : stream
-            The in-memory/open byte stream of the image.
-
-        Returns
-        -------
-        str
-            The string representation (hexdigest) of the image hash.
-
-        """
 
     @abstractmethod
     def equivalent_hash(self, actual, expected, marker=None):
@@ -70,6 +62,41 @@ class Kernel(ABC):
 
         """
 
+    @abstractmethod
+    def generate_hash(self, buffer):
+        """
+        Computes the hash of the image from the in-memory/open byte stream
+        buffer.
+
+        Parameters
+        ----------
+        buffer : stream
+            The in-memory/open byte stream of the image.
+
+        Returns
+        -------
+        str
+            The string representation (hexdigest) of the image hash.
+
+        """
+
+    def update_status(self, message):
+        """
+        Append the kernel status message to the provided message.
+
+        Parameters
+        ----------
+        message : str
+            The existing status message.
+
+        Returns
+        -------
+        str
+            The updated status message.
+
+        """
+        return message
+
     def update_summary(self, summary):
         """
         Refresh the image comparison summary with relevant kernel entries.
@@ -81,7 +108,7 @@ class Kernel(ABC):
         Returns
         -------
         dict
-            The image comparison summary.
+            The updated image comparison summary.
 
         """
         return summary
@@ -104,15 +131,11 @@ class KernelPHash(Kernel):
         # py.test marker kwarg
         self.option = "hamming_tolerance"
         # value may be overridden by py.test marker kwarg
-        self.hamming_tolerance = self._plugin.hamming_tolerance
+        self.hamming_tolerance = self._plugin.hamming_tolerance or DEFAULT_HAMMING_TOLERANCE
         # keep state of hash hamming distance (whole number) result
         self.hamming_distance = None
-
-    def generate_hash(self, buffer):
-        buffer.seek(0)
-        data = Image.open(buffer)
-        phash = imagehash.phash(data, hash_size=self.hash_size)
-        return str(phash)
+        # keep state of equivalence result
+        self.equivalent = None
 
     def equivalent_hash(self, actual, expected, marker=None):
         if marker:
@@ -120,7 +143,22 @@ class KernelPHash(Kernel):
         actual = imagehash.hex_to_hash(actual)
         expected = imagehash.hex_to_hash(expected)
         self.hamming_distance = actual - expected
-        return self.hamming_distance <= self.hamming_tolerance
+        self.equivalent = self.hamming_distance <= self.hamming_tolerance
+        return self.equivalent
+
+    def generate_hash(self, buffer):
+        buffer.seek(0)
+        data = Image.open(buffer)
+        phash = imagehash.phash(data, hash_size=self.hash_size)
+        return str(phash)
+
+    def update_status(self, message):
+        result = str() if message is None else str(message)
+        if self.equivalent is False:
+            msg = (f"Hash hamming distance of {self.hamming_distance} bits > "
+                   f"hamming tolerance of {self.hamming_tolerance} bits.")
+            result = f"{message} {msg}" if len(result) else msg
+        return result
 
     def update_summary(self, summary):
         summary["hamming_distance"] = self.hamming_distance
@@ -136,15 +174,15 @@ class KernelSHA256(Kernel):
 
     name = KERNEL_SHA256
 
+    def equivalent_hash(self, actual, expected, marker=None):
+        return actual == expected
+
     def generate_hash(self, buffer):
         buffer.seek(0)
         data = buffer.read()
         hasher = hashlib.sha256()
         hasher.update(data)
         return hasher.hexdigest()
-
-    def equivalent_hash(self, actual, expected, marker=None):
-        return actual == expected
 
 
 #: Registry of available hashing kernel factories.

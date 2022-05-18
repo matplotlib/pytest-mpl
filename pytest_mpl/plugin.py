@@ -43,7 +43,7 @@ from urllib.request import urlopen
 
 import pytest
 
-from .kernels import KERNEL_SHA256, kernel_factory
+from .kernels import DEFAULT_HAMMING_TOLERANCE, DEFAULT_HASH_SIZE, KERNEL_SHA256, kernel_factory
 from .summary.html import generate_summary_basic_html, generate_summary_html
 
 SUPPORTED_FORMATS = {'html', 'json', 'basic-html'}
@@ -56,12 +56,6 @@ SHAPE_MISMATCH_ERROR = """Error: Image dimensions did not match.
 
 #: The default matplotlib backend.
 DEFAULT_BACKEND = "agg"
-
-#: The default hamming distance bit tolerance for "similar" imagehash hashes.
-DEFAULT_HAMMING_TOLERANCE = 2
-
-#: The default imagehash hash size (N), resulting in a hash of N**2 bits.
-DEFAULT_HASH_SIZE = 16
 
 #: The default algorithm to use for image hashing.
 DEFAULT_KERNEL = KERNEL_SHA256
@@ -307,7 +301,7 @@ class ImageComparison:
                                 DEFAULT_HAMMING_TOLERANCE)
         self.hamming_tolerance = hamming_tolerance
 
-        # Configure the hashing kernel.
+        # Configure the hashing kernel - must be done *after* kernel options.
         option = "mpl-kernel"
         kernel = config.getoption(f"--{option}") or config.getini(option)
         if kernel:
@@ -318,7 +312,7 @@ class ImageComparison:
             kernel = requested
         else:
             kernel = DEFAULT_KERNEL
-        print(f"{kernel_factory=}")
+        # Create the kernel.
         self.kernel = kernel_factory[kernel](self)
 
         # Generate the containing dir for all test results
@@ -599,8 +593,10 @@ class ImageComparison:
         if baseline_hash is None:  # hash-missing
             summary['status'] = 'failed'
             summary['hash_status'] = 'missing'
-            summary['status_msg'] = (f"Hash for test '{hash_name}' not found in {hash_library_filename}. "
-                                     f"Generated hash is {test_hash}.")
+            msg = (f'Hash for test {hash_name!r} not found in '
+                   f'{hash_library_filename!r}. Generated hash is '
+                   f'{test_hash!r}.')
+            summary['status_msg'] = msg
         elif self.kernel.equivalent_hash(test_hash, baseline_hash):  # hash-match
             hash_comparison_pass = True
             summary['status'] = 'passed'
@@ -610,9 +606,10 @@ class ImageComparison:
         else:  # hash-diff
             summary['status'] = 'failed'
             summary['hash_status'] = 'diff'
-            summary['status_msg'] = (f"Hash {test_hash} doesn't match hash "
-                                     f"{baseline_hash} in library "
-                                     f"{hash_library_filename} for test {hash_name}.")
+            msg = (f"Test hash {test_hash!r} doesn't match baseline hash "
+                   f'{baseline_hash!r} in library {str(hash_library_filename)!r} '
+                   f'for test {hash_name!r}.')
+            summary['status_msg'] = self.kernel.update_status(msg)
             self.kernel.update_summary(summary)
 
         # Save the figure for later summary (will be removed later if not needed)
