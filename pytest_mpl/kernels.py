@@ -151,7 +151,9 @@ class KernelPHash(Kernel):
 
     def equivalent_hash(self, actual, expected, marker=None):
         if marker:
-            self.hamming_tolerance = int(marker.kwargs.get(self.option))
+            value = marker.kwargs.get(self.option)
+            if value is not None:
+                self.hamming_tolerance = int(value)
         actual = imagehash.hex_to_hash(actual)
         expected = imagehash.hex_to_hash(expected)
         self.hamming_distance = actual - expected
