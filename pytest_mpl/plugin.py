@@ -621,6 +621,7 @@ class ImageComparison:
         hash_name = self.generate_test_name(item)
         baseline_hash = hash_library.get(hash_name, None)
         summary['baseline_hash'] = baseline_hash
+        summary['kernel'] = self.kernel.name
 
         result_hash = self.generate_image_hash(item, fig)
         summary['result_hash'] = result_hash
