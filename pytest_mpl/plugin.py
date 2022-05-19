@@ -735,6 +735,9 @@ class ImageComparison:
                     'result_image': None,
                     'baseline_hash': None,
                     'result_hash': None,
+                    'kernel': None,
+                    'hamming_distance': None,
+                    'hamming_tolerance': None,
                 }
 
                 # What we do now depends on whether we are generating the

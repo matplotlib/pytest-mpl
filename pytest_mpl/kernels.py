@@ -115,6 +115,7 @@ class Kernel(ABC):
         None
 
         """
+        # The "name" class property *must* be defined in derived child class.
         summary["kernel"] = self.name
 
 
