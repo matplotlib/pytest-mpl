@@ -193,7 +193,8 @@ class KernelPHash(Kernel):
 
 class KernelSHA256(Kernel):
     """
-    A simple kernel that calculates a 256-bit SHA hash of an image.
+    A simple kernel that calculates a 256-bit cryptographic SHA hash
+    of an image.
 
     """
 

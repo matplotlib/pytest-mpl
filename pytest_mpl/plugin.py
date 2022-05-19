@@ -65,6 +65,9 @@ DEFAULT_RMS_TOLERANCE = 2
 #: The default matplotlib plot style.
 DEFAULT_STYLE = "classic"
 
+#: Metadata entry in the JSON hash library defining the source kernel of the hashes.
+META_HASH_LIBRARY_KERNEL = 'pytest-mpl-kernel'
+
 #: Valid formats for generate summary.
 SUPPORTED_FORMATS = {'html', 'json', 'basic-html'}
 
@@ -615,9 +618,28 @@ class ImageComparison:
         hash_library_filename = (Path(item.fspath).parent / hash_library_filename).absolute()
 
         if not Path(hash_library_filename).exists():
-            pytest.fail(f"Can't find hash library at path {hash_library_filename}")
+            pytest.fail(f"Can't find hash library at path {str(hash_library_filename)!r}.")
 
         hash_library = self.load_hash_library(hash_library_filename)
+        kernel_name = hash_library.get(META_HASH_LIBRARY_KERNEL)
+        if kernel_name is None:
+            msg = (f'Hash library {str(hash_library_filename)!r} missing a '
+                   f'{META_HASH_LIBRARY_KERNEL!r} entry. Assuming that a '
+                   f'{self.kernel.name!r} kernel generated the library.')
+            self.logger.info(msg)
+        else:
+            if kernel_name not in kernel_factory:
+                emsg = (f'Unrecognised hashing kernel {kernel_name!r} specified '
+                        f'in the hash library {str(hash_library_filename)!r}.')
+                pytest.fail(emsg)
+            if kernel_name != self.kernel.name:
+                # TODO: we could be lenient here by raising a warning and hot-swap to
+                #       use the hash library kernel, instead of forcing a test failure?
+                emsg = (f'Hash library {str(hash_library_filename)!r} kernel '
+                        f'{kernel_name!r} does not match configured runtime '
+                        f'kernel {self.kernel.name!r}.')
+                pytest.fail(emsg)
+
         hash_name = self.generate_test_name(item)
         baseline_hash = hash_library.get(hash_name, None)
         summary['baseline_hash'] = baseline_hash
@@ -630,7 +652,7 @@ class ImageComparison:
             summary['status'] = 'failed'
             summary['hash_status'] = 'missing'
             msg = (f'Hash for test {hash_name!r} not found in '
-                   f'{hash_library_filename!r}. Generated hash is '
+                   f'{str(hash_library_filename)!r}. Generated hash is '
                    f'{result_hash!r}.')
             summary['status_msg'] = msg
         elif self.kernel.equivalent_hash(result_hash, baseline_hash):  # hash-match
@@ -759,6 +781,7 @@ class ImageComparison:
                     image_hash = self.generate_image_hash(item, fig)
                     self._generated_hash_library[test_name] = image_hash
                     summary['baseline_hash'] = image_hash
+                    summary['kernel'] = self.kernel.name
 
                 # Only test figures if not generating images
                 if self.generate_dir is None:
@@ -807,6 +830,10 @@ class ImageComparison:
         if self.generate_hash_library is not None:
             hash_library_path = Path(config.rootdir) / self.generate_hash_library
             hash_library_path.parent.mkdir(parents=True, exist_ok=True)
+            # It's safe to inject this metadata, as the key is an invalid Python
+            # class/function/method name, therefore there's no possible
+            # namespace conflict with user py.test marker decorated tokens.
+            self._generated_hash_library[META_HASH_LIBRARY_KERNEL] = self.kernel.name
             with open(hash_library_path, "w") as fp:
                 json.dump(self._generated_hash_library, fp, indent=2)
             if self.results_always:  # Make accessible in results directory
@@ -817,6 +844,7 @@ class ImageComparison:
             result_hashes = {k: v['result_hash'] for k, v in self._test_results.items()
                              if v['result_hash']}
             if len(result_hashes) > 0:  # At least one hash comparison test
+                result_hashes[META_HASH_LIBRARY_KERNEL] = self.kernel.name
                 with open(result_hash_library, "w") as fp:
                     json.dump(result_hashes, fp, indent=2)
 
