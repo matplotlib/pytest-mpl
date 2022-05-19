@@ -181,12 +181,14 @@ def pytest_addoption(parser):
     parser.addini(option, help=msg)
 
     msg = 'The hash size (N) used to generate a N**2 bit image hash.'
-    group.addoption('--mpl-hash-size', help=msg, action='store')
-    parser.addini('mpl-hash-size', help=msg)
+    option = 'mpl-hash-size'
+    group.addoption(f'--{option}', help=msg, action='store')
+    parser.addini(option, help=msg)
 
     msg = 'Hamming distance bit tolerance for similar image hashes.'
-    group.addoption('--mpl-hamming-tolerance', help=msg, action='store')
-    parser.addini('mpl-hamming-tolerance', help=msg)
+    option = 'mpl-hamming-tolerance'
+    group.addoption(f'--{option}', help=msg, action='store')
+    parser.addini(option, help=msg)
 
 
 def pytest_configure(config):
@@ -620,17 +622,17 @@ class ImageComparison:
         baseline_hash = hash_library.get(hash_name, None)
         summary['baseline_hash'] = baseline_hash
 
-        test_hash = self.generate_image_hash(item, fig)
-        summary['result_hash'] = test_hash
+        result_hash = self.generate_image_hash(item, fig)
+        summary['result_hash'] = result_hash
 
         if baseline_hash is None:  # hash-missing
             summary['status'] = 'failed'
             summary['hash_status'] = 'missing'
             msg = (f'Hash for test {hash_name!r} not found in '
                    f'{hash_library_filename!r}. Generated hash is '
-                   f'{test_hash!r}.')
+                   f'{result_hash!r}.')
             summary['status_msg'] = msg
-        elif self.kernel.equivalent_hash(test_hash, baseline_hash):  # hash-match
+        elif self.kernel.equivalent_hash(result_hash, baseline_hash):  # hash-match
             hash_comparison_pass = True
             summary['status'] = 'passed'
             summary['hash_status'] = 'match'
@@ -639,7 +641,7 @@ class ImageComparison:
         else:  # hash-diff
             summary['status'] = 'failed'
             summary['hash_status'] = 'diff'
-            msg = (f'Result hash {test_hash!r} does not match baseline hash '
+            msg = (f'Result hash {result_hash!r} does not match baseline hash '
                    f'{baseline_hash!r} in library {str(hash_library_filename)!r} '
                    f'for test {hash_name!r}.')
             summary['status_msg'] = self.kernel.update_status(msg)
