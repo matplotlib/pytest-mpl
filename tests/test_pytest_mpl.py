@@ -289,13 +289,14 @@ def test_hash_fails(tmpdir):
         f.write(TEST_FAILING_HASH)
 
     # If we use --mpl, it should detect that the figure is wrong
-    output = assert_pytest_fails_with(['--mpl', test_file], "doesn't match hash FAIL in library")
+    expected = "does not match baseline hash 'FAIL' in library"
+    output = assert_pytest_fails_with(['--mpl', test_file], expected)
     # We didn't specify a baseline dir so we shouldn't attempt to find one
     assert "Image file not found for comparison test" not in output, output
 
     # Check that the summary path is printed and that it exists.
     output = assert_pytest_fails_with(['--mpl', test_file, '--mpl-generate-summary=html'],
-                                      "doesn't match hash FAIL in library")
+                                      expected)
     # We didn't specify a baseline dir so we shouldn't attempt to find one
     print_message = "A summary of test results can be found at:"
     assert print_message in output, output
