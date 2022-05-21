@@ -333,7 +333,7 @@ def test_hash_fail_hybrid(tmpdir):
     output = assert_pytest_fails_with(['--mpl', test_file,
                                        rf'--mpl-baseline-path={hash_baseline_dir_abs / "fail"}'],
                                       expected)
-    assert "Error: Image files did not match." in output, output
+    assert "Failed! Image files did not match." in output, output
 
     # Assert reports missing baseline image
     output = assert_pytest_fails_with(['--mpl', test_file,
