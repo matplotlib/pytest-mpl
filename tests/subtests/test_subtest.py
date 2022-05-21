@@ -11,6 +11,9 @@ from packaging.version import Version
 
 from .helpers import assert_existence, diff_summary, patch_summary
 
+# TODO: raise issue and quote URL here
+pytest.skip(reason="temporarily disable sub-tests", allow_module_level=True)
+
 # Handle Matplotlib and FreeType versions
 MPL_VERSION = Version(matplotlib.__version__)
 FTV = matplotlib.ft2font.__freetype_version__.replace('.', '')

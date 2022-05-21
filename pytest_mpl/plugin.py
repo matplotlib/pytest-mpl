@@ -76,7 +76,6 @@ PROTOCOLS = ('http://', 'https://')
 
 #: Template error message for image shape conformance.
 TEMPLATE_SHAPE_MISMATCH = """Error! Image dimensions did not match.
-
   Baseline Shape:
     {baseline_shape}
   Baseline Image:
@@ -87,7 +86,6 @@ TEMPLATE_SHAPE_MISMATCH = """Error! Image dimensions did not match.
     {result_image}"""
 
 TEMPLATE_IMAGE_DIFFERENCE = """Failed! Image files did not match.
-
   RMS: {rms}
   Tolerance: {tol}
   Baseline Image:
