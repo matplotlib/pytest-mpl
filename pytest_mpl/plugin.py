@@ -46,6 +46,9 @@ import pytest
 
 from pytest_mpl.summary.html import generate_summary_basic_html, generate_summary_html
 
+#: The default savefig format when generating an image hash.
+DEFAULT_FORMAT = 'png'
+
 SUPPORTED_FORMATS = {'html', 'json', 'basic-html'}
 
 SHAPE_MISMATCH_ERROR = """Error: Image dimensions did not match.
@@ -415,6 +418,9 @@ class ImageComparison:
         """
         compare = self.get_compare(item)
         savefig_kwargs = compare.kwargs.get('savefig_kwargs', {})
+
+        if 'format' not in savefig_kwargs:
+            savefig_kwargs['format'] = DEFAULT_FORMAT
 
         imgdata = io.BytesIO()
 
