@@ -329,21 +329,22 @@ def test_hash_fail_hybrid(tmpdir):
         f.write(TEST_FAILING_HYBRID)
 
     # Assert that image comparison runs and fails
+    expected = "does not match baseline hash 'FAIL' in library"
     output = assert_pytest_fails_with(['--mpl', test_file,
                                        rf'--mpl-baseline-path={hash_baseline_dir_abs / "fail"}'],
-                                      "doesn't match hash FAIL in library")
+                                      expected)
     assert "Error: Image files did not match." in output, output
 
     # Assert reports missing baseline image
     output = assert_pytest_fails_with(['--mpl', test_file,
                                        '--mpl-baseline-path=/not/a/path'],
-                                      "doesn't match hash FAIL in library")
+                                      expected)
     assert "Image file not found for comparison test" in output, output
 
     # Assert reports image comparison succeeds
     output = assert_pytest_fails_with(['--mpl', test_file,
                                        rf'--mpl-baseline-path={hash_baseline_dir_abs / "succeed"}'],
-                                      "doesn't match hash FAIL in library")
+                                      expected)
     assert "The comparison to the baseline image succeeded." in output, output
 
     # If we don't use --mpl option, the test should succeed
@@ -371,16 +372,17 @@ def test_hash_fail_new_hashes(tmpdir):
         f.write(TEST_FAILING_NEW_HASH)
 
     # Assert that image comparison runs and fails
+    expected = "does not match baseline hash 'FAIL' in library"
     assert_pytest_fails_with(['--mpl', test_file,
                               f'--mpl-hash-library={fail_hash_library}'],
-                             "doesn't match hash FAIL in library")
+                             expected)
 
     hash_file = tmpdir.join('new_hashes.json').strpath
     # Assert that image comparison runs and fails
     assert_pytest_fails_with(['--mpl', test_file,
                               f'--mpl-hash-library={fail_hash_library}',
                               f'--mpl-generate-hash-library={hash_file}'],
-                             "doesn't match hash FAIL")
+                             expected)
 
 
 TEST_MISSING_HASH = """
