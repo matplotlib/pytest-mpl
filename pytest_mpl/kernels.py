@@ -18,8 +18,8 @@ DEFAULT_HASH_SIZE = 16
 DEFAULT_HIGH_FREQUENCY_FACTOR = 4
 
 #: Registered kernel names.
-KERNEL_SHA256 = "sha256"
 KERNEL_PHASH = "phash"
+KERNEL_SHA256 = "sha256"
 
 __all__ = [
     "DEFAULT_HAMMING_TOLERANCE",
@@ -137,15 +137,16 @@ class KernelPHash(Kernel):
         # Keep state of hash hamming distance (whole number) result.
         self.hamming_distance = None
         # Value may be overridden by py.test marker kwarg.
-        self.hamming_tolerance = (
-            self._plugin.hamming_tolerance or DEFAULT_HAMMING_TOLERANCE
-        )
+        arg = self._plugin.hamming_tolerance
+        self.hamming_tolerance = arg if arg is not None else DEFAULT_HAMMING_TOLERANCE
         # The hash-size (N) defines the resultant N**2 bits hash size.
-        self.hash_size = self._plugin.hash_size
+        arg = self._plugin.hash_size
+        self.hash_size = arg if arg is not None else DEFAULT_HASH_SIZE
         # The level of image detail (high freq) or structure (low freq)
         # represented in perceptual hash thru discrete cosine transform.
+        arg = self._plugin.high_freq_factor
         self.high_freq_factor = (
-            self._plugin.high_freq_factor or DEFAULT_HIGH_FREQUENCY_FACTOR
+            arg if arg is not None else DEFAULT_HIGH_FREQUENCY_FACTOR
         )
         # py.test marker kwarg.
         self.option = "hamming_tolerance"
