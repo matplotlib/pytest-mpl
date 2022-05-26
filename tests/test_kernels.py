@@ -25,6 +25,10 @@ HASH_2BIT = "0120456789abcdef"
 #            --XX-----------X
 HASH_4BIT = "0100456789abcdee"
 
+#: baseline with 8-bit delta (64-bit)
+#            -X------------XX
+HASH_8BIT = "0023456789abcd00"
+
 
 #: Absolute path to test baseline image
 baseline_image = Path(__file__).parent / "baseline" / "2.0.x" / "test_base_style.png"
@@ -97,7 +101,8 @@ def test_phash_option():
     [
         (HASH_BASE, True, 0),
         (HASH_2BIT, True, 2),
-        (HASH_4BIT, False, 4),
+        (HASH_4BIT, True, 4),
+        (HASH_8BIT, False, 8),
         (HASH_BASE_32, False, None),
     ],
 )

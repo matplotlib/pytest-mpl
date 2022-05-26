@@ -9,7 +9,7 @@ import imagehash
 from PIL import Image
 
 #: The default hamming distance bit tolerance for "similar" imagehash hashes.
-DEFAULT_HAMMING_TOLERANCE = 2
+DEFAULT_HAMMING_TOLERANCE = 4
 
 #: The default imagehash hash size (N), resulting in a hash of N**2 bits.
 DEFAULT_HASH_SIZE = 16

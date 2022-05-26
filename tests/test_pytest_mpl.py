@@ -32,6 +32,7 @@ hash_library = (Path(__file__).parent / "baseline" /  # noqa
 fail_hash_library = Path(__file__).parent / "baseline" / "test_hash_lib.json"
 baseline_dir_abs = Path(__file__).parent / "baseline" / baseline_subdir
 hash_baseline_dir_abs = Path(__file__).parent / "baseline" / "hybrid"
+phash_library = Path(__file__).parent / "baseline" / "hashes" / "test_phash.json"
 
 
 WIN = sys.platform.startswith('win')
@@ -491,31 +492,14 @@ def test_results_always(tmpdir):
                 assert json_res[json_image_key] is None
 
 
-def test_phash(tmpdir, capsys):
+def test_phash(tmpdir):
     test_file = tmpdir.join("test.py").strpath
     with open(test_file, "w") as fo:
         fo.write(TEST_GENERATE)
 
-    results_dir = tmpdir.mkdir("foo").strpath
-    gen_dir = tmpdir.mkdir("bar").strpath
-    hash_file = "test_phash.json"
-
-    code = call_pytest([f"--mpl-generate-path={gen_dir}", test_file])
-    assert code == 0
-    assert os.path.exists(os.path.join(gen_dir, "test_gen.png"))
-
-    command = [f"--mpl-generate-hash-library={hash_file}",
-               "--mpl-results-always",
-               f"--mpl-results-path={results_dir}",
+    command = ["--mpl",
                "--mpl-kernel=phash",
+               f"--mpl-hash-library={phash_library}",
                test_file]
     code = call_pytest(command)
-    hash_file = os.path.join(results_dir, hash_file)
-    assert os.path.exists(os.path.join(hash_file))
-
-    with open(hash_file) as fi:
-        hash_lib = json.load(fi)
-
-    with capsys.disabled():
-        from pprint import pprint
-        pprint(hash_lib)
+    assert code == 0
