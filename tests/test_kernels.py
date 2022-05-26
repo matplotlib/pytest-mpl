@@ -11,14 +11,17 @@ HASH_SIZE = sentinel.hash_size
 HAMMING_TOLERANCE = sentinel.hamming_tolerance
 HIGH_FREQUENCY_FACTOR = sentinel.high_freq_factor
 
+#: baseline hash (32-bit)
+HASH_BASE_32 = "01234567"
+
 #: baseline hash (64-bit)
 HASH_BASE = "0123456789abcdef"
 
-#: 2-bit baseline delta (64-bit)
+#: baseline hash with 2-bit delta (64-bit)
 #            ---X------------
 HASH_2BIT = "0120456789abcdef"
 
-#: 4-bit baseline delta (64-bit)
+#: baseline with 4-bit delta (64-bit)
 #            --XX-----------X
 HASH_4BIT = "0100456789abcdee"
 
@@ -52,7 +55,13 @@ def test_kernel_abc():
 
 
 def test_phash_name():
-    assert KernelPHash.name == KERNEL_PHASH
+    for name, factory in kernel_factory.items():
+        assert name == factory.name
+
+
+#
+# KernelPHash
+#
 
 
 def test_phash_init__set():
@@ -85,7 +94,12 @@ def test_phash_option():
 
 @pytest.mark.parametrize(
     "baseline,equivalent,distance",
-    [(HASH_BASE, True, 0), (HASH_2BIT, True, 2), (HASH_4BIT, False, 4)],
+    [
+        (HASH_BASE, True, 0),
+        (HASH_2BIT, True, 2),
+        (HASH_4BIT, False, 4),
+        (HASH_BASE_32, False, None),
+    ],
 )
 def test_phash_equivalent(baseline, equivalent, distance):
     kernel = KernelPHash(DummyPlugin())
@@ -188,3 +202,42 @@ def test_phash_update_summary(summary, distance, tolerance, count):
     assert summary["hamming_distance"] == distance
     assert summary["hamming_tolerance"] == tolerance
     assert len(summary) == count
+
+
+#
+# KernelSHA256
+#
+
+
+@pytest.mark.parametrize(
+    "baseline, equivalent",
+    [(HASH_BASE, True), (HASH_2BIT, False), (HASH_4BIT, False)],
+)
+def test_sha256_equivalent(baseline, equivalent):
+    kernel = KernelSHA256(DummyPlugin())
+    assert kernel.equivalent_hash(HASH_BASE, baseline) is equivalent
+
+
+@pytest.mark.skipif(baseline_unavailable, reason=baseline_missing)
+def test_sha256_generate_hash():
+    kernel = KernelSHA256(DummyPlugin())
+    fh = open(baseline_image, "rb")
+    actual = kernel.generate_hash(fh)
+    expected = "2dc4d32eefa5f5d11c365b10196f2fcdadc8ed604e370d595f9cf304363c13d2"
+    assert actual == expected
+
+
+def test_sha256_update_status():
+    kernel = KernelSHA256(DummyPlugin())
+    message = sentinel.message
+    result = kernel.update_status(message)
+    assert result is message
+
+
+def test_sha256_update_summary():
+    kernel = KernelSHA256(DummyPlugin())
+    summary = {}
+    kernel.update_summary(summary)
+    assert len(summary) == 1
+    assert "kernel" in summary
+    assert summary["kernel"] == KernelSHA256.name

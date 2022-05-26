@@ -163,8 +163,14 @@ class KernelPHash(Kernel):
         # Unlike cryptographic hashes, perceptual hashes can measure the
         # degree of "similarity" through hamming distance bit differences
         # between the hashes.
-        self.hamming_distance = result - baseline
-        self.equivalent = self.hamming_distance <= self.hamming_tolerance
+        try:
+            self.hamming_distance = result - baseline
+            self.equivalent = self.hamming_distance <= self.hamming_tolerance
+        except TypeError:
+            # imagehash won't compare hashes of different sizes, however
+            # let's gracefully support this for use-ability.
+            self.hamming_distance = None
+            self.equivalent = False
         return self.equivalent
 
     def generate_hash(self, buffer):
