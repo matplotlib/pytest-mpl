@@ -489,3 +489,33 @@ def test_results_always(tmpdir):
                 assert image and not image_exists
                 assert image not in html
                 assert json_res[json_image_key] is None
+
+
+def test_phash(tmpdir, capsys):
+    test_file = tmpdir.join("test.py").strpath
+    with open(test_file, "w") as fo:
+        fo.write(TEST_GENERATE)
+
+    results_dir = tmpdir.mkdir("foo").strpath
+    gen_dir = tmpdir.mkdir("bar").strpath
+    hash_file = "test_phash.json"
+
+    code = call_pytest([f"--mpl-generate-path={gen_dir}", test_file])
+    assert code == 0
+    assert os.path.exists(os.path.join(gen_dir, "test_gen.png"))
+
+    command = [f"--mpl-generate-hash-library={hash_file}",
+               "--mpl-results-always",
+               f"--mpl-results-path={results_dir}",
+               "--mpl-kernel=phash",
+               test_file]
+    code = call_pytest(command)
+    hash_file = os.path.join(results_dir, hash_file)
+    assert os.path.exists(os.path.join(hash_file))
+
+    with open(hash_file) as fi:
+        hash_lib = json.load(fi)
+
+    with capsys.disabled():
+        from pprint import pprint
+        pprint(hash_lib)
