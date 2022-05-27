@@ -255,3 +255,36 @@ def apply_regex(file, regex_paths, regex_strs):
 
     with open(file, 'w') as f:
         json.dump(summary, f, indent=2)
+
+
+def remove_specific_hashes(summary_file):
+    """Replace all hashes in a summary file with placeholder values.
+
+    This is done because the actual hashes used for testing are taken from
+    separate files for each specific matplotlib version.
+    """
+
+    baseline_placeholder = "###_BASELINE_HASH_###"
+    result_placeholder = "###_RESULT_HASH_###"
+
+    with open(summary_file, "r") as f:
+        summary = json.load(f)
+
+    for test in summary.keys():
+
+        # Get actual hashes
+        baseline = summary[test]["baseline_hash"]
+        result = summary[test]["result_hash"]
+
+        # Replace with placeholders (if summary has hashes)
+        if baseline is not None:
+            summary[test]["baseline_hash"] = baseline_placeholder
+            summary[test]["status_msg"] = \
+                summary[test]["status_msg"].replace(baseline, baseline_placeholder)
+        if result is not None:
+            summary[test]["result_hash"] = result_placeholder
+            summary[test]["status_msg"] = \
+                summary[test]["status_msg"].replace(result, result_placeholder)
+
+    with open(summary_file, "w") as f:
+        json.dump(summary, f, indent=2)

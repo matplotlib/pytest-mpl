@@ -9,7 +9,7 @@
     "rms": null,
     "tolerance": null,
     "result_image": null,
-    "baseline_hash": "4a47c9b7920779cc83eabe2bbb64b9c40745d9d8abfa57857f93a5d8f12a5a03",
+    "baseline_hash": "###_BASELINE_HASH_###",
     "result_hash": null
   },
   "subtests.subtest.test_hmatch_idiff": {
@@ -22,7 +22,7 @@
     "rms": null,
     "tolerance": null,
     "result_image": null,
-    "baseline_hash": "2b48790b0a2cee4b41cdb9820336acaf229ba811ae21c6a92b4b92838843adfa",
+    "baseline_hash": "###_BASELINE_HASH_###",
     "result_hash": null
   },
   "subtests.subtest.test_hmatch_idiffshape": {
@@ -35,7 +35,7 @@
     "rms": null,
     "tolerance": null,
     "result_image": null,
-    "baseline_hash": "e3fed4ad2d22aff2cd771c5503dcb30c6161b21d154430ededa5faa1ec54366e",
+    "baseline_hash": "###_BASELINE_HASH_###",
     "result_hash": null
   },
   "subtests.subtest.test_hmatch_imissing": {
@@ -48,7 +48,7 @@
     "rms": null,
     "tolerance": null,
     "result_image": null,
-    "baseline_hash": "e937fa1997d088c904ca35b1ab542e2285ea47b84df976490380f9c5f5b5f8ae",
+    "baseline_hash": "###_BASELINE_HASH_###",
     "result_hash": null
   },
   "subtests.subtest.test_hdiff_imatch": {
@@ -61,7 +61,7 @@
     "rms": null,
     "tolerance": null,
     "result_image": null,
-    "baseline_hash": "2cae8f315d44b06de8f45d937af46a67bd1389edd6e4cde32f9feb4b7472284f",
+    "baseline_hash": "###_BASELINE_HASH_###",
     "result_hash": null
   },
   "subtests.subtest.test_hdiff_idiff": {
@@ -74,7 +74,7 @@
     "rms": null,
     "tolerance": null,
     "result_image": null,
-    "baseline_hash": "927521206ef454a25417e3ba0bd3235c84518cb202c2d1fa7afcfdfcde5fdcde",
+    "baseline_hash": "###_BASELINE_HASH_###",
     "result_hash": null
   },
   "subtests.subtest.test_hdiff_idiffshape": {
@@ -87,7 +87,7 @@
     "rms": null,
     "tolerance": null,
     "result_image": null,
-    "baseline_hash": "5d37745bbdf2aac6743dbd830afb1877c2ac25a5f926d4f6483c1e24d19a0580",
+    "baseline_hash": "###_BASELINE_HASH_###",
     "result_hash": null
   },
   "subtests.subtest.test_hdiff_imissing": {
@@ -100,7 +100,7 @@
     "rms": null,
     "tolerance": null,
     "result_image": null,
-    "baseline_hash": "afc411cfa34db3a5819ac4127704e86acf27d24d1ea2410718853d3d7e1d6ae0",
+    "baseline_hash": "###_BASELINE_HASH_###",
     "result_hash": null
   },
   "subtests.subtest.test_hmissing_imatch": {
@@ -113,7 +113,7 @@
     "rms": null,
     "tolerance": null,
     "result_image": null,
-    "baseline_hash": "7ee8370efdc4b767634d12355657ca4f2460176670c07b31f3fb72cea0e79856",
+    "baseline_hash": "###_BASELINE_HASH_###",
     "result_hash": null
   },
   "subtests.subtest.test_hmissing_idiff": {
@@ -126,7 +126,7 @@
     "rms": null,
     "tolerance": null,
     "result_image": null,
-    "baseline_hash": "4eeda1d349f4b0f26df97df41ba5410dce2b1c7ed520062d58f3c5f0e3790ebd",
+    "baseline_hash": "###_BASELINE_HASH_###",
     "result_hash": null
   },
   "subtests.subtest.test_hmissing_idiffshape": {
@@ -139,7 +139,7 @@
     "rms": null,
     "tolerance": null,
     "result_image": null,
-    "baseline_hash": "204d43b643538cafafa2d0fb7dafac9cf7009dbb421d4b32c71da2e400ceb59d",
+    "baseline_hash": "###_BASELINE_HASH_###",
     "result_hash": null
   },
   "subtests.subtest.test_hmissing_imissing": {
@@ -152,7 +152,7 @@
     "rms": null,
     "tolerance": null,
     "result_image": null,
-    "baseline_hash": "5101e60ac100cf2c2f418a0a6a382aae0060339e76718730344f539b61f7dc7e",
+    "baseline_hash": "###_BASELINE_HASH_###",
     "result_hash": null
   },
   "subtests.subtest.test_hdiff_imatch_tolerance": {
@@ -165,7 +165,7 @@
     "rms": null,
     "tolerance": null,
     "result_image": null,
-    "baseline_hash": "510b3273d63a2a26a27e788ff0f090e86c9df7f9f191b7c566321c57de8266d6",
+    "baseline_hash": "###_BASELINE_HASH_###",
     "result_hash": null
   },
   "subtests.subtest.test_hdiff_idiff_tolerance": {
@@ -178,7 +178,7 @@
     "rms": null,
     "tolerance": null,
     "result_image": null,
-    "baseline_hash": "510b3273d63a2a26a27e788ff0f090e86c9df7f9f191b7c566321c57de8266d6",
+    "baseline_hash": "###_BASELINE_HASH_###",
     "result_hash": null
   },
   "subtests.subtest.test_hdiff_imatch_savefig": {
@@ -191,7 +191,7 @@
     "rms": null,
     "tolerance": null,
     "result_image": null,
-    "baseline_hash": "8864803a4b4026d8c6dc0ab950228793ea255cd9b6c629c39db9e6315a9af6bc",
+    "baseline_hash": "###_BASELINE_HASH_###",
     "result_hash": null
   },
   "subtests.subtest.test_hdiff_imatch_style": {
@@ -204,7 +204,7 @@
     "rms": null,
     "tolerance": null,
     "result_image": null,
-    "baseline_hash": "e3c8de36c2bad7dca131e4cbbfe229f882b5beec62750fb7da29314fd6a1ff13",
+    "baseline_hash": "###_BASELINE_HASH_###",
     "result_hash": null
   },
   "subtests.subtest.test_hdiff_imatch_removetext": {
@@ -217,7 +217,7 @@
     "rms": null,
     "tolerance": null,
     "result_image": null,
-    "baseline_hash": "e4c06cf613c6836c1b1202abaae69cf65bc2232a8e31ab1040454bedc8e31e7a",
+    "baseline_hash": "###_BASELINE_HASH_###",
     "result_hash": null
   }
 }

@@ -1,3 +1,4 @@
+import os
 import sys
 import json
 import shutil
@@ -9,7 +10,8 @@ import matplotlib.ft2font
 import pytest
 from packaging.version import Version
 
-from .helpers import assert_existence, diff_summary, patch_summary
+from .helpers import (apply_regex, assert_existence, diff_summary,
+                      patch_summary, remove_specific_hashes)
 
 # Handle Matplotlib and FreeType versions
 MPL_VERSION = Version(matplotlib.__version__)
@@ -31,6 +33,16 @@ TEST_FILE = Path(__file__).parent / 'subtest.py'
 # (See also `run_subtest` argument `update_baseline` and `update_summary`.)
 UPDATE_BASELINE = False  # baseline images and hashes
 UPDATE_SUMMARY = False  # baseline summaries
+
+# When updating baseline summaries, replace parts of status_msg with regex.
+# See helpers.apply_regex for more information.
+REGEX_PATHS = [
+    str(Path(__file__).parent),  # replace all references to baseline files
+    str(os.path.realpath(os.getenv("TMPDIR"))),  # replace all references to output files
+]
+REGEX_STRS = [
+    r'RMS Value: ',
+]
 
 
 def run_subtest(baseline_summary_name, tmp_path, args, summaries=None, xfail=True,
@@ -57,6 +69,9 @@ def run_subtest(baseline_summary_name, tmp_path, args, summaries=None, xfail=Tru
         Whether `--mpl-generate-hash-library` was specified and
         both of `--mpl-hash-library` and `hash_library=` were not.
     """
+    if update_baseline and update_summary:
+        raise ValueError("Cannot enable both `update_baseline` and `update_summary`.")
+
     # Parse arguments
     if summaries is None:
         summaries = []
@@ -85,6 +100,7 @@ def run_subtest(baseline_summary_name, tmp_path, args, summaries=None, xfail=Tru
         if HASH_LIBRARY.exists():
             # Keep in sync. Use `git add -p` to commit specific lines.
             shutil.copy(HASH_LIBRARY, RESULT_LIBRARY)
+        pytest.skip("Skipping testing, since `update_baseline` is enabled.")
         return
 
     # Ensure exit status is as expected
@@ -99,6 +115,8 @@ def run_subtest(baseline_summary_name, tmp_path, args, summaries=None, xfail=Tru
     results_file = results_path / 'results.json'
     if update_summary:
         shutil.copy(results_file, baseline_file)
+        apply_regex(baseline_file, REGEX_PATHS, REGEX_STRS)
+        remove_specific_hashes(baseline_file)
     with open(baseline_file, 'r') as f:
         baseline_summary = json.load(f)
     with open(results_file, 'r') as f:
@@ -135,6 +153,9 @@ def run_subtest(baseline_summary_name, tmp_path, args, summaries=None, xfail=Tru
         diff_summary({'a': baseline}, {'a': result})
     else:
         assert not result_hash_file.exists()
+
+    if update_summary:
+        pytest.skip("Skipping testing, since `update_summary` is enabled.")
 
 
 def test_default(tmp_path):
