@@ -15,66 +15,73 @@ def plot(line, **kwargs):
 
 # hash match
 
-@pytest.mark.mpl_image_compare()
+@pytest.mark.image
+@pytest.mark.hash
+@pytest.mark.mpl_image_compare(savefig_kwargs={'metadata': {'Software': None}})
 def test_hmatch_imatch():
     return plot([1, 2, 3, 4])
 
 
-@pytest.mark.mpl_image_compare()
+@pytest.mark.image
+@pytest.mark.mpl_image_compare(savefig_kwargs={'metadata': {'Software': None}})
 def test_hmatch_idiff():
     return plot([1, 3, 2, 4])
 
 
-@pytest.mark.mpl_image_compare()
+@pytest.mark.image
+@pytest.mark.mpl_image_compare(savefig_kwargs={'metadata': {'Software': None}})
 def test_hmatch_idiffshape():
     return plot([4, 2, 3, 1, 2])
 
 
-@pytest.mark.mpl_image_compare()
+@pytest.mark.image
+@pytest.mark.mpl_image_compare(savefig_kwargs={'metadata': {'Software': None}})
 def test_hmatch_imissing():
     return plot([4, 3, 2, 1])
 
 
 # hash diff
 
-@pytest.mark.mpl_image_compare()
+@pytest.mark.hash
+@pytest.mark.mpl_image_compare(savefig_kwargs={'metadata': {'Software': None}})
 def test_hdiff_imatch():
     return plot([1, 4, 2, 3])
 
 
-@pytest.mark.mpl_image_compare()
+@pytest.mark.mpl_image_compare(savefig_kwargs={'metadata': {'Software': None}})
 def test_hdiff_idiff():
     return plot([1, 2, 4, 3])
 
 
-@pytest.mark.mpl_image_compare()
+@pytest.mark.mpl_image_compare(savefig_kwargs={'metadata': {'Software': None}})
 def test_hdiff_idiffshape():
     return plot([4, 2, 3, 1, 3])
 
 
-@pytest.mark.mpl_image_compare()
+@pytest.mark.mpl_image_compare(savefig_kwargs={'metadata': {'Software': None}})
 def test_hdiff_imissing():
     return plot([3, 2, 4, 1])
 
 
 # hash missing
 
-@pytest.mark.mpl_image_compare()
+@pytest.mark.hash
+@pytest.mark.mpl_image_compare(savefig_kwargs={'metadata': {'Software': None}})
 def test_hmissing_imatch():
     return plot([1, 3, 4, 2])
 
 
-@pytest.mark.mpl_image_compare()
+@pytest.mark.mpl_image_compare(savefig_kwargs={'metadata': {'Software': None}})
 def test_hmissing_idiff():
     return plot([1, 4, 3, 2])
 
 
-@pytest.mark.mpl_image_compare()
+@pytest.mark.mpl_image_compare(savefig_kwargs={'metadata': {'Software': None}})
 def test_hmissing_idiffshape():
     return plot([4, 2, 3, 1, 4])
 
 
-@pytest.mark.mpl_image_compare()
+@pytest.mark.mpl_image_compare(savefig_kwargs={'metadata': {'Software': None}})
 def test_hmissing_imissing():
     return plot([2, 4, 3, 1])
 
@@ -82,19 +89,25 @@ def test_hmissing_imissing():
 # ### Specialized tests
 
 # Tolerance: high to force image match
-@pytest.mark.mpl_image_compare(tolerance=200)
+@pytest.mark.image
+@pytest.mark.hash
+@pytest.mark.mpl_image_compare(tolerance=200, savefig_kwargs={'metadata': {'Software': None}})
 def test_hdiff_imatch_tolerance():
     return plot([1, 2, 3, 4], linestyle='--')
 
 
 # Tolerance: non-default to verify option recorded in JSON
-@pytest.mark.mpl_image_compare(tolerance=3)
+@pytest.mark.image
+@pytest.mark.hash
+@pytest.mark.mpl_image_compare(tolerance=3, savefig_kwargs={'metadata': {'Software': None}})
 def test_hdiff_idiff_tolerance():
     return plot([1, 2, 3, 4], linestyle='--')
 
 
 # Savefig kwargs
-@pytest.mark.mpl_image_compare(savefig_kwargs={'facecolor': 'r'})
+@pytest.mark.image
+@pytest.mark.hash
+@pytest.mark.mpl_image_compare(savefig_kwargs={'facecolor': 'r', 'metadata': {'Software': None}})
 def test_hdiff_imatch_savefig():
     return plot([1, 2, 3, 4])
 
@@ -120,12 +133,16 @@ def test_hdiff_imatch_savefig():
 
 
 # Different style
-@pytest.mark.mpl_image_compare(style='fivethirtyeight')
+@pytest.mark.image
+@pytest.mark.hash
+@pytest.mark.mpl_image_compare(style='fivethirtyeight', savefig_kwargs={'metadata': {'Software': None}})
 def test_hdiff_imatch_style():
     return plot([4, 2, 1, 4])
 
 
 # Remove text
-@pytest.mark.mpl_image_compare(remove_text=True)
+@pytest.mark.image
+@pytest.mark.hash
+@pytest.mark.mpl_image_compare(remove_text=True, savefig_kwargs={'metadata': {'Software': None}})
 def test_hdiff_imatch_removetext():
     return plot([4, 2, 1, 4])

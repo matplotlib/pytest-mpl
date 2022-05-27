@@ -10,8 +10,8 @@ import matplotlib.ft2font
 import pytest
 from packaging.version import Version
 
-from .helpers import (apply_regex, assert_existence, diff_summary,
-                      patch_summary, remove_specific_hashes)
+from .helpers import (apply_regex, assert_existence, diff_summary, patch_summary,
+                      remove_specific_hashes, transform_hashes, transform_images)
 
 # Handle Matplotlib and FreeType versions
 MPL_VERSION = Version(matplotlib.__version__)
@@ -25,14 +25,18 @@ FULL_BASELINE_PATH = Path(__file__).parent / 'baseline'
 BASELINE_IMAGES_FLAG_REL = ['--mpl-baseline-path=baseline', '--mpl-baseline-relative']
 BASELINE_IMAGES_FLAG_ABS = rf'--mpl-baseline-path={FULL_BASELINE_PATH}'
 
+IMAGE_COMPARISON_MODE = ["-k", "image"]
+HASH_COMPARISON_MODE = ["-k", "hash"]
+# HYBRID_MODE = []
+
 TEST_FILE = Path(__file__).parent / 'subtest.py'
 
 # Global settings to update baselines when running pytest
 # Note: when updating baseline make sure you don't commit "fixes"
 # for tests that are expected to fail
 # (See also `run_subtest` argument `update_baseline` and `update_summary`.)
-UPDATE_BASELINE = False  # baseline images and hashes
-UPDATE_SUMMARY = False  # baseline summaries
+UPDATE_BASELINE = os.getenv("MPL_UPDATE_BASELINE") is not None  # baseline images and hashes
+UPDATE_SUMMARY = os.getenv("MPL_UPDATE_SUMMARY") is not None  # baseline summaries
 
 # When updating baseline summaries, replace parts of status_msg with regex.
 # See helpers.apply_regex for more information.
@@ -97,9 +101,10 @@ def run_subtest(baseline_summary_name, tmp_path, args, summaries=None, xfail=Tru
     # If updating baseline, don't check summaries
     if update_baseline:
         assert status == 0
+        transform_images(FULL_BASELINE_PATH)  # Make image comparison tests fail correctly
         if HASH_LIBRARY.exists():
-            # Keep in sync. Use `git add -p` to commit specific lines.
             shutil.copy(HASH_LIBRARY, RESULT_LIBRARY)
+            transform_hashes(HASH_LIBRARY)  # Make hash comparison tests fail correctly
         pytest.skip("Skipping testing, since `update_baseline` is enabled.")
         return
 
@@ -150,6 +155,12 @@ def run_subtest(baseline_summary_name, tmp_path, args, summaries=None, xfail=Tru
             baseline = json.load(f)
         with open(result_hash_file, "r") as f:
             result = json.load(f)
+
+        # Baseline contains hashes for all subtests so remove ones not used
+        for test in list(baseline.keys()):
+            if test not in result:
+                del baseline[test]
+
         diff_summary({'a': baseline}, {'a': result})
     else:
         assert not result_hash_file.exists()
@@ -159,17 +170,12 @@ def run_subtest(baseline_summary_name, tmp_path, args, summaries=None, xfail=Tru
 
 
 def test_default(tmp_path):
-    run_subtest('test_default', tmp_path, [])
+    run_subtest('test_default', tmp_path, [*IMAGE_COMPARISON_MODE])
 
 
 @pytest.mark.skipif(not HASH_LIBRARY.exists(), reason="No hash library for this mpl version")
 def test_hash(tmp_path):
-    run_subtest('test_hash', tmp_path, [HASH_LIBRARY_FLAG])
-
-
-@pytest.mark.skipif(not HASH_LIBRARY.exists(), reason="No hash library for this mpl version")
-def test_hybrid(tmp_path):
-    run_subtest('test_hybrid', tmp_path, [HASH_LIBRARY_FLAG, BASELINE_IMAGES_FLAG_ABS])
+    run_subtest('test_hash', tmp_path, [HASH_LIBRARY_FLAG, *HASH_COMPARISON_MODE])
 
 
 @pytest.mark.skipif(not HASH_LIBRARY.exists(), reason="No hash library for this mpl version")
@@ -191,15 +197,16 @@ def test_html(tmp_path):
 
 @pytest.mark.skipif(not HASH_LIBRARY.exists(), reason="No hash library for this mpl version")
 def test_html_hashes_only(tmp_path):
-    run_subtest('test_html_hashes_only', tmp_path, [HASH_LIBRARY_FLAG], summaries=['html'],
-                has_result_hashes=True)
+    run_subtest('test_html_hashes_only', tmp_path,
+                [HASH_LIBRARY_FLAG, *HASH_COMPARISON_MODE],
+                summaries=['html'], has_result_hashes=True)
     assert (tmp_path / 'results' / 'fig_comparison.html').exists()
     assert (tmp_path / 'results' / 'extra.js').exists()
     assert (tmp_path / 'results' / 'styles.css').exists()
 
 
 def test_html_images_only(tmp_path):
-    run_subtest('test_html_images_only', tmp_path, [], summaries=['html'])
+    run_subtest('test_html_images_only', tmp_path, [*IMAGE_COMPARISON_MODE], summaries=['html'])
     assert (tmp_path / 'results' / 'fig_comparison.html').exists()
     assert (tmp_path / 'results' / 'extra.js').exists()
     assert (tmp_path / 'results' / 'styles.css').exists()
@@ -225,7 +232,7 @@ def test_generate(tmp_path):
 def test_generate_images_only(tmp_path):
     # generating images; no testing
     run_subtest('test_generate_images_only', tmp_path,
-                [rf'--mpl-generate-path={tmp_path}'], xfail=False)
+                [rf'--mpl-generate-path={tmp_path}', *IMAGE_COMPARISON_MODE], xfail=False)
 
 
 @pytest.mark.skipif(not HASH_LIBRARY.exists(), reason="No hash library for this mpl version")
@@ -250,7 +257,7 @@ def test_html_generate(tmp_path):
 def test_html_generate_images_only(tmp_path):
     # generating images; no testing
     run_subtest('test_html_generate_images_only', tmp_path,
-                [rf'--mpl-generate-path={tmp_path}'],
+                [rf'--mpl-generate-path={tmp_path}', *IMAGE_COMPARISON_MODE],
                 summaries=['html'], xfail=False)
     assert (tmp_path / 'results' / 'fig_comparison.html').exists()
 
@@ -269,6 +276,12 @@ def test_html_run_generate_hashes_only(tmp_path):
     # generating hashes; testing hashes
     run_subtest('test_html_hashes_only', tmp_path,
                 [rf'--mpl-generate-hash-library={tmp_path / "test_hashes.json"}',
-                 HASH_LIBRARY_FLAG],
+                 HASH_LIBRARY_FLAG, *HASH_COMPARISON_MODE],
                 summaries=['html'], has_result_hashes="test_hashes.json")
     assert (tmp_path / 'results' / 'fig_comparison.html').exists()
+
+
+# Run a hybrid mode test last so if generating hash libraries, it includes all the hashes.
+@pytest.mark.skipif(not HASH_LIBRARY.exists(), reason="No hash library for this mpl version")
+def test_hybrid(tmp_path):
+    run_subtest('test_hybrid', tmp_path, [HASH_LIBRARY_FLAG, BASELINE_IMAGES_FLAG_ABS])
