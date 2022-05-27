@@ -2,6 +2,7 @@ import os
 import sys
 import json
 import shutil
+import tempfile
 import subprocess
 from pathlib import Path
 
@@ -42,7 +43,7 @@ UPDATE_SUMMARY = os.getenv("MPL_UPDATE_SUMMARY") is not None  # baseline summari
 # See helpers.apply_regex for more information.
 REGEX_PATHS = [
     str(Path(__file__).parent),  # replace all references to baseline files
-    str(os.path.realpath(os.getenv("TMPDIR"))),  # replace all references to output files
+    os.path.realpath(tempfile.gettempdir()),  # replace all references to output files
 ]
 REGEX_STRS = [
     r'RMS Value: ',
