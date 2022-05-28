@@ -2,7 +2,7 @@ Testing ``pytest-mpl`` using the ``tests/subtests``
 **************************************************
 
 ``pytest-mpl`` can output JSON summaries (``--mpl-generate-summary=json``) which contain lots of machine readable information relating to the internal state of the plugin while it was run.
-This test module (``test_subtest.py``) runs the test file ``subtest.py`` multiple times with different combinations of 
+This test module (``test_subtest.py``) runs the test file ``subtest.py`` multiple times with different combinations of
 ``pytest-mpl`` arguments.
 After each test, it compares the outputted JSON summary to a "baseline" JSON summary for that specific combination of arguments (``summaries/*.json``).
 
