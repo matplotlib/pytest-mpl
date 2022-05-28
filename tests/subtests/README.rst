@@ -2,7 +2,7 @@ Testing ``pytest-mpl`` using the ``tests/subtests``
 **************************************************
 
 ``pytest-mpl`` can output JSON summaries (``--mpl-generate-summary=json``) which contain lots of machine readable information relating to the internal state of the plugin while it was run.
-This test module (``test_subtest.py``) runs the test file ``subtest.py`` multiple times with different combinations of z
+This test module (``test_subtest.py``) runs the test file ``subtest.py`` multiple times with different combinations of 
 ``pytest-mpl`` arguments.
 After each test, it compares the outputted JSON summary to a "baseline" JSON summary for that specific combination of arguments (``summaries/*.json``).
 
@@ -32,7 +32,7 @@ Full details on how the baselines are modified for each case are given below:
 
 **Image comparison status flags:**
 
-:``imatch``: Image comparison must pass, so correct image in included in the baseline directory.
+:``imatch``: Image comparison must pass, so correct image is included in the baseline directory.
 
 :``idiff``: Image comparison must fail, so baseline image is edited to include a red cross such that the RMS is greater than the tolerance.
 
