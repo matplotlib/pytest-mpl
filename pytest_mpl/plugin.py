@@ -351,8 +351,12 @@ class ImageComparison:
                 emsg = f'Unrecognised hashing kernel {kernel!r} not supported.'
                 raise ValueError(emsg)
             kernel = requested
+            # Flag that the kernel has been user configured.
+            self.kernel_default = False
         else:
             kernel = DEFAULT_KERNEL
+            # Flag that the kernel has been configured by default.
+            self.kernel_default = True
         # Create the kernel.
         self.kernel = kernel_factory[kernel](self)
 
@@ -631,12 +635,15 @@ class ImageComparison:
                         f'in the hash library {str(hash_library_filename)!r}.')
                 pytest.fail(emsg)
             if kernel_name != self.kernel.name:
-                # TODO: we could be lenient here by raising a warning and hot-swap to
-                #       use the hash library kernel, instead of forcing a test failure?
-                emsg = (f'Hash library {str(hash_library_filename)!r} kernel '
-                        f'{kernel_name!r} does not match configured runtime '
-                        f'kernel {self.kernel.name!r}.')
-                pytest.fail(emsg)
+                if self.kernel_default:
+                    # Override the default kernel with the kernel configured
+                    # within the hash library.
+                    self.kernel = kernel_factory[kernel_name](self)
+                else:
+                    emsg = (f'Hash library {str(hash_library_filename)!r} kernel '
+                            f'{kernel_name!r} does not match configured runtime '
+                            f'kernel {self.kernel.name!r}.')
+                    pytest.fail(emsg)
 
         hash_name = self.generate_test_name(item)
         baseline_hash = hash_library.get(hash_name, None)

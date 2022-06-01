@@ -492,14 +492,33 @@ def test_results_always(tmpdir):
                 assert json_res[json_image_key] is None
 
 
-def test_phash(tmpdir):
+@pytest.mark.parametrize("cla", ["--mpl-kernel=phash", ""])
+def test_phash(tmpdir, cla):
+    test_file = tmpdir.join("test.py").strpath
+    with open(test_file, "w") as fo:
+        fo.write(TEST_GENERATE)
+
+    # Filter out empty command-line-argument (cla) from command string.
+    command = list(filter(None,
+                          ["--mpl",
+                           cla,
+                           f"--mpl-hash-library={phash_library}",
+                           test_file]
+                          )
+                   )
+    code = call_pytest(command)
+    assert code == 0
+
+
+def test_phash__fail(tmpdir):
     test_file = tmpdir.join("test.py").strpath
     with open(test_file, "w") as fo:
         fo.write(TEST_GENERATE)
 
     command = ["--mpl",
-               "--mpl-kernel=phash",
+               "--mpl-kernel=sha256",
                f"--mpl-hash-library={phash_library}",
                test_file]
-    code = call_pytest(command)
-    assert code == 0
+
+    emsg = "'phash' does not match configured runtime kernel 'sha256'"
+    assert_pytest_fails_with(command, emsg)
