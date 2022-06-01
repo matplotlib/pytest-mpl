@@ -33,6 +33,10 @@ jobs:
         - linux: py38-test-mpl33
         - linux: py39-test-mpl34
         - linux: py310-test-mpl35
+        # Test different versions of pytest
+        - linux: py310-test-mpl35-pytestdev
+        - linux: py310-test-mpl35-pytest62
+        - linux: py310-test-mpl35-pytest54
       coverage: 'codecov'
 
   publish:
