@@ -486,3 +486,46 @@ def test_results_always(tmpdir):
                 assert image and not image_exists
                 assert image not in html
                 assert json_res[json_image_key] is None
+
+
+TEST_FAILING_CLASS = """
+import pytest
+import matplotlib.pyplot as plt
+class TestClass(object):
+    @pytest.mark.mpl_image_compare
+    def test_fails(self):
+        fig = plt.figure()
+        ax = fig.add_subplot(1, 1, 1)
+        ax.plot([1, 2, 3])
+        return fig
+"""
+
+TEST_FAILING_CLASS_SETUP_METHOD = """
+import pytest
+import matplotlib.pyplot as plt
+class TestClassWithSetup:
+    def setup_method(self, method):
+        self.x = [1, 2, 3]
+    @pytest.mark.mpl_image_compare
+    def test_fails(self):
+        fig = plt.figure()
+        ax = fig.add_subplot(1, 1, 1)
+        ax.plot(self.x)
+        return fig
+"""
+
+
+@pytest.mark.parametrize("code", [TEST_FAILING_CLASS, TEST_FAILING_CLASS_SETUP_METHOD])
+def test_class_fail(code, tmpdir):
+
+    test_file = tmpdir.join('test.py').strpath
+    with open(test_file, 'w') as f:
+        f.write(code)
+
+    # Assert fails if hash library missing
+    assert_pytest_fails_with(['--mpl', test_file, '--mpl-hash-library=/not/a/path'],
+                             "Can't find hash library at path")
+
+    # If we don't use --mpl option, the test should succeed
+    code = call_pytest([test_file])
+    assert code == 0
