@@ -302,7 +302,11 @@ class ImageComparison:
         """
         Generate a unique name for the hash for this test.
         """
-        return f"{item.module.__name__}.{item.name}"
+        if item.cls is not None:
+            name = f"{item.module.__name__}.{item.cls.__name__}.{item.name}"
+        else:
+            name = f"{item.module.__name__}.{item.name}"
+        return name
 
     def make_test_results_dir(self, item):
         """
