@@ -93,8 +93,9 @@ class Result:
 
         # Name of test with module and test function together and separate
         self.full_name = name
-        self.name = name.split('.')[-1]
-        self.module = '.'.join(name.split('.')[:-1])
+        without_parametrized_name = name.split("[")[0]
+        self.module = ".".join(without_parametrized_name.split(".")[:-1])
+        self.name = name[len(self.module)+1:]
 
         # Additional classes to add to the result card
         self.classes = [f'{k}-{str(v).lower()}' for k, v in [
