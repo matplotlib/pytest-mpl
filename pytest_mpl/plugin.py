@@ -269,6 +269,7 @@ class ImageComparison:
 
         # We need global state to store all the hashes generated over the run
         self._generated_hash_library = {}
+        self._generated_baseline_images = set()
         self._test_results = {}
         self._test_stats = None
 
@@ -402,6 +403,15 @@ class ImageComparison:
 
         baseline_filename = self.generate_filename(item)
         baseline_path = (self.generate_dir / baseline_filename).absolute()
+
+        if str(baseline_path) in self._generated_baseline_images:
+            raise ValueError(
+                f"Multiple tests are generating baseline images at {str(baseline_path)!r}. "
+                "Try renaming this test or use the 'mpl-use-full-test-name' ini option "
+                "to use the fully qualified test name as the filename."
+            )
+        self._generated_baseline_images.add(str(baseline_path))
+
         fig.savefig(str(baseline_path), **savefig_kwargs)
 
         close_mpl_figure(fig)
