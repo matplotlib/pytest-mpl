@@ -13,7 +13,7 @@
                 <div class="card h-100">
                     <div class="card-header">{{ name }}</div>
                     {% if file -%}
-                    <img src="{{ file }}" class="card-img-top" alt="{{ name }}">
+                    <img src="{{ file | urlencode }}" class="card-img-top" alt="{{ name }}">
                     {%- endif %}
                 </div>
             </div>
