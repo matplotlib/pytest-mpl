@@ -1,7 +1,7 @@
 {
   "test.test_gen": "8fe8c01f7a45b01f6645ac1fe9572b2a807e2ae0d41a7ab085967aac87997eab",
   "pytest-mpl-kernel": {
-    "name": "phash",
+    "name": "wibble",
     "hash_size": 16,
     "high_freq_factor": 4
   }

@@ -118,6 +118,19 @@ class Kernel(ABC):
         # The "name" class property *must* be defined in derived child class.
         summary["kernel"] = self.name
 
+    @property
+    def metadata(self):
+        """
+        The kernel metadata to be archived in a hash library with results.
+
+        Returns
+        -------
+        dict
+            The kernel metadata.
+
+        """
+        return dict(name=self.name)
+
 
 class KernelPHash(Kernel):
     """
@@ -138,15 +151,17 @@ class KernelPHash(Kernel):
         self.hamming_distance = None
         # Value may be overridden by py.test marker kwarg.
         arg = self._plugin.hamming_tolerance
-        self.hamming_tolerance = arg if arg is not None else DEFAULT_HAMMING_TOLERANCE
+        self.hamming_tolerance = (
+            int(arg) if arg is not None else DEFAULT_HAMMING_TOLERANCE
+        )
         # The hash-size (N) defines the resultant N**2 bits hash size.
         arg = self._plugin.hash_size
-        self.hash_size = arg if arg is not None else DEFAULT_HASH_SIZE
+        self.hash_size = int(arg) if arg is not None else DEFAULT_HASH_SIZE
         # The level of image detail (high freq) or structure (low freq)
         # represented in perceptual hash thru discrete cosine transform.
         arg = self._plugin.high_freq_factor
         self.high_freq_factor = (
-            arg if arg is not None else DEFAULT_HIGH_FREQUENCY_FACTOR
+            int(arg) if arg is not None else DEFAULT_HIGH_FREQUENCY_FACTOR
         )
         # py.test marker kwarg.
         self.option = "hamming_tolerance"
@@ -196,6 +211,13 @@ class KernelPHash(Kernel):
         super().update_summary(summary)
         summary["hamming_distance"] = self.hamming_distance
         summary["hamming_tolerance"] = self.hamming_tolerance
+
+    @property
+    def metadata(self):
+        result = super().metadata
+        result["hash_size"] = self.hash_size
+        result["high_freq_factor"] = self.high_freq_factor
+        return result
 
 
 class KernelSHA256(Kernel):

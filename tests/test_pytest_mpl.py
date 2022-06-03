@@ -26,13 +26,13 @@ hash_filename = f"mpl{MPL_VERSION.major}{MPL_VERSION.minor}_ft{ftv}.json"
 if "+" in matplotlib.__version__:
     hash_filename = "mpldev.json"
 
-hash_library = (Path(__file__).parent / "baseline" /  # noqa
-                "hashes" / hash_filename)
+hashes_dir = Path(__file__).parent / "baseline" / "hashes"
+
+hash_library = hashes_dir / hash_filename
 
 fail_hash_library = Path(__file__).parent / "baseline" / "test_hash_lib.json"
 baseline_dir_abs = Path(__file__).parent / "baseline" / baseline_subdir
 hash_baseline_dir_abs = Path(__file__).parent / "baseline" / "hybrid"
-phash_library = Path(__file__).parent / "baseline" / "hashes" / "test_phash.json"
 
 
 WIN = sys.platform.startswith('win')
@@ -502,7 +502,7 @@ def test_phash(tmpdir, cla):
     command = list(filter(None,
                           ["--mpl",
                            cla,
-                           f"--mpl-hash-library={phash_library}",
+                           f"--mpl-hash-library={hashes_dir / 'test_phash.json'}",
                            test_file]
                           )
                    )
@@ -510,15 +510,56 @@ def test_phash(tmpdir, cla):
     assert code == 0
 
 
-def test_phash__fail(tmpdir):
+@pytest.mark.parametrize("key", ["name", "hash_size", "high_freq_factor"])
+def test_phash_fail__hash_library_missing(tmpdir, key):
     test_file = tmpdir.join("test.py").strpath
     with open(test_file, "w") as fo:
         fo.write(TEST_GENERATE)
 
+    library = hashes_dir / f"test_phash_missing_{key}.json"
+    command = ["--mpl",
+               "--mpl-kernel=phash",
+               f"--mpl-hash-library={library}",
+               test_file]
+    emsg = f"Missing kernel '{key}'"
+    assert_pytest_fails_with(command, emsg)
+
+
+def test_phash_fail__hash_library_bad_kernel(tmpdir):
+    test_file = tmpdir.join("test.py").strpath
+    with open(test_file, "w") as fo:
+        fo.write(TEST_GENERATE)
+
+    library = hashes_dir / 'test_phash_bad_kernel.json'
+    command = ["--mpl",
+               f"--mpl-hash-library={library}",
+               test_file]
+    emsg = "Unrecognised hashing kernel 'wibble'"
+    assert_pytest_fails_with(command, emsg)
+
+
+def test_phash_pass__override_default(tmpdir):
+    test_file = tmpdir.join("test.py").strpath
+    with open(test_file, "w") as fo:
+        fo.write(TEST_GENERATE)
+
+    library = hashes_dir / 'test_phash.json'
+    command = ["--mpl",
+               f"--mpl-hash-library={library}",
+               test_file]
+    code = call_pytest(command)
+    assert code == 0
+
+
+def test_phash_fail__hash_library_mismatch_kernel(tmpdir):
+    test_file = tmpdir.join("test.py").strpath
+    with open(test_file, "w") as fo:
+        fo.write(TEST_GENERATE)
+
+    library = hashes_dir / 'test_phash.json'
     command = ["--mpl",
                "--mpl-kernel=sha256",
-               f"--mpl-hash-library={phash_library}",
+               f"--mpl-hash-library={library}",
                test_file]
-
     emsg = "'phash' does not match configured runtime kernel 'sha256'"
     assert_pytest_fails_with(command, emsg)

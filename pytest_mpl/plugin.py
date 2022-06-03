@@ -43,8 +43,7 @@ from urllib.request import urlopen
 
 import pytest
 
-from .kernels import (DEFAULT_HAMMING_TOLERANCE, DEFAULT_HASH_SIZE,
-                      DEFAULT_HIGH_FREQUENCY_FACTOR, KERNEL_SHA256, kernel_factory)
+from .kernels import KERNEL_SHA256, kernel_factory
 from .summary.html import generate_summary_basic_html, generate_summary_html
 
 #: The default matplotlib backend.
@@ -65,8 +64,8 @@ DEFAULT_RMS_TOLERANCE = 2
 #: The default matplotlib plot style.
 DEFAULT_STYLE = "classic"
 
-#: Metadata entry in the JSON hash library defining the source kernel of the hashes.
-META_HASH_LIBRARY_KERNEL = 'pytest-mpl-kernel'
+#: JSON metadata entry defining the source kernel of the hashes.
+META_HASH_KERNEL = 'pytest-mpl-kernel'
 
 #: Valid formats for generate summary.
 SUPPORTED_FORMATS = {'html', 'json', 'basic-html'}
@@ -326,20 +325,18 @@ class ImageComparison:
 
         # Configure hashing kernel options.
         option = 'mpl-hash-size'
-        hash_size = int(config.getoption(f'--{option}') or
-                        config.getini(option) or DEFAULT_HASH_SIZE)
+        hash_size = (config.getoption(f'--{option}') or
+                     config.getini(option) or None)
         self.hash_size = hash_size
 
         option = 'mpl-hamming-tolerance'
-        hamming_tolerance = int(config.getoption(f'--{option}') or
-                                config.getini(option) or
-                                DEFAULT_HAMMING_TOLERANCE)
+        hamming_tolerance = (config.getoption(f'--{option}') or
+                             config.getini(option) or None)
         self.hamming_tolerance = hamming_tolerance
 
         option = 'mpl-high-freq-factor'
-        high_freq_factor = int(config.getoption(f'--{option}') or
-                               config.getini(option) or
-                               DEFAULT_HIGH_FREQUENCY_FACTOR)
+        high_freq_factor = (config.getoption(f'--{option}') or
+                            config.getini(option) or None)
         self.high_freq_factor = high_freq_factor
 
         # Configure the hashing kernel - must be done *after* kernel options.
@@ -351,12 +348,8 @@ class ImageComparison:
                 emsg = f'Unrecognised hashing kernel {kernel!r} not supported.'
                 raise ValueError(emsg)
             kernel = requested
-            # Flag that the kernel has been user configured.
-            self.kernel_default = False
         else:
             kernel = DEFAULT_KERNEL
-            # Flag that the kernel has been configured by default.
-            self.kernel_default = True
         # Create the kernel.
         self.kernel = kernel_factory[kernel](self)
 
@@ -600,9 +593,63 @@ class ImageComparison:
             summary['status_msg'] = error_message
             return error_message
 
-    def load_hash_library(self, library_path):
-        with open(str(library_path)) as fp:
-            return json.load(fp)
+    def load_hash_library(self, fname):
+        with open(str(fname)) as fi:
+            hash_library = json.load(fi)
+        kernel_metadata = hash_library.get(META_HASH_KERNEL)
+        if kernel_metadata is None:
+            msg = (f'Hash library {str(fname)!r} missing a '
+                   f'{META_HASH_KERNEL!r} entry. Assuming that a '
+                   f'{self.kernel.name!r} kernel generated the library.')
+            self.logger.info(msg)
+        else:
+            if "name" not in kernel_metadata:
+                emsg = (f"Missing kernel 'name' in the {META_HASH_KERNEL!r} entry, "
+                        f'for the hash library {str(fname)!r}.')
+                pytest.fail(emsg)
+            kernel_name = kernel_metadata["name"]
+            if kernel_name not in kernel_factory:
+                emsg = (f'Unrecognised hashing kernel {kernel_name!r} specified '
+                        f'in the hash library {str(fname)!r}.')
+                pytest.fail(emsg)
+            if kernel_name != self.kernel.name:
+                option = 'mpl-kernel'
+                if (self.config.getoption(f'--{option}') is None and
+                        len(self.config.getini(option)) == 0):
+                    # Override the default kernel with the kernel configured
+                    # within the hash library.
+                    self.kernel = kernel_factory[kernel_name](self)
+                else:
+                    emsg = (f'Hash library {str(fname)!r} kernel '
+                            f'{kernel_name!r} does not match configured runtime '
+                            f'kernel {self.kernel.name!r}.')
+                    pytest.fail(emsg)
+
+            def check_metadata(key):
+                if key not in kernel_metadata:
+                    emsg = (f'Missing kernel {key!r} in the '
+                            f'{META_HASH_KERNEL!r} entry, for the hash '
+                            f'library {str(fname)!r}.')
+                    pytest.fail(emsg)
+                value = kernel_metadata[key]
+                if value != getattr(self.kernel, key):
+                    option = f'mpl-{key.replace("_", "-")}'
+                    if (self.config.getoption(f'--{option}') is None and
+                            len(self.config.getini(option)) == 0):
+                        # Override the default kernel value with the
+                        # configured value within the hash library.
+                        setattr(self.kernel, key, value)
+                    else:
+                        emsg = (f"Hash library {str(fname)!r} '{key}={value}' "
+                                'does not match configured runtime kernel '
+                                f"'{key}={getattr(self.kernel, key)}'.")
+                        pytest.fail(emsg)
+
+            for key in self.kernel.metadata:
+                if key != "name":
+                    check_metadata(key)
+
+        return hash_library
 
     def compare_image_to_hash_library(self, item, fig, result_dir, summary=None):
         hash_comparison_pass = False
@@ -623,27 +670,6 @@ class ImageComparison:
             pytest.fail(f"Can't find hash library at path {str(hash_library_filename)!r}.")
 
         hash_library = self.load_hash_library(hash_library_filename)
-        kernel_name = hash_library.get(META_HASH_LIBRARY_KERNEL)
-        if kernel_name is None:
-            msg = (f'Hash library {str(hash_library_filename)!r} missing a '
-                   f'{META_HASH_LIBRARY_KERNEL!r} entry. Assuming that a '
-                   f'{self.kernel.name!r} kernel generated the library.')
-            self.logger.info(msg)
-        else:
-            if kernel_name not in kernel_factory:
-                emsg = (f'Unrecognised hashing kernel {kernel_name!r} specified '
-                        f'in the hash library {str(hash_library_filename)!r}.')
-                pytest.fail(emsg)
-            if kernel_name != self.kernel.name:
-                if self.kernel_default:
-                    # Override the default kernel with the kernel configured
-                    # within the hash library.
-                    self.kernel = kernel_factory[kernel_name](self)
-                else:
-                    emsg = (f'Hash library {str(hash_library_filename)!r} kernel '
-                            f'{kernel_name!r} does not match configured runtime '
-                            f'kernel {self.kernel.name!r}.')
-                    pytest.fail(emsg)
 
         hash_name = self.generate_test_name(item)
         baseline_hash = hash_library.get(hash_name, None)
@@ -838,7 +864,7 @@ class ImageComparison:
             # It's safe to inject this metadata, as the key is an invalid Python
             # class/function/method name, therefore there's no possible
             # namespace conflict with user py.test marker decorated tokens.
-            self._generated_hash_library[META_HASH_LIBRARY_KERNEL] = self.kernel.name
+            self._generated_hash_library[META_HASH_KERNEL] = self.kernel.metadata
             with open(hash_library_path, "w") as fp:
                 json.dump(self._generated_hash_library, fp, indent=2)
             if self.results_always:  # Make accessible in results directory
@@ -849,7 +875,7 @@ class ImageComparison:
             result_hashes = {k: v['result_hash'] for k, v in self._test_results.items()
                              if v['result_hash']}
             if len(result_hashes) > 0:  # At least one hash comparison test
-                result_hashes[META_HASH_LIBRARY_KERNEL] = self.kernel.name
+                result_hashes[META_HASH_KERNEL] = self.kernel.metadata
                 with open(result_hash_library, "w") as fp:
                     json.dump(result_hashes, fp, indent=2)
 

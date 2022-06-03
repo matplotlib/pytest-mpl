@@ -1,15 +1,10 @@
 from pathlib import Path
-from unittest.mock import sentinel
 
 import pytest
 
 from pytest_mpl.kernels import (DEFAULT_HAMMING_TOLERANCE, DEFAULT_HASH_SIZE,
-                                DEFAULT_HIGH_FREQUENCY_FACTOR, KERNEL_PHASH, KERNEL_SHA256, Kernel,
+                                DEFAULT_HIGH_FREQUENCY_FACTOR, Kernel,
                                 KernelPHash, KernelSHA256, kernel_factory)
-
-HASH_SIZE = sentinel.hash_size
-HAMMING_TOLERANCE = sentinel.hamming_tolerance
-HIGH_FREQUENCY_FACTOR = sentinel.high_freq_factor
 
 #: baseline hash (32-bit)
 HASH_BASE_32 = "01234567"
@@ -69,15 +64,16 @@ def test_phash_name():
 
 
 def test_phash_init__set():
+    hash_size, hamming_tolerance, high_freq_factor = -1, -2, -3
     plugin = DummyPlugin(
-        hash_size=HASH_SIZE,
-        hamming_tolerance=HAMMING_TOLERANCE,
-        high_freq_factor=HIGH_FREQUENCY_FACTOR,
+        hash_size=hash_size,
+        hamming_tolerance=hamming_tolerance,
+        high_freq_factor=high_freq_factor,
     )
     kernel = KernelPHash(plugin)
-    assert kernel.hash_size == HASH_SIZE
-    assert kernel.hamming_tolerance == HAMMING_TOLERANCE
-    assert kernel.high_freq_factor == HIGH_FREQUENCY_FACTOR
+    assert kernel.hash_size == hash_size
+    assert kernel.hamming_tolerance == hamming_tolerance
+    assert kernel.high_freq_factor == high_freq_factor
     assert kernel.equivalent is None
     assert kernel.hamming_distance is None
 
@@ -209,6 +205,20 @@ def test_phash_update_summary(summary, distance, tolerance, count):
     assert len(summary) == count
 
 
+@pytest.mark.parametrize(
+    "hash_size,hff",
+    [(DEFAULT_HASH_SIZE, DEFAULT_HIGH_FREQUENCY_FACTOR), (32, 8)],
+)
+def test_phash_metadata(hash_size, hff):
+    plugin = DummyPlugin(hash_size=hash_size, high_freq_factor=hff)
+    kernel = KernelPHash(plugin)
+    metadata = kernel.metadata
+    assert {"name", "hash_size", "high_freq_factor"} == set(metadata)
+    assert metadata["name"] == KernelPHash.name
+    assert metadata["hash_size"] == hash_size
+    assert metadata["high_freq_factor"] == hff
+
+
 #
 # KernelSHA256
 #
@@ -234,7 +244,7 @@ def test_sha256_generate_hash():
 
 def test_sha256_update_status():
     kernel = KernelSHA256(DummyPlugin())
-    message = sentinel.message
+    message = "nop"
     result = kernel.update_status(message)
     assert result is message
 
@@ -246,3 +256,10 @@ def test_sha256_update_summary():
     assert len(summary) == 1
     assert "kernel" in summary
     assert summary["kernel"] == KernelSHA256.name
+
+
+def test_sha256_metadata():
+    kernel = KernelSHA256(DummyPlugin())
+    metadata = kernel.metadata
+    assert {"name"} == set(metadata)
+    assert metadata["name"] == KernelSHA256.name
