@@ -12,19 +12,19 @@
             <div class="hover-image">
                 {% if r.diff_image -%}
                 <div class="diff-image">
-                    <img src="{{ r.diff_image }}" class="card-img-top" alt="diff image">
+                    <img src="{{ r.diff_image | urlencode }}" class="card-img-top" alt="diff image">
                 </div>
                 <div class="result-image">
-                    <img src="{{ r.result_image }}" class="card-img-top" alt="result image">
+                    <img src="{{ r.result_image | urlencode }}" class="card-img-top" alt="result image">
                 </div>
                 {%- else -%}
-                <img src="{{ r.result_image }}" class="card-img-top" alt="result image">
+                <img src="{{ r.result_image | urlencode }}" class="card-img-top" alt="result image">
                 {%- endif %}
             </div>
             {%- elif r.result_image -%}
-            <img src="{{ r.result_image }}" class="card-img-top" alt="result image">
+            <img src="{{ r.result_image | urlencode }}" class="card-img-top" alt="result image">
             {%- elif r.baseline_image -%}
-            <img src="{{ r.baseline_image }}" class="card-img-top" alt="baseline image">
+            <img src="{{ r.baseline_image | urlencode }}" class="card-img-top" alt="baseline image">
             {%- endif %}
         </a>
         {% filter indent(width=8) -%}

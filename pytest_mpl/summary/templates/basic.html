@@ -73,7 +73,7 @@
             {%- endif %}
         </td>
         {% macro image(file) -%}
-        <td>{% if file %}<img src="{{ file }}">{% endif %}</td>
+        <td>{% if file %}<img src="{{ file | urlencode }}">{% endif %}</td>
         {%- endmacro -%}
         {{ image(result.baseline_image) }}
         {{ image(result.diff_image) }}
