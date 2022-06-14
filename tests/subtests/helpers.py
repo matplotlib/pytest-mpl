@@ -1,8 +1,12 @@
+import os
 import re
 import json
 from pathlib import Path
 
-__all__ = ['diff_summary', 'assert_existence', 'patch_summary', 'apply_regex']
+from PIL import Image, ImageDraw
+
+__all__ = ['diff_summary', 'assert_existence', 'patch_summary', 'apply_regex',
+           'remove_specific_hashes', 'transform_hashes', 'transform_images']
 
 
 class MatchError(Exception):
@@ -255,3 +259,86 @@ def apply_regex(file, regex_paths, regex_strs):
 
     with open(file, 'w') as f:
         json.dump(summary, f, indent=2)
+
+
+def remove_specific_hashes(summary_file):
+    """Replace all hashes in a summary file with placeholder values.
+
+    This is done because the actual hashes used for testing are taken from
+    separate files for each specific matplotlib version.
+    """
+
+    baseline_placeholder = "###_BASELINE_HASH_###"
+    result_placeholder = "###_RESULT_HASH_###"
+
+    with open(summary_file, "r") as f:
+        summary = json.load(f)
+
+    for test in summary.keys():
+
+        # Get actual hashes
+        baseline = summary[test]["baseline_hash"]
+        result = summary[test]["result_hash"]
+
+        # Replace with placeholders (if summary has hashes)
+        if baseline is not None:
+            summary[test]["baseline_hash"] = baseline_placeholder
+            summary[test]["status_msg"] = \
+                summary[test]["status_msg"].replace(baseline, baseline_placeholder)
+        if result is not None:
+            summary[test]["result_hash"] = result_placeholder
+            summary[test]["status_msg"] = \
+                summary[test]["status_msg"].replace(result, result_placeholder)
+
+    with open(summary_file, "w") as f:
+        json.dump(summary, f, indent=2)
+
+
+def transform_hashes(hash_file):
+    """Make hash comparison tests fail correctly.
+
+    Makes hashes of tests *hdiff* in hash_file fail hash comparison
+    and remove *hmissing* hashes that should be missing.
+    """
+
+    with open(hash_file, "r") as f:
+        hashes = json.load(f)
+
+    for test in list(hashes.keys()):
+        h = hashes[test]
+        if "hdiff" in test and h is not None:
+            # Replace first four letters with d1ff to force mismatch
+            hashes[test] = "d1ff" + h[4:]
+        if "hmissing" in test and h is not None:
+            # Remove hashes that should be missing
+            del hashes[test]
+
+    with open(hash_file, "w") as f:
+        json.dump(hashes, f, indent=2)
+
+
+def transform_images(baseline_path):
+    """Make image comparison tests fail correctly.
+
+    Makes images of tests *idiff* under baseline_path fail image comparison
+    and deletes images for *imissing* tests.
+    """
+
+    # Delete imissing files
+    for file in baseline_path.glob("**/*imissing*.png"):
+        file.unlink()
+
+    # Add red cross to idiff files
+    for file in baseline_path.glob("**/*idiff*.png"):
+        with Image.open(file) as im:
+            draw = ImageDraw.Draw(im)
+            draw.line((0, 0) + im.size, "#f00", 3)
+            draw.line((0, im.size[1], im.size[0], 0), "#f00", 3)
+            im.save(file)
+
+    # Resize idiffshape files
+    for file in baseline_path.glob("**/*idiffshape*.png"):
+        with Image.open(file) as im:
+            (width, height) = (im.width // 2, im.height // 2)
+            im_resized = im.resize((width, height))
+            im_resized.save(file)
