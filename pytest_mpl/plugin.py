@@ -81,14 +81,6 @@ def pathify(path):
     return Path(path + ext)
 
 
-def _pytest_pyfunc_call(obj, pyfuncitem):
-    testfunction = pyfuncitem.obj
-    funcargs = pyfuncitem.funcargs
-    testargs = {arg: funcargs[arg] for arg in pyfuncitem._fixtureinfo.argnames}
-    obj.result = testfunction(**testargs)
-    return True
-
-
 def generate_test_name(item):
     """
     Generate a unique name for the hash for this test.
@@ -98,6 +90,24 @@ def generate_test_name(item):
     else:
         name = f"{item.module.__name__}.{item.name}"
     return name
+
+
+def wrap_figure_interceptor(plugin, item):
+    """
+    Intercept and store figures returned by test functions.
+    """
+    # Only intercept figures on marked figure tests
+    if get_compare(item) is not None:
+
+        # Use the full test name as a key to ensure correct figure is being retrieved
+        test_name = generate_test_name(item)
+
+        def figure_interceptor(store, obj):
+            def wrapper(*args, **kwargs):
+                store.return_value[test_name] = obj(*args, **kwargs)
+            return wrapper
+
+        item.obj = figure_interceptor(plugin, item.obj)
 
 
 def pytest_report_header(config, startdir):
@@ -286,6 +296,7 @@ class ImageComparison:
         self._generated_hash_library = {}
         self._test_results = {}
         self._test_stats = None
+        self.return_value = {}
 
         # https://stackoverflow.com/questions/51737378/how-should-i-log-in-my-pytest-plugin
         # turn debug prints on only if "-vv" or more passed
@@ -608,13 +619,14 @@ class ImageComparison:
         with plt.style.context(style, after_reset=True), switch_backend(backend):
 
             # Run test and get figure object
+            wrap_figure_interceptor(self, item)
             yield
-            fig = self.result
+            test_name = generate_test_name(item)
+            fig = self.return_value[test_name]
 
             if remove_text:
                 remove_ticks_and_titles(fig)
 
-            test_name = generate_test_name(item)
             result_dir = self.make_test_results_dir(item)
 
             summary = {
@@ -678,10 +690,6 @@ class ImageComparison:
             if summary['status'] == 'skipped':
                 pytest.skip(summary['status_msg'])
 
-    @pytest.hookimpl(tryfirst=True)
-    def pytest_pyfunc_call(self, pyfuncitem):
-        return _pytest_pyfunc_call(self, pyfuncitem)
-
     def generate_summary_json(self):
         json_file = self.results_dir / 'results.json'
         with open(json_file, 'w') as f:
@@ -733,13 +741,13 @@ class FigureCloser:
 
     def __init__(self, config):
         self.config = config
+        self.return_value = {}
 
     @pytest.hookimpl(hookwrapper=True)
     def pytest_runtest_call(self, item):
+        wrap_figure_interceptor(self, item)
         yield
         if get_compare(item) is not None:
-            close_mpl_figure(self.result)
-
-    @pytest.hookimpl(tryfirst=True)
-    def pytest_pyfunc_call(self, pyfuncitem):
-        return _pytest_pyfunc_call(self, pyfuncitem)
+            test_name = generate_test_name(item)
+            fig = self.return_value[test_name]
+            close_mpl_figure(fig)
