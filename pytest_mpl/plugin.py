@@ -89,6 +89,17 @@ def _pytest_pyfunc_call(obj, pyfuncitem):
     return True
 
 
+def generate_test_name(item):
+    """
+    Generate a unique name for the hash for this test.
+    """
+    if item.cls is not None:
+        name = f"{item.module.__name__}.{item.cls.__name__}.{item.name}"
+    else:
+        name = f"{item.module.__name__}.{item.name}"
+    return name
+
+
 def pytest_report_header(config, startdir):
     import matplotlib
     import matplotlib.ft2font
@@ -287,7 +298,7 @@ class ImageComparison:
         Given a pytest item, generate the figure filename.
         """
         if self.config.getini('mpl-use-full-test-name'):
-            filename = self.generate_test_name(item) + '.png'
+            filename = generate_test_name(item) + '.png'
         else:
             compare = get_compare(item)
             # Find test name to use as plot name
@@ -298,21 +309,11 @@ class ImageComparison:
         filename = str(pathify(filename))
         return filename
 
-    def generate_test_name(self, item):
-        """
-        Generate a unique name for the hash for this test.
-        """
-        if item.cls is not None:
-            name = f"{item.module.__name__}.{item.cls.__name__}.{item.name}"
-        else:
-            name = f"{item.module.__name__}.{item.name}"
-        return name
-
     def make_test_results_dir(self, item):
         """
         Generate the directory to put the results in.
         """
-        test_name = pathify(self.generate_test_name(item))
+        test_name = pathify(generate_test_name(item))
         results_dir = self.results_dir / test_name
         results_dir.mkdir(exist_ok=True, parents=True)
         return results_dir
@@ -526,7 +527,7 @@ class ImageComparison:
             pytest.fail(f"Can't find hash library at path {hash_library_filename}")
 
         hash_library = self.load_hash_library(hash_library_filename)
-        hash_name = self.generate_test_name(item)
+        hash_name = generate_test_name(item)
         baseline_hash = hash_library.get(hash_name, None)
         summary['baseline_hash'] = baseline_hash
 
@@ -613,7 +614,7 @@ class ImageComparison:
             if remove_text:
                 remove_ticks_and_titles(fig)
 
-            test_name = self.generate_test_name(item)
+            test_name = generate_test_name(item)
             result_dir = self.make_test_results_dir(item)
 
             summary = {
