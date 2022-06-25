@@ -3,6 +3,7 @@ import sys
 import json
 import subprocess
 from pathlib import Path
+from unittest import TestCase
 
 import matplotlib
 import matplotlib.ft2font
@@ -247,6 +248,23 @@ class TestClassWithSetup:
     # Regression test for a bug that occurred when using setup_method
 
     def setup_method(self, method):
+        self.x = [1, 2, 3]
+
+    @pytest.mark.mpl_image_compare(baseline_dir=baseline_dir_local,
+                                   filename='test_succeeds.png',
+                                   tolerance=DEFAULT_TOLERANCE)
+    def test_succeeds(self):
+        fig = plt.figure()
+        ax = fig.add_subplot(1, 1, 1)
+        ax.plot(self.x)
+        return fig
+
+
+class TestClassWithTestCase(TestCase):
+
+    # Regression test for a bug that occurred when using unittest.TestCase
+
+    def setUp(self):
         self.x = [1, 2, 3]
 
     @pytest.mark.mpl_image_compare(baseline_dir=baseline_dir_local,
@@ -514,8 +532,27 @@ class TestClassWithSetup:
         return fig
 """
 
+TEST_FAILING_UNITTEST_TESTCASE = """
+from unittest import TestCase
+import pytest
+import matplotlib.pyplot as plt
+class TestClassWithTestCase(TestCase):
+    def setUp(self):
+        self.x = [1, 2, 3]
+    @pytest.mark.mpl_image_compare
+    def test_fails(self):
+        fig = plt.figure()
+        ax = fig.add_subplot(1, 1, 1)
+        ax.plot(self.x)
+        return fig
+"""
 
-@pytest.mark.parametrize("code", [TEST_FAILING_CLASS, TEST_FAILING_CLASS_SETUP_METHOD])
+
+@pytest.mark.parametrize("code", [
+    TEST_FAILING_CLASS,
+    TEST_FAILING_CLASS_SETUP_METHOD,
+    TEST_FAILING_UNITTEST_TESTCASE,
+])
 def test_class_fail(code, tmpdir):
 
     test_file = tmpdir.join('test.py').strpath
