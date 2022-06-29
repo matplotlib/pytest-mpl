@@ -622,6 +622,9 @@ class ImageComparison:
             wrap_figure_interceptor(self, item)
             yield
             test_name = generate_test_name(item)
+            if test_name not in self.return_value:
+                # Test function did not complete successfully
+                return
             fig = self.return_value[test_name]
 
             if remove_text:
@@ -749,5 +752,8 @@ class FigureCloser:
         yield
         if get_compare(item) is not None:
             test_name = generate_test_name(item)
+            if test_name not in self.return_value:
+                # Test function did not complete successfully
+                return
             fig = self.return_value[test_name]
             close_mpl_figure(fig)
