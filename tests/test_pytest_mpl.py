@@ -566,3 +566,107 @@ def test_class_fail(code, tmpdir):
     # If we don't use --mpl option, the test should succeed
     code = call_pytest([test_file])
     assert code == 0
+
+
+@pytest.mark.parametrize("runpytest_args", [(), ("--mpl",)])
+def test_user_fail(pytester, runpytest_args):
+    pytester.makepyfile(
+        """
+        import pytest
+        @pytest.mark.mpl_image_compare
+        def test_fail():
+            pytest.fail("Manually failed by user.")
+    """
+    )
+    result = pytester.runpytest(*runpytest_args)
+    result.assert_outcomes(failed=1)
+    result.stdout.fnmatch_lines("FAILED*Manually failed by user.*")
+
+
+@pytest.mark.parametrize("runpytest_args", [(), ("--mpl",)])
+def test_user_skip(pytester, runpytest_args):
+    pytester.makepyfile(
+        """
+        import pytest
+        @pytest.mark.mpl_image_compare
+        def test_skip():
+            pytest.skip("Manually skipped by user.")
+    """
+    )
+    result = pytester.runpytest(*runpytest_args)
+    result.assert_outcomes(skipped=1)
+
+
+@pytest.mark.parametrize("runpytest_args", [(), ("--mpl",)])
+def test_user_importorskip(pytester, runpytest_args):
+    pytester.makepyfile(
+        """
+        import pytest
+        @pytest.mark.mpl_image_compare
+        def test_importorskip():
+            pytest.importorskip("nonexistantmodule")
+    """
+    )
+    result = pytester.runpytest(*runpytest_args)
+    result.assert_outcomes(skipped=1)
+
+
+@pytest.mark.parametrize("runpytest_args", [(), ("--mpl",)])
+def test_user_xfail(pytester, runpytest_args):
+    pytester.makepyfile(
+        """
+        import pytest
+        @pytest.mark.mpl_image_compare
+        def test_xfail():
+            pytest.xfail()
+    """
+    )
+    result = pytester.runpytest(*runpytest_args)
+    result.assert_outcomes(xfailed=1)
+
+
+@pytest.mark.parametrize("runpytest_args", [(), ("--mpl",)])
+def test_user_exit_success(pytester, runpytest_args):
+    pytester.makepyfile(
+        """
+        import pytest
+        @pytest.mark.mpl_image_compare
+        def test_exit_success():
+            pytest.exit("Manually exited by user.", returncode=0)
+    """
+    )
+    result = pytester.runpytest(*runpytest_args)
+    result.assert_outcomes()
+    assert result.ret == 0
+    result.stdout.fnmatch_lines("*Exit*Manually exited by user.*")
+
+
+@pytest.mark.parametrize("runpytest_args", [(), ("--mpl",)])
+def test_user_exit_failure(pytester, runpytest_args):
+    pytester.makepyfile(
+        """
+        import pytest
+        @pytest.mark.mpl_image_compare
+        def test_exit_fail():
+            pytest.exit("Manually exited by user.", returncode=1)
+    """
+    )
+    result = pytester.runpytest(*runpytest_args)
+    result.assert_outcomes()
+    assert result.ret == 1
+    result.stdout.fnmatch_lines("*Exit*Manually exited by user.*")
+
+
+@pytest.mark.parametrize("runpytest_args", [(), ("--mpl",)])
+def test_user_function_raises(pytester, runpytest_args):
+    pytester.makepyfile(
+        """
+        import pytest
+        @pytest.mark.mpl_image_compare
+        def test_raises():
+            raise ValueError("User code raised an exception.")
+    """
+    )
+    result = pytester.runpytest(*runpytest_args)
+    result.assert_outcomes(failed=1)
+    result.stdout.fnmatch_lines("FAILED*ValueError*User code*")
