@@ -1,0 +1,58 @@
+name: Docs
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - v[0-9]+.[0-9]+.[0-9]+
+  pull_request:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: ${{ github.workflow}}-${{ github.head_ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+      - run: python -m pip install pip --upgrade
+      - run: python -m pip install -e ".[test,docs]"
+      - run: |
+          cd docs
+          make html
+      - uses: actions/upload-artifact@v3
+        with:
+          name: docs-html
+          path: |
+            docs/_build/html
+          retention-days: 5
+
+  deploy:
+    if: ${{ github.event_name != 'pull_request' }}
+    needs: [build]
+    environment:
+      name: github-pages
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download doc build
+        uses: actions/download-artifact@v3
+        with:
+          name: docs-html
+          path: ./docs/_build/html
+      - name: Upload to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          deploy_key: ${{ secrets.GHPAGES_DEPLOY_KEY }}
+          publish_dir: ./docs/_build/html
+          exclude_assets: '.buildinfo'
+          destination_dir: ./latest
+          keep_files: false
+          full_commit_message: Deploy latest to GitHub Pages
