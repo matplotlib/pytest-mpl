@@ -3,6 +3,7 @@ import sys
 import json
 import subprocess
 from pathlib import Path
+from unittest import TestCase
 
 import matplotlib
 import matplotlib.ft2font
@@ -247,6 +248,23 @@ class TestClassWithSetup:
     # Regression test for a bug that occurred when using setup_method
 
     def setup_method(self, method):
+        self.x = [1, 2, 3]
+
+    @pytest.mark.mpl_image_compare(baseline_dir=baseline_dir_local,
+                                   filename='test_succeeds.png',
+                                   tolerance=DEFAULT_TOLERANCE)
+    def test_succeeds(self):
+        fig = plt.figure()
+        ax = fig.add_subplot(1, 1, 1)
+        ax.plot(self.x)
+        return fig
+
+
+class TestClassWithTestCase(TestCase):
+
+    # Regression test for a bug that occurred when using unittest.TestCase
+
+    def setUp(self):
         self.x = [1, 2, 3]
 
     @pytest.mark.mpl_image_compare(baseline_dir=baseline_dir_local,
@@ -514,8 +532,27 @@ class TestClassWithSetup:
         return fig
 """
 
+TEST_FAILING_UNITTEST_TESTCASE = """
+from unittest import TestCase
+import pytest
+import matplotlib.pyplot as plt
+class TestClassWithTestCase(TestCase):
+    def setUp(self):
+        self.x = [1, 2, 3]
+    @pytest.mark.mpl_image_compare
+    def test_fails(self):
+        fig = plt.figure()
+        ax = fig.add_subplot(1, 1, 1)
+        ax.plot(self.x)
+        return fig
+"""
 
-@pytest.mark.parametrize("code", [TEST_FAILING_CLASS, TEST_FAILING_CLASS_SETUP_METHOD])
+
+@pytest.mark.parametrize("code", [
+    TEST_FAILING_CLASS,
+    TEST_FAILING_CLASS_SETUP_METHOD,
+    TEST_FAILING_UNITTEST_TESTCASE,
+])
 def test_class_fail(code, tmpdir):
 
     test_file = tmpdir.join('test.py').strpath
@@ -529,3 +566,107 @@ def test_class_fail(code, tmpdir):
     # If we don't use --mpl option, the test should succeed
     code = call_pytest([test_file])
     assert code == 0
+
+
+@pytest.mark.parametrize("runpytest_args", [(), ("--mpl",)])
+def test_user_fail(pytester, runpytest_args):
+    pytester.makepyfile(
+        """
+        import pytest
+        @pytest.mark.mpl_image_compare
+        def test_fail():
+            pytest.fail("Manually failed by user.")
+    """
+    )
+    result = pytester.runpytest(*runpytest_args)
+    result.assert_outcomes(failed=1)
+    result.stdout.fnmatch_lines("FAILED*Manually failed by user.*")
+
+
+@pytest.mark.parametrize("runpytest_args", [(), ("--mpl",)])
+def test_user_skip(pytester, runpytest_args):
+    pytester.makepyfile(
+        """
+        import pytest
+        @pytest.mark.mpl_image_compare
+        def test_skip():
+            pytest.skip("Manually skipped by user.")
+    """
+    )
+    result = pytester.runpytest(*runpytest_args)
+    result.assert_outcomes(skipped=1)
+
+
+@pytest.mark.parametrize("runpytest_args", [(), ("--mpl",)])
+def test_user_importorskip(pytester, runpytest_args):
+    pytester.makepyfile(
+        """
+        import pytest
+        @pytest.mark.mpl_image_compare
+        def test_importorskip():
+            pytest.importorskip("nonexistantmodule")
+    """
+    )
+    result = pytester.runpytest(*runpytest_args)
+    result.assert_outcomes(skipped=1)
+
+
+@pytest.mark.parametrize("runpytest_args", [(), ("--mpl",)])
+def test_user_xfail(pytester, runpytest_args):
+    pytester.makepyfile(
+        """
+        import pytest
+        @pytest.mark.mpl_image_compare
+        def test_xfail():
+            pytest.xfail()
+    """
+    )
+    result = pytester.runpytest(*runpytest_args)
+    result.assert_outcomes(xfailed=1)
+
+
+@pytest.mark.parametrize("runpytest_args", [(), ("--mpl",)])
+def test_user_exit_success(pytester, runpytest_args):
+    pytester.makepyfile(
+        """
+        import pytest
+        @pytest.mark.mpl_image_compare
+        def test_exit_success():
+            pytest.exit("Manually exited by user.", returncode=0)
+    """
+    )
+    result = pytester.runpytest(*runpytest_args)
+    result.assert_outcomes()
+    assert result.ret == 0
+    result.stdout.fnmatch_lines("*Exit*Manually exited by user.*")
+
+
+@pytest.mark.parametrize("runpytest_args", [(), ("--mpl",)])
+def test_user_exit_failure(pytester, runpytest_args):
+    pytester.makepyfile(
+        """
+        import pytest
+        @pytest.mark.mpl_image_compare
+        def test_exit_fail():
+            pytest.exit("Manually exited by user.", returncode=1)
+    """
+    )
+    result = pytester.runpytest(*runpytest_args)
+    result.assert_outcomes()
+    assert result.ret == 1
+    result.stdout.fnmatch_lines("*Exit*Manually exited by user.*")
+
+
+@pytest.mark.parametrize("runpytest_args", [(), ("--mpl",)])
+def test_user_function_raises(pytester, runpytest_args):
+    pytester.makepyfile(
+        """
+        import pytest
+        @pytest.mark.mpl_image_compare
+        def test_raises():
+            raise ValueError("User code raised an exception.")
+    """
+    )
+    result = pytester.runpytest(*runpytest_args)
+    result.assert_outcomes(failed=1)
+    result.stdout.fnmatch_lines("FAILED*ValueError*User code*")
