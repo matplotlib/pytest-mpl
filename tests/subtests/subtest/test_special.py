@@ -2,8 +2,8 @@ import pytest
 
 from .helpers import plot
 
-
 # ### Specialized tests
+
 
 # Tolerance: high to force image match
 @pytest.mark.image

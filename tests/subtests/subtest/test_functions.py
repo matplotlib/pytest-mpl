@@ -2,10 +2,10 @@ import pytest
 
 from .helpers import plot
 
-
 # ### Test all permutations of:
 # baseline hash: match, diff, or missing
 # baseline image: match, diff, or missing
+
 
 # hash match
 
