@@ -1,12 +1,27 @@
+## v0.16.1 - 2022-07-23
+
+<!-- Release notes generated using configuration in .github/release.yml at main -->
+### What's Changed
+
+#### Fixes
+
+- Fix tests which exit before returning a figure or use `unittest.TestCase` by @ConorMacBride in https://github.com/matplotlib/pytest-mpl/pull/171
+
+#### Other Changes
+
+- Rename default branch to `main` by @ConorMacBride in https://github.com/matplotlib/pytest-mpl/pull/169
+
+**Full Changelog**: https://github.com/matplotlib/pytest-mpl/compare/v0.16.0...v0.16.1
+
 ## v0.16.0 - 2022-06-14
 
 ### Fixes
 
 - Make summary log message about test results in general instead of failures by @neutrinoceros in https://github.com/matplotlib/pytest-mpl/pull/148
 - Add support for classes with pytest 7 by @ConorMacBride in https://github.com/matplotlib/pytest-mpl/pull/164
-  Note that this change necessitated a minor breaking change for figure tests within classes only, and the following will need to be done:
-      - Hash library test names will need to be regenerated/updated to include the class name.
-      - If the undocumented `mpl-use-full-test-name` ini option is enabled, the the baseline images will need to be regenerated, or have their filename updated to include the class name.
+- Note that this change necessitated a minor breaking change for figure tests within classes only, and the following will need to be done:
+- - Hash library test names will need to be regenerated/updated to include the class name.
+- - If the undocumented `mpl-use-full-test-name` ini option is enabled, the the baseline images will need to be regenerated, or have their filename updated to include the class name.
 
 ### Other Changes
 
