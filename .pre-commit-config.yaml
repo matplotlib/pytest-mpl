@@ -60,7 +60,7 @@ repos:
   # W605 - Fix invalid escape sequence 'x'.
   # W690 - Fix various deprecated code (via lib2to3).
   - repo: https://github.com/PyCQA/flake8
-    rev: 4.0.1
+    rev: 5.0.2
     hooks:
       - id: flake8
         args:
