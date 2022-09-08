@@ -1,5 +1,5 @@
 {
-  "subtests.subtest.test_hmatch_imatch": {
+  "subtests.subtest.test_classes.TestClass.test_hmatch_imatch_testclass": {
     "status": "skipped",
     "image_status": "generated",
     "hash_status": "generated",
@@ -12,7 +12,7 @@
     "baseline_hash": "###_BASELINE_HASH_###",
     "result_hash": null
   },
-  "subtests.subtest.test_hmatch_idiff": {
+  "subtests.subtest.test_classes.TestClass.test_hdiff_idiff_testclass": {
     "status": "skipped",
     "image_status": "generated",
     "hash_status": "generated",
@@ -25,7 +25,7 @@
     "baseline_hash": "###_BASELINE_HASH_###",
     "result_hash": null
   },
-  "subtests.subtest.test_hmatch_idiffshape": {
+  "subtests.subtest.test_classes.TestClassWithSetupMethod.test_hmatch_imatch_testclasswithsetupmethod": {
     "status": "skipped",
     "image_status": "generated",
     "hash_status": "generated",
@@ -38,7 +38,7 @@
     "baseline_hash": "###_BASELINE_HASH_###",
     "result_hash": null
   },
-  "subtests.subtest.test_hmatch_imissing": {
+  "subtests.subtest.test_classes.TestClassWithSetupMethod.test_hdiff_idiff_testclasswithsetupmethod": {
     "status": "skipped",
     "image_status": "generated",
     "hash_status": "generated",
@@ -51,7 +51,7 @@
     "baseline_hash": "###_BASELINE_HASH_###",
     "result_hash": null
   },
-  "subtests.subtest.test_hdiff_imatch": {
+  "subtests.subtest.test_classes.TestClassWithSetupClass.test_hmatch_imatch_testclasswithsetupclass": {
     "status": "skipped",
     "image_status": "generated",
     "hash_status": "generated",
@@ -64,7 +64,7 @@
     "baseline_hash": "###_BASELINE_HASH_###",
     "result_hash": null
   },
-  "subtests.subtest.test_hdiff_idiff": {
+  "subtests.subtest.test_classes.TestClassWithSetupClass.test_hdiff_idiff_testclasswithsetupclass": {
     "status": "skipped",
     "image_status": "generated",
     "hash_status": "generated",
@@ -77,7 +77,7 @@
     "baseline_hash": "###_BASELINE_HASH_###",
     "result_hash": null
   },
-  "subtests.subtest.test_hdiff_idiffshape": {
+  "subtests.subtest.test_classes.TestClassWithFixture.test_hmatch_imatch_testclasswithfixture": {
     "status": "skipped",
     "image_status": "generated",
     "hash_status": "generated",
@@ -90,7 +90,7 @@
     "baseline_hash": "###_BASELINE_HASH_###",
     "result_hash": null
   },
-  "subtests.subtest.test_hdiff_imissing": {
+  "subtests.subtest.test_classes.TestMultipleFigures.test_hmatch_imatch_multiplefigures_first": {
     "status": "skipped",
     "image_status": "generated",
     "hash_status": "generated",
@@ -103,7 +103,7 @@
     "baseline_hash": "###_BASELINE_HASH_###",
     "result_hash": null
   },
-  "subtests.subtest.test_hmissing_imatch": {
+  "subtests.subtest.test_classes.TestMultipleFigures.test_hmatch_imatch_multiplefigures_second": {
     "status": "skipped",
     "image_status": "generated",
     "hash_status": "generated",
@@ -116,7 +116,7 @@
     "baseline_hash": "###_BASELINE_HASH_###",
     "result_hash": null
   },
-  "subtests.subtest.test_hmissing_idiff": {
+  "subtests.subtest.test_functions.test_hmatch_imatch": {
     "status": "skipped",
     "image_status": "generated",
     "hash_status": "generated",
@@ -129,7 +129,7 @@
     "baseline_hash": "###_BASELINE_HASH_###",
     "result_hash": null
   },
-  "subtests.subtest.test_hmissing_idiffshape": {
+  "subtests.subtest.test_functions.test_hmatch_idiff": {
     "status": "skipped",
     "image_status": "generated",
     "hash_status": "generated",
@@ -142,7 +142,7 @@
     "baseline_hash": "###_BASELINE_HASH_###",
     "result_hash": null
   },
-  "subtests.subtest.test_hmissing_imissing": {
+  "subtests.subtest.test_functions.test_hmatch_idiffshape": {
     "status": "skipped",
     "image_status": "generated",
     "hash_status": "generated",
@@ -155,7 +155,7 @@
     "baseline_hash": "###_BASELINE_HASH_###",
     "result_hash": null
   },
-  "subtests.subtest.test_hdiff_imatch_tolerance": {
+  "subtests.subtest.test_functions.test_hmatch_imissing": {
     "status": "skipped",
     "image_status": "generated",
     "hash_status": "generated",
@@ -168,7 +168,7 @@
     "baseline_hash": "###_BASELINE_HASH_###",
     "result_hash": null
   },
-  "subtests.subtest.test_hdiff_idiff_tolerance": {
+  "subtests.subtest.test_functions.test_hdiff_imatch": {
     "status": "skipped",
     "image_status": "generated",
     "hash_status": "generated",
@@ -181,7 +181,7 @@
     "baseline_hash": "###_BASELINE_HASH_###",
     "result_hash": null
   },
-  "subtests.subtest.test_hdiff_imatch_savefig": {
+  "subtests.subtest.test_functions.test_hdiff_idiff": {
     "status": "skipped",
     "image_status": "generated",
     "hash_status": "generated",
@@ -194,7 +194,7 @@
     "baseline_hash": "###_BASELINE_HASH_###",
     "result_hash": null
   },
-  "subtests.subtest.test_hdiff_imatch_style": {
+  "subtests.subtest.test_functions.test_hdiff_idiffshape": {
     "status": "skipped",
     "image_status": "generated",
     "hash_status": "generated",
@@ -207,7 +207,202 @@
     "baseline_hash": "###_BASELINE_HASH_###",
     "result_hash": null
   },
-  "subtests.subtest.test_hdiff_imatch_removetext": {
+  "subtests.subtest.test_functions.test_hdiff_imissing": {
+    "status": "skipped",
+    "image_status": "generated",
+    "hash_status": "generated",
+    "status_msg": "Skipped test, since generating image.",
+    "baseline_image": null,
+    "diff_image": null,
+    "rms": null,
+    "tolerance": null,
+    "result_image": null,
+    "baseline_hash": "###_BASELINE_HASH_###",
+    "result_hash": null
+  },
+  "subtests.subtest.test_functions.test_hmissing_imatch": {
+    "status": "skipped",
+    "image_status": "generated",
+    "hash_status": "generated",
+    "status_msg": "Skipped test, since generating image.",
+    "baseline_image": null,
+    "diff_image": null,
+    "rms": null,
+    "tolerance": null,
+    "result_image": null,
+    "baseline_hash": "###_BASELINE_HASH_###",
+    "result_hash": null
+  },
+  "subtests.subtest.test_functions.test_hmissing_idiff": {
+    "status": "skipped",
+    "image_status": "generated",
+    "hash_status": "generated",
+    "status_msg": "Skipped test, since generating image.",
+    "baseline_image": null,
+    "diff_image": null,
+    "rms": null,
+    "tolerance": null,
+    "result_image": null,
+    "baseline_hash": "###_BASELINE_HASH_###",
+    "result_hash": null
+  },
+  "subtests.subtest.test_functions.test_hmissing_idiffshape": {
+    "status": "skipped",
+    "image_status": "generated",
+    "hash_status": "generated",
+    "status_msg": "Skipped test, since generating image.",
+    "baseline_image": null,
+    "diff_image": null,
+    "rms": null,
+    "tolerance": null,
+    "result_image": null,
+    "baseline_hash": "###_BASELINE_HASH_###",
+    "result_hash": null
+  },
+  "subtests.subtest.test_functions.test_hmissing_imissing": {
+    "status": "skipped",
+    "image_status": "generated",
+    "hash_status": "generated",
+    "status_msg": "Skipped test, since generating image.",
+    "baseline_image": null,
+    "diff_image": null,
+    "rms": null,
+    "tolerance": null,
+    "result_image": null,
+    "baseline_hash": "###_BASELINE_HASH_###",
+    "result_hash": null
+  },
+  "subtests.subtest.test_special.test_hdiff_imatch_tolerance": {
+    "status": "skipped",
+    "image_status": "generated",
+    "hash_status": "generated",
+    "status_msg": "Skipped test, since generating image.",
+    "baseline_image": null,
+    "diff_image": null,
+    "rms": null,
+    "tolerance": null,
+    "result_image": null,
+    "baseline_hash": "###_BASELINE_HASH_###",
+    "result_hash": null
+  },
+  "subtests.subtest.test_special.test_hdiff_idiff_tolerance": {
+    "status": "skipped",
+    "image_status": "generated",
+    "hash_status": "generated",
+    "status_msg": "Skipped test, since generating image.",
+    "baseline_image": null,
+    "diff_image": null,
+    "rms": null,
+    "tolerance": null,
+    "result_image": null,
+    "baseline_hash": "###_BASELINE_HASH_###",
+    "result_hash": null
+  },
+  "subtests.subtest.test_special.test_hdiff_imatch_savefig": {
+    "status": "skipped",
+    "image_status": "generated",
+    "hash_status": "generated",
+    "status_msg": "Skipped test, since generating image.",
+    "baseline_image": null,
+    "diff_image": null,
+    "rms": null,
+    "tolerance": null,
+    "result_image": null,
+    "baseline_hash": "###_BASELINE_HASH_###",
+    "result_hash": null
+  },
+  "subtests.subtest.test_special.test_hdiff_imatch_style": {
+    "status": "skipped",
+    "image_status": "generated",
+    "hash_status": "generated",
+    "status_msg": "Skipped test, since generating image.",
+    "baseline_image": null,
+    "diff_image": null,
+    "rms": null,
+    "tolerance": null,
+    "result_image": null,
+    "baseline_hash": "###_BASELINE_HASH_###",
+    "result_hash": null
+  },
+  "subtests.subtest.test_special.test_hdiff_imatch_removetext": {
+    "status": "skipped",
+    "image_status": "generated",
+    "hash_status": "generated",
+    "status_msg": "Skipped test, since generating image.",
+    "baseline_image": null,
+    "diff_image": null,
+    "rms": null,
+    "tolerance": null,
+    "result_image": null,
+    "baseline_hash": "###_BASELINE_HASH_###",
+    "result_hash": null
+  },
+  "subtests.subtest.test_unittest.TestCase.test_hdiff_idiff_testclass": {
+    "status": "skipped",
+    "image_status": "generated",
+    "hash_status": "generated",
+    "status_msg": "Skipped test, since generating image.",
+    "baseline_image": null,
+    "diff_image": null,
+    "rms": null,
+    "tolerance": null,
+    "result_image": null,
+    "baseline_hash": "###_BASELINE_HASH_###",
+    "result_hash": null
+  },
+  "subtests.subtest.test_unittest.TestCase.test_hmatch_imatch_testclass": {
+    "status": "skipped",
+    "image_status": "generated",
+    "hash_status": "generated",
+    "status_msg": "Skipped test, since generating image.",
+    "baseline_image": null,
+    "diff_image": null,
+    "rms": null,
+    "tolerance": null,
+    "result_image": null,
+    "baseline_hash": "###_BASELINE_HASH_###",
+    "result_hash": null
+  },
+  "subtests.subtest.test_unittest.TestCaseWithSetUp.test_hdiff_idiff_testcasewithsetup": {
+    "status": "skipped",
+    "image_status": "generated",
+    "hash_status": "generated",
+    "status_msg": "Skipped test, since generating image.",
+    "baseline_image": null,
+    "diff_image": null,
+    "rms": null,
+    "tolerance": null,
+    "result_image": null,
+    "baseline_hash": "###_BASELINE_HASH_###",
+    "result_hash": null
+  },
+  "subtests.subtest.test_unittest.TestCaseWithSetUp.test_hmatch_imatch_testcasewithsetup": {
+    "status": "skipped",
+    "image_status": "generated",
+    "hash_status": "generated",
+    "status_msg": "Skipped test, since generating image.",
+    "baseline_image": null,
+    "diff_image": null,
+    "rms": null,
+    "tolerance": null,
+    "result_image": null,
+    "baseline_hash": "###_BASELINE_HASH_###",
+    "result_hash": null
+  },
+  "subtests.subtest.test_unittest.TestCaseWithSetUpClass.test_hdiff_idiff_testcasewithsetupclass": {
+    "status": "skipped",
+    "image_status": "generated",
+    "hash_status": "generated",
+    "status_msg": "Skipped test, since generating image.",
+    "baseline_image": null,
+    "diff_image": null,
+    "rms": null,
+    "tolerance": null,
+    "result_image": null,
+    "baseline_hash": "###_BASELINE_HASH_###",
+    "result_hash": null
+  },
+  "subtests.subtest.test_unittest.TestCaseWithSetUpClass.test_hmatch_imatch_testcasewithsetupclass": {
     "status": "skipped",
     "image_status": "generated",
     "hash_status": "generated",

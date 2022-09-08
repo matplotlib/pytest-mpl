@@ -6,7 +6,6 @@ import tempfile
 import subprocess
 from pathlib import Path
 
-import matplotlib
 import matplotlib.ft2font
 import pytest
 from packaging.version import Version
@@ -18,10 +17,10 @@ from .helpers import (apply_regex, assert_existence, diff_summary, patch_summary
 MPL_VERSION = Version(matplotlib.__version__)
 FTV = matplotlib.ft2font.__freetype_version__.replace('.', '')
 VERSION_ID = f"mpl{MPL_VERSION.major}{MPL_VERSION.minor}_ft{FTV}"
-HASH_LIBRARY = Path(__file__).parent / 'hashes' / (VERSION_ID + ".json")
+HASH_LIBRARY = Path(__file__).parent / 'subtest' / 'hashes' / (VERSION_ID + ".json")
 RESULT_LIBRARY = Path(__file__).parent / 'result_hashes' / (VERSION_ID + ".json")
 HASH_LIBRARY_FLAG = rf'--mpl-hash-library={HASH_LIBRARY}'
-FULL_BASELINE_PATH = Path(__file__).parent / 'baseline'
+FULL_BASELINE_PATH = Path(__file__).parent / 'subtest' / 'baseline'
 
 BASELINE_IMAGES_FLAG_REL = ['--mpl-baseline-path=baseline', '--mpl-baseline-relative']
 BASELINE_IMAGES_FLAG_ABS = rf'--mpl-baseline-path={FULL_BASELINE_PATH}'
@@ -30,7 +29,7 @@ IMAGE_COMPARISON_MODE = ["-k", "image"]
 HASH_COMPARISON_MODE = ["-k", "hash"]
 # HYBRID_MODE = []
 
-TEST_FILE = Path(__file__).parent / 'subtest.py'
+TEST_FILE = Path(__file__).parent / 'subtest'
 
 # Global settings to update baselines when running pytest
 # Note: when updating baseline make sure you don't commit "fixes"
