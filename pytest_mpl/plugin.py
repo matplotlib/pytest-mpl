@@ -162,6 +162,14 @@ def pytest_addoption(parser):
     parser.addini('mpl-use-full-test-name', help="use fully qualified test name as the filename.",
                   type='bool')
 
+    style_help = "default style to use for tests, unless specified in the mpl_image_compare decorator"
+    group.addoption('--mpl-default-style', help=style_help, action='store')
+    parser.addini('mpl-default-style', help=style_help)
+
+    tolerance_help = "default tolerance to use for tests, unless specified in the mpl_image_compare decorator"
+    group.addoption('--mpl-default-tolerance', help=tolerance_help, action='store')
+    parser.addini('mpl-default-tolerance', help=tolerance_help)
+
 
 def pytest_configure(config):
 
@@ -202,6 +210,12 @@ def pytest_configure(config):
         if results_dir is not None:
             results_dir = os.path.abspath(results_dir)
 
+        default_style = (config.getoption("--mpl-default-style") or
+                         config.getini("mpl-default-style"))
+
+        default_tolerance = (config.getoption("--mpl-default-tolerance") or
+                             config.getini("mpl-default-tolerance"))
+
         config.pluginmanager.register(ImageComparison(config,
                                                       baseline_dir=baseline_dir,
                                                       baseline_relative_dir=baseline_relative_dir,
@@ -210,7 +224,9 @@ def pytest_configure(config):
                                                       hash_library=hash_library,
                                                       generate_hash_library=generate_hash_lib,
                                                       generate_summary=generate_summary,
-                                                      results_always=results_always))
+                                                      results_always=results_always,
+                                                      default_style=default_style,
+                                                      default_tolerance=default_tolerance))
 
     else:
 
@@ -266,7 +282,9 @@ class ImageComparison:
                  hash_library=None,
                  generate_hash_library=None,
                  generate_summary=None,
-                 results_always=False
+                 results_always=False,
+                 default_style='classic',
+                 default_tolerance=2
                  ):
         self.config = config
         self.baseline_dir = baseline_dir
@@ -286,6 +304,9 @@ class ImageComparison:
                 results_always = True
         self.generate_summary = generate_summary
         self.results_always = results_always
+
+        self.default_style = default_style
+        self.default_tolerance = default_tolerance
 
         # Generate the containing dir for all test results
         if not self.results_dir:
@@ -467,7 +488,7 @@ class ImageComparison:
             summary = {}
 
         compare = get_compare(item)
-        tolerance = compare.kwargs.get('tolerance', 2)
+        tolerance = compare.kwargs.get('tolerance', self.default_tolerance)
 
         ext = self._file_extension(item)
 
@@ -683,7 +704,7 @@ class ImageComparison:
             from matplotlib.testing.decorators import ImageComparisonTest as MplImageComparisonTest
             remove_ticks_and_titles = MplImageComparisonTest.remove_text
 
-        style = compare.kwargs.get('style', 'classic')
+        style = compare.kwargs.get('style', self.default_style)
         remove_text = compare.kwargs.get('remove_text', False)
         backend = compare.kwargs.get('backend', 'agg')
 
