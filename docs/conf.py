@@ -28,7 +28,7 @@ copyright = '{}, {}'.format(datetime.datetime.now().year, author)
 
 release = __version__
 pytest_mpl_version = Version(__version__)
-is_release = not(pytest_mpl_version.is_prerelease or pytest_mpl_version.is_devrelease)
+is_release = not (pytest_mpl_version.is_prerelease or pytest_mpl_version.is_devrelease)
 
 
 # -- General configuration ---------------------------------------------------
