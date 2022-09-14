@@ -1,0 +1,665 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>Configuration &#8212; pytest-mpl 0.1.dev1+g78dd670 documentation</title>
+  <script>
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=9b1a4fa89bdd0e95b23b" rel="stylesheet">
+<link href="_static/styles/pydata-sphinx-theme.css?digest=9b1a4fa89bdd0e95b23b" rel="stylesheet">
+
+  
+  <link rel="stylesheet"
+    href="_static/vendor/fontawesome/6.1.2/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/css/style.css" />
+    <link rel="stylesheet" type="text/css" href="_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=9b1a4fa89bdd0e95b23b">
+
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/design-tabs.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'configuration';</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Summary Reports" href="summaries.html" />
+    <link rel="prev" title="Basic Usage" href="usage.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="docsearch:language" content="en">
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="">
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__primary" id="__primary">
+  <label class="overlay overlay-primary" for="__primary"></label>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__secondary" id="__secondary">
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+      
+<form class="bd-search d-flex align-items-center" action="search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+    </div>
+  </div>
+
+  
+  <nav class="bd-header navbar navbar-expand-lg bd-navbar" id="navbar-main"><div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+      <span class="fas fa-bars"></span>
+  </label>
+  <div id="navbar-start">
+    
+    
+   
+
+
+<a class="navbar-brand logo" href="https://matplotlib.org/stable/">
+
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <img src="_static/images/logo2.svg" class="logo__image only-light" alt="Logo image">
+    <img src="_static/images/logo_dark.svg" class="logo__image only-dark" alt="Logo image">
+  
+  
+</a>
+    
+  </div>
+
+  
+  <div class="col-lg-9 navbar-header-items">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <ul id="navbar-main-elements" class="navbar-nav">
+  <li class="nav-item">
+    <a class="reference internal nav-link" href="https://matplotlib.org/stable/plot_types/index">Plot types</a>
+  </li>
+  <li class="nav-item">
+    <a class="reference internal nav-link" href="https://matplotlib.org/stable/gallery/index">Examples</a>
+  </li>
+  <li class="nav-item">
+    <a class="reference internal nav-link" href="https://matplotlib.org/stable/tutorials/index">Tutorials</a>
+  </li>
+  <li class="nav-item">
+    <a class="reference internal nav-link" href="https://matplotlib.org/stable/api/index">Reference</a>
+  </li>
+  <li class="nav-item">
+    <a class="reference internal nav-link" href="https://matplotlib.org/stable/users/index">User guide</a>
+  </li>
+  <li class="nav-item">
+    <a class="reference internal nav-link" href="https://matplotlib.org/stable/devel/index">Develop</a>
+  </li>
+  <li class="nav-item">
+    <a class="reference internal nav-link" href="https://matplotlib.org/stable/users/release_notes">Release notes</a>
+  </li>
+</ul>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      <div class="navbar-end-item navbar-end__search-button-container">
+        
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search">
+  <i class="fas fa-search"></i>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          <a href="https://gitter.im/matplotlib" title="Gitter" class="nav-link" rel="noopener" target="_blank"><span><i class="fab fa-gitter"></i></span>
+            <label class="sr-only">Gitter</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          <a href="https://discourse.matplotlib.org" title="Discourse" class="nav-link" rel="noopener" target="_blank"><span><i class="fab fa-discourse"></i></span>
+            <label class="sr-only">Discourse</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/matplotlib/matplotlib" title="GitHub" class="nav-link" rel="noopener" target="_blank"><span><i class="fab fa-github"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          <a href="https://twitter.com/matplotlib/" title="Twitter" class="nav-link" rel="noopener" target="_blank"><span><i class="fab fa-twitter"></i></span>
+            <label class="sr-only">Twitter</label></a>
+        </li>
+      </ul>
+      </div>
+      
+      <div class="navbar-end-item">
+        <span class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle">
+    <a class="theme-switch" data-mode="light"><i class="fas fa-sun"></i></a>
+    <a class="theme-switch" data-mode="dark"><i class="far fa-moon"></i></a>
+    <a class="theme-switch" data-mode="auto"><i class="fas fa-adjust"></i></a>
+</span>
+      </div>
+      
+    </div>
+  </div>
+
+
+  
+  <div class="search-button-container--mobile">
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search">
+  <i class="fas fa-search"></i>
+</button>
+  </div>
+
+  
+  <label class="sidebar-toggle secondary-toggle" for="__secondary">
+      <span class="fas fa-outdent"></span>
+  </label>
+  
+
+</div>
+  </nav>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+      
+      <div class="navbar-center-item">
+        <ul id="navbar-main-elements" class="navbar-nav">
+  <li class="nav-item">
+    <a class="reference internal nav-link" href="https://matplotlib.org/stable/plot_types/index">Plot types</a>
+  </li>
+  <li class="nav-item">
+    <a class="reference internal nav-link" href="https://matplotlib.org/stable/gallery/index">Examples</a>
+  </li>
+  <li class="nav-item">
+    <a class="reference internal nav-link" href="https://matplotlib.org/stable/tutorials/index">Tutorials</a>
+  </li>
+  <li class="nav-item">
+    <a class="reference internal nav-link" href="https://matplotlib.org/stable/api/index">Reference</a>
+  </li>
+  <li class="nav-item">
+    <a class="reference internal nav-link" href="https://matplotlib.org/stable/users/index">User guide</a>
+  </li>
+  <li class="nav-item">
+    <a class="reference internal nav-link" href="https://matplotlib.org/stable/devel/index">Develop</a>
+  </li>
+  <li class="nav-item">
+    <a class="reference internal nav-link" href="https://matplotlib.org/stable/users/release_notes">Release notes</a>
+  </li>
+</ul>
+      </div>
+      
+      </div>
+    
+
+    
+    
+    <div class="sidebar-header-items__end">
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          <a href="https://gitter.im/matplotlib" title="Gitter" class="nav-link" rel="noopener" target="_blank"><span><i class="fab fa-gitter"></i></span>
+            <label class="sr-only">Gitter</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          <a href="https://discourse.matplotlib.org" title="Discourse" class="nav-link" rel="noopener" target="_blank"><span><i class="fab fa-discourse"></i></span>
+            <label class="sr-only">Discourse</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/matplotlib/matplotlib" title="GitHub" class="nav-link" rel="noopener" target="_blank"><span><i class="fab fa-github"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          <a href="https://twitter.com/matplotlib/" title="Twitter" class="nav-link" rel="noopener" target="_blank"><span><i class="fab fa-twitter"></i></span>
+            <label class="sr-only">Twitter</label></a>
+        </li>
+      </ul>
+      </div>
+      
+      <div class="navbar-end-item">
+        <span class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle">
+    <a class="theme-switch" data-mode="light"><i class="fas fa-sun"></i></a>
+    <a class="theme-switch" data-mode="dark"><i class="far fa-moon"></i></a>
+    <a class="theme-switch" data-mode="auto"><i class="fas fa-adjust"></i></a>
+</span>
+      </div>
+      
+    </div>
+    
+  </div>
+
+  
+  <div class="sidebar-start-items sidebar-primary__section">
+    <div class="sidebar-start-items__item"><nav class="bd-links" id="bd-docs-nav" aria-label="Site navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">
+    <a href="index.html">pytest-mpl Documentation</a>
+  </p>
+  <div class="bd-toc-item navbar-nav">
+    <ul class="current nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="installing.html">
+   Installation Guide
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="usage.html">
+   Basic Usage
+  </a>
+ </li>
+ <li class="toctree-l1 current active">
+  <a class="current reference internal" href="#">
+   Configuration
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="summaries.html">
+   Summary Reports
+  </a>
+ </li>
+</ul>
+
+  </div>
+</nav>
+    </div>
+  </div>
+  
+
+  
+  <div class="sidebar-end-items sidebar-primary__section">
+    <div class="sidebar-end-items__item">
+    </div>
+  </div>
+
+      </div>
+      <main class="bd-main">
+        
+        
+        <div class="bd-content">
+          <div class="bd-article-container">
+            
+            <div class="bd-header-article">
+                
+            </div>
+            
+            
+            <article class="bd-article" role="main">
+              
+  <section id="configuration">
+<h1>Configuration<a class="headerlink" href="#configuration" title="Permalink to this heading">#</a></h1>
+<section id="tolerance">
+<h2>Tolerance<a class="headerlink" href="#tolerance" title="Permalink to this heading">#</a></h2>
+<p>The RMS tolerance for the image comparison (which defaults to 2) can be
+specified in the <code class="docutils literal notranslate"><span class="pre">mpl_image_compare</span></code> decorator with the <code class="docutils literal notranslate"><span class="pre">tolerance</span></code>
+argument:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">mpl_image_compare</span><span class="p">(</span><span class="n">tolerance</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">test_image</span><span class="p">():</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
+</section>
+<section id="savefig-options">
+<h2>Savefig options<a class="headerlink" href="#savefig-options" title="Permalink to this heading">#</a></h2>
+<p>You can pass keyword arguments to <code class="docutils literal notranslate"><span class="pre">savefig</span></code> by using
+<code class="docutils literal notranslate"><span class="pre">savefig_kwargs</span></code> in the <code class="docutils literal notranslate"><span class="pre">mpl_image_compare</span></code> decorator:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">mpl_image_compare</span><span class="p">(</span><span class="n">savefig_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;dpi&#39;</span><span class="p">:</span><span class="mi">300</span><span class="p">})</span>
+<span class="k">def</span> <span class="nf">test_image</span><span class="p">():</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
+</section>
+<section id="baseline-images">
+<h2>Baseline images<a class="headerlink" href="#baseline-images" title="Permalink to this heading">#</a></h2>
+<p>The baseline directory (which defaults to <code class="docutils literal notranslate"><span class="pre">baseline</span></code> ) and the
+filename of the plot (which defaults to the name of the test with a
+<code class="docutils literal notranslate"><span class="pre">.png</span></code> suffix) can be customized with the <code class="docutils literal notranslate"><span class="pre">baseline_dir</span></code> and
+<code class="docutils literal notranslate"><span class="pre">filename</span></code> arguments in the <code class="docutils literal notranslate"><span class="pre">mpl_image_compare</span></code> decorator:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">mpl_image_compare</span><span class="p">(</span><span class="n">baseline_dir</span><span class="o">=</span><span class="s1">&#39;baseline_images&#39;</span><span class="p">,</span>
+                               <span class="n">filename</span><span class="o">=</span><span class="s1">&#39;other_name.png&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">test_image</span><span class="p">():</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
+<p>The baseline directory in the decorator above will be interpreted as
+being relative to the test file. Note that the baseline directory can
+also be a URL (which should start with <code class="docutils literal notranslate"><span class="pre">http://</span></code> or <code class="docutils literal notranslate"><span class="pre">https://</span></code> and
+end in a slash). If you want to specify mirrors, set <code class="docutils literal notranslate"><span class="pre">baseline_dir</span></code> to
+a comma-separated list of URLs (real commas in the URL should be encoded
+as <code class="docutils literal notranslate"><span class="pre">%2C</span></code>).</p>
+<p>Finally, you can also set a custom baseline directory globally when
+running tests by running <code class="docutils literal notranslate"><span class="pre">pytest</span></code> with:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pytest</span> <span class="o">--</span><span class="n">mpl</span> <span class="o">--</span><span class="n">mpl</span><span class="o">-</span><span class="n">baseline</span><span class="o">-</span><span class="n">path</span><span class="o">=</span><span class="n">baseline_images</span>
+</pre></div>
+</div>
+<p>This directory will be interpreted as being relative to where pytest
+is run. However, if the <code class="docutils literal notranslate"><span class="pre">--mpl-baseline-relative</span></code> option is also
+included, this directory will be interpreted as being relative to
+the current test directory.
+In addition, if both this option and the <code class="docutils literal notranslate"><span class="pre">baseline_dir</span></code>
+option in the <code class="docutils literal notranslate"><span class="pre">mpl_image_compare</span></code> decorator are used, the one in the
+decorator takes precedence.</p>
+</section>
+<section id="results-always">
+<h2>Results always<a class="headerlink" href="#results-always" title="Permalink to this heading">#</a></h2>
+<p>By default, result images are only saved for tests that fail.
+Passing <code class="docutils literal notranslate"><span class="pre">--mpl-results-always</span></code> to pytest will force result images
+to be saved for all tests, even for tests that pass.</p>
+<p>When in <strong>hybrid mode</strong>, even if a test passes hash comparison,
+a comparison to the baseline image will also be carried out,
+with the baseline image and diff image (if image comparison fails)
+saved for all tests. This secondary comparison will not affect
+the success status of the test.</p>
+<p>This option is useful for always <em>comparing</em> the result images against
+the baseline images, while only <em>assessing</em> the tests against the
+hash library.
+If you only update your baseline images after merging a PR, this
+option means that the generated summary will always show how the
+PR affects the baseline images, with the success status of each
+test (based on the hash library) also shown in the generated
+summary. This option is applied automatically when generating
+a HTML summary.</p>
+<p>When the <code class="docutils literal notranslate"><span class="pre">--mpl-results-always</span></code> option is active, and some hash
+comparison tests are performed, a hash library containing all the
+result hashes will also be saved to the root of the results directory.
+The filename will be extracted from <code class="docutils literal notranslate"><span class="pre">--mpl-generate-hash-library</span></code>,
+<code class="docutils literal notranslate"><span class="pre">--mpl-hash-library</span></code> or <code class="docutils literal notranslate"><span class="pre">hash_library=</span></code> in that order.</p>
+</section>
+<section id="base-style">
+<h2>Base style<a class="headerlink" href="#base-style" title="Permalink to this heading">#</a></h2>
+<p>By default, tests will be run using the Matplotlib ‘classic’ style
+(ignoring any locally defined RC parameters). This can be overridden by
+using the <code class="docutils literal notranslate"><span class="pre">style</span></code> argument:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">mpl_image_compare</span><span class="p">(</span><span class="n">style</span><span class="o">=</span><span class="s1">&#39;fivethirtyeight&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">test_image</span><span class="p">():</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
+</section>
+<section id="package-version-dependencies">
+<h2>Package version dependencies<a class="headerlink" href="#package-version-dependencies" title="Permalink to this heading">#</a></h2>
+<p>Different versions of Matplotlib and FreeType may result in slightly
+different images. When testing on multiple platforms or as part of a
+pipeline, it is important to ensure that the versions of these
+packages match the versions used to generate the images used for
+comparison. It can be useful to pin versions of Matplotlib and FreeType
+so as to avoid automatic updates that fail tests.</p>
+</section>
+<section id="removing-text">
+<h2>Removing text<a class="headerlink" href="#removing-text" title="Permalink to this heading">#</a></h2>
+<p>If you are running a test for which you are not interested in comparing
+the text labels, you can use the <code class="docutils literal notranslate"><span class="pre">remove_text</span></code> argument to the
+decorator:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">mpl_image_compare</span><span class="p">(</span><span class="n">remove_text</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">test_image</span><span class="p">():</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
+<p>This will make the test insensitive to changes in e.g. the freetype
+library.</p>
+<section id="test-failure-example">
+<h3>Test failure example<a class="headerlink" href="#test-failure-example" title="Permalink to this heading">#</a></h3>
+<p>If the images produced by the tests are correct, then the test will
+pass, but if they are not, the test will fail with a message similar to
+the following:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">E</span>               <span class="ne">Exception</span><span class="p">:</span> <span class="n">Error</span><span class="p">:</span> <span class="n">Image</span> <span class="n">files</span> <span class="n">did</span> <span class="ow">not</span> <span class="n">match</span><span class="o">.</span>
+<span class="n">E</span>                 <span class="n">RMS</span> <span class="n">Value</span><span class="p">:</span> <span class="mf">142.2287807767823</span>
+<span class="n">E</span>                 <span class="n">Expected</span><span class="p">:</span>
+<span class="n">E</span>                   <span class="o">/</span><span class="n">var</span><span class="o">/</span><span class="n">folders</span><span class="o">/</span><span class="n">zy</span><span class="o">/</span><span class="n">t1l3sx310d3d6p0kyxqzlrnr0000gr</span><span class="o">/</span><span class="n">T</span><span class="o">/</span><span class="n">tmp4h4oxr7y</span><span class="o">/</span><span class="n">baseline</span><span class="o">-</span><span class="n">coords_overlay_auto_coord_meta</span><span class="o">.</span><span class="n">png</span>
+<span class="n">E</span>                 <span class="n">Actual</span><span class="p">:</span>
+<span class="n">E</span>                   <span class="o">/</span><span class="n">var</span><span class="o">/</span><span class="n">folders</span><span class="o">/</span><span class="n">zy</span><span class="o">/</span><span class="n">t1l3sx310d3d6p0kyxqzlrnr0000gr</span><span class="o">/</span><span class="n">T</span><span class="o">/</span><span class="n">tmp4h4oxr7y</span><span class="o">/</span><span class="n">coords_overlay_auto_coord_meta</span><span class="o">.</span><span class="n">png</span>
+<span class="n">E</span>                 <span class="n">Difference</span><span class="p">:</span>
+<span class="n">E</span>                   <span class="o">/</span><span class="n">var</span><span class="o">/</span><span class="n">folders</span><span class="o">/</span><span class="n">zy</span><span class="o">/</span><span class="n">t1l3sx310d3d6p0kyxqzlrnr0000gr</span><span class="o">/</span><span class="n">T</span><span class="o">/</span><span class="n">tmp4h4oxr7y</span><span class="o">/</span><span class="n">coords_overlay_auto_coord_meta</span><span class="o">-</span><span class="n">failed</span><span class="o">-</span><span class="n">diff</span><span class="o">.</span><span class="n">png</span>
+<span class="n">E</span>                 <span class="n">Tolerance</span><span class="p">:</span>
+<span class="n">E</span>                   <span class="mi">10</span>
+</pre></div>
+</div>
+<p>The image paths included in the exception are then available for
+inspection:</p>
+<table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Expected</p></th>
+<th class="head"><p>Actual</p></th>
+<th class="head"><p>Difference</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><img alt="expected" src="_images/baseline-coords_overlay_auto_coord_meta.png" /></p></td>
+<td><p><img alt="actual" src="_images/coords_overlay_auto_coord_meta.png" /></p></td>
+<td><p><img alt="diff" src="_images/coords_overlay_auto_coord_meta-failed-diff.png" /></p></td>
+</tr>
+</tbody>
+</table>
+<p>In this case, the differences are very clear, while in some cases it may
+be necessary to use the difference image, or blink the expected and
+actual images, in order to see what changed.</p>
+<p>The default tolerance is 2, which is very strict. In some cases, you may
+want to relax this to account for differences in fonts across different
+systems.</p>
+<p>By default, the expected, actual and difference files are written to a
+temporary directory with a non-deterministic path. If you want to instead
+write them to a specific directory, you can use:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pytest</span> <span class="o">--</span><span class="n">mpl</span> <span class="o">--</span><span class="n">mpl</span><span class="o">-</span><span class="n">results</span><span class="o">-</span><span class="n">path</span><span class="o">=</span><span class="n">results</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">results</span></code> directory will then contain one sub-directory per test, and each
+sub-directory will contain the three files mentioned above. If you are using a
+continuous integration service, you can then use the option to upload artifacts
+to upload these results to somewhere where you can view them. For more
+information, see:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://docs.travis-ci.com/user/uploading-artifacts/">Uploading artifacts on Travis-CI</a></p></li>
+<li><p><a class="reference external" href="https://circleci.com/docs/1.0/build-artifacts/">Build Artifacts (CircleCI)</a></p></li>
+<li><p><a class="reference external" href="https://www.appveyor.com/docs/packaging-artifacts/">Packaging Artifacts (AppVeyor)</a></p></li>
+</ul>
+</section>
+</section>
+</section>
+
+
+            </article>
+            
+            
+            
+          </div>
+          
+          
+          
+            <div class="bd-sidebar-secondary bd-toc">
+              
+<div class="toc-item">
+  
+<div class="tocsection onthispage">
+    <i class="fas fa-list"></i> On this page
+</div>
+<nav id="bd-toc-nav" class="page-toc">
+    <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#tolerance">
+   Tolerance
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#savefig-options">
+   Savefig options
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#baseline-images">
+   Baseline images
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#results-always">
+   Results always
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#base-style">
+   Base style
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#package-version-dependencies">
+   Package version dependencies
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#removing-text">
+   Removing text
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#test-failure-example">
+     Test failure example
+    </a>
+   </li>
+  </ul>
+ </li>
+</ul>
+
+</nav>
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+<div class="toc-item">
+  
+<div class="tocsection sourcelink">
+    <a href="_sources/configuration.rst.txt">
+        <i class="fas fa-file-alt"></i> Show Source
+    </a>
+</div>
+
+</div>
+
+            </div>
+          
+          
+        </div>
+        <footer class="bd-footer-content">
+          <div class="bd-footer-content__inner">
+            
+          </div>
+        </footer>
+        
+      </main>
+    </div>
+  </div>
+
+  
+    
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="_static/scripts/pydata-sphinx-theme.js?digest=9b1a4fa89bdd0e95b23b"></script>
+
+  <footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    
+<p class="copyright">
+
+    &copy; Copyright 2022, Thomas Robitaille.<br>
+
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+<p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.1.1.<br>
+</p>
+
+  </div>
+  
+</div>
+  </footer>
+  </body>
+</html>

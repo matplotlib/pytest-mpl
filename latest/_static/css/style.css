@@ -1,0 +1,16 @@
+/* rgb #11557c */
+html[data-theme="light"] {
+  --pst-color-primary: hsl(202, 76%, 28%);
+}
+
+html[data-theme="dark"] {
+  --pst-color-primary: rgb(70, 152, 198);
+}
+
+:root {
+--pst-color-link-hover: var(--pst-color-secondary);
+}
+
+.sidebar-cheatsheets, .sidebar-donate {
+  margin: 2.75rem 0;
+}

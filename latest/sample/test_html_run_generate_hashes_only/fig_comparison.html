@@ -1,0 +1,1593 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="styles.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <title>Image comparison</title>
+</head>
+<body id="results">
+<nav class="navbar sticky-top navbar-expand-sm navbar-light bg-light">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="https://github.com/matplotlib/pytest-mpl">
+            <span class="org">matplotlib</span>&nbsp;/&nbsp;<span class="repo">pytest-mpl</span>
+        </a>
+        <div class="d-flex nav-filtertools">
+            <div class="spacer"></div>
+            <form class="me-2 nav-searchbar" onsubmit="return false">
+                <input class="form-control me-2 search" type="search" onblur="searchComplete()" placeholder="Search"
+                       aria-label="Search">
+            </form>
+            <a download="test_hashes.json" href="test_hashes.json" class="btn btn-outline-secondary me-2"
+               data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
+               title="Download generated <pre>test_hashes.json</pre>"
+               role="button">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-hash"
+                     viewBox="0 0 16 16">
+                    <path d="M8.39 12.648a1.32 1.32 0 0 0-.015.18c0 .305.21.508.5.508.266 0 .492-.172.555-.477l.554-2.703h1.204c.421 0 .617-.234.617-.547 0-.312-.188-.53-.617-.53h-.985l.516-2.524h1.265c.43 0 .618-.227.618-.547 0-.313-.188-.524-.618-.524h-1.046l.476-2.304a1.06 1.06 0 0 0 .016-.164.51.51 0 0 0-.516-.516.54.54 0 0 0-.539.43l-.523 2.554H7.617l.477-2.304c.008-.04.015-.118.015-.164a.512.512 0 0 0-.523-.516.539.539 0 0 0-.531.43L6.53 5.484H5.414c-.43 0-.617.22-.617.532 0 .312.187.539.617.539h.906l-.515 2.523H4.609c-.421 0-.609.219-.609.531 0 .313.188.547.61.547h.976l-.516 2.492c-.008.04-.015.125-.015.18 0 .305.21.508.5.508.265 0 .492-.172.554-.477l.555-2.703h2.242l-.515 2.492zm-1-6.109h2.266l-.515 2.563H6.859l.532-2.563z"/>
+                </svg>
+            </a>
+            <button class="btn btn-outline-primary" aria-label="Filter" type="button" data-bs-toggle="offcanvas"
+                    data-bs-target="#offcanvasFilter" aria-controls="offcanvasFilter">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-funnel"
+                     viewBox="0 0 16 16">
+                    <path d="M1.5 1.5A.5.5 0 0 1 2 1h12a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.128.334L10 8.692V13.5a.5.5 0 0 1-.342.474l-3 1A.5.5 0 0 1 6 14.5V8.692L1.628 3.834A.5.5 0 0 1 1.5 3.5v-2zm1 .5v1.308l4.372 4.858A.5.5 0 0 1 7 8.5v5.306l2-.666V8.5a.5.5 0 0 1 .128-.334L13.5 3.308V2h-11z"/>
+                </svg>
+            </button>
+        </div>
+    </div>
+</nav>
+<div class="album bg-light">
+    <div class="container-fluid">
+        <div id="noResultsAlert"></div>
+        <div class="row list" id="resultslist" style="display:none">
+            <div class="py-2 col-sm-6 col-lg-4 col-xxl-3 result overall-failed image-none hash-missing">
+                <span class="collected-sort" style="display:none">11</span>
+                <span class="test-name" style="display:none">subtests.subtest.test_functions.test_hmissing_imatch</span>
+                <span class="status-sort" style="display:none">15</span>
+                <span class="rms-sort" style="display:none">000001</span>
+                <span class="filter-classes" style="display:none">overall-failed image-none hash-missing</span>
+                <div class="card">
+                    <a class="btn" data-bs-toggle="offcanvas" href="#offcanvas11" role="button"
+                       aria-controls="offcanvas11">
+                        <img src="subtests.subtest.test_functions.test_hmissing_imatch/result.png" class="card-img-top" alt="result image">
+                    </a>
+                    <div class="offcanvas offcanvas-bottom mpl-images" tabindex="-1" id="offcanvas11"
+                         aria-labelledby="offcanvas11Label">
+                        <div class="offcanvas-header">
+                            <h6><small class="text-muted">subtests.subtest.test_functions</small></h6>
+                            <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                        </div>
+                        <div class="offcanvas-body">
+                            <h5 class="card-title">test_hmissing_imatch</h5>
+                            
+                            <div class="row row-cols-1 row-cols-md-2 g-4">
+                                <div class="col">
+                                    <div class="card text-white bg-danger">
+                                        <div class="card-header">FAILED</div>
+                                        <div class="card-body">
+                                            <pre class="card-text">Hash for test &#39;subtests.subtest.test_functions.test_hmissing_imatch&#39; not found in /home/runner/work/pytest-mpl/pytest-mpl/tests/subtests/subtest/hashes/mpl35_ft261.json. Generated hash is 592d12cc2d5749a6607bbf98d715b95c06a2af6572a7e298bcae349648b9997e.</pre>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    
+                                    <div class="card text-white bg-warning mb-3">
+                                        <div class="card-header">Baseline hash not found</div>
+                                        <div class="card-body">
+                                            <div class="mb-3 baseline-hash">
+                                                <label for="baseline_hash" class="form-label">Baseline</label>
+                                                <pre class="form-control baseline-hash-value" id="baseline_hash">None</pre>
+                                            </div>
+                                            <div class="mb-3 result-hash">
+                                                <label for="result_hash" class="form-label">Result</label>
+                                                <pre class="form-control result-hash-value" id="result_hash">592d12cc2d5749a6607bbf98d715b95c06a2af6572a7e298bcae349648b9997e</pre>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <h6><small class="text-muted">subtests.subtest.test_functions</small></h6>
+                        <h5 class="card-title">test_hmissing_imatch</h5>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="btn-group status-badge" role="group" aria-label="status">
+                                <button class="btn btn-sm btn-danger" type="button"
+                                        data-bs-toggle="offcanvas" data-bs-target="#offcanvas11"
+                                        aria-controls="offcanvas11">
+                                    FAILED
+                                </button>
+                                <button class="btn btn-sm btn-warning" type="button"
+                                        data-bs-toggle="offcanvas" data-bs-target="#offcanvas11"
+                                        aria-controls="offcanvas11">
+                                    <a data-bs-toggle="tooltip" data-bs-placement="top" title="Baseline hash not found">
+                                        <img src="hash.svg">
+                                    </a>
+                                </button>
+                                
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div><div class="py-2 col-sm-6 col-lg-4 col-xxl-3 result overall-failed image-none hash-diff">
+                <span class="collected-sort" style="display:none">01</span>
+                <span class="test-name" style="display:none">subtests.subtest.test_classes.TestClass.test_hdiff_idiff_testclass</span>
+                <span class="status-sort" style="display:none">11</span>
+                <span class="rms-sort" style="display:none">000001</span>
+                <span class="filter-classes" style="display:none">overall-failed image-none hash-diff</span>
+                <div class="card">
+                    <a class="btn" data-bs-toggle="offcanvas" href="#offcanvas01" role="button"
+                       aria-controls="offcanvas01">
+                        <img src="subtests.subtest.test_classes.TestClass.test_hdiff_idiff_testclass/result.png" class="card-img-top" alt="result image">
+                    </a>
+                    <div class="offcanvas offcanvas-bottom mpl-images" tabindex="-1" id="offcanvas01"
+                         aria-labelledby="offcanvas01Label">
+                        <div class="offcanvas-header">
+                            <h6><small class="text-muted">subtests.subtest.test_classes.TestClass</small></h6>
+                            <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                        </div>
+                        <div class="offcanvas-body">
+                            <h5 class="card-title">test_hdiff_idiff_testclass</h5>
+                            
+                            <div class="row row-cols-1 row-cols-md-2 g-4">
+                                <div class="col">
+                                    <div class="card text-white bg-danger">
+                                        <div class="card-header">FAILED</div>
+                                        <div class="card-body">
+                                            <pre class="card-text">Hash 2bb430367cdf04b7b5f3af8c50652964ff27def9fc0a75a68b4775ba1eb8e827 doesn&#39;t match hash d1ff30367cdf04b7b5f3af8c50652964ff27def9fc0a75a68b4775ba1eb8e827 in library /home/runner/work/pytest-mpl/pytest-mpl/tests/subtests/subtest/hashes/mpl35_ft261.json for test subtests.subtest.test_classes.TestClass.test_hdiff_idiff_testclass.</pre>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    
+                                    <div class="card text-white bg-danger mb-3">
+                                        <div class="card-header">Baseline hash differs</div>
+                                        <div class="card-body">
+                                            <div class="mb-3 baseline-hash">
+                                                <label for="baseline_hash" class="form-label">Baseline</label>
+                                                <pre class="form-control baseline-hash-value" id="baseline_hash">d1ff30367cdf04b7b5f3af8c50652964ff27def9fc0a75a68b4775ba1eb8e827</pre>
+                                            </div>
+                                            <div class="mb-3 result-hash">
+                                                <label for="result_hash" class="form-label">Result</label>
+                                                <pre class="form-control result-hash-value" id="result_hash">2bb430367cdf04b7b5f3af8c50652964ff27def9fc0a75a68b4775ba1eb8e827</pre>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <h6><small class="text-muted">subtests.subtest.test_classes.TestClass</small></h6>
+                        <h5 class="card-title">test_hdiff_idiff_testclass</h5>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="btn-group status-badge" role="group" aria-label="status">
+                                <button class="btn btn-sm btn-danger" type="button"
+                                        data-bs-toggle="offcanvas" data-bs-target="#offcanvas01"
+                                        aria-controls="offcanvas01">
+                                    FAILED
+                                </button>
+                                
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div><div class="py-2 col-sm-6 col-lg-4 col-xxl-3 result overall-failed image-none hash-diff">
+                <span class="collected-sort" style="display:none">03</span>
+                <span class="test-name" style="display:none">subtests.subtest.test_classes.TestClassWithSetupMethod.test_hdiff_idiff_testclasswithsetupmethod</span>
+                <span class="status-sort" style="display:none">11</span>
+                <span class="rms-sort" style="display:none">000001</span>
+                <span class="filter-classes" style="display:none">overall-failed image-none hash-diff</span>
+                <div class="card">
+                    <a class="btn" data-bs-toggle="offcanvas" href="#offcanvas03" role="button"
+                       aria-controls="offcanvas03">
+                        <img src="subtests.subtest.test_classes.TestClassWithSetupMethod.test_hdiff_idiff_testclasswithsetupmethod/result.png" class="card-img-top" alt="result image">
+                    </a>
+                    <div class="offcanvas offcanvas-bottom mpl-images" tabindex="-1" id="offcanvas03"
+                         aria-labelledby="offcanvas03Label">
+                        <div class="offcanvas-header">
+                            <h6><small class="text-muted">subtests.subtest.test_classes.TestClassWithSetupMethod</small></h6>
+                            <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                        </div>
+                        <div class="offcanvas-body">
+                            <h5 class="card-title">test_hdiff_idiff_testclasswithsetupmethod</h5>
+                            
+                            <div class="row row-cols-1 row-cols-md-2 g-4">
+                                <div class="col">
+                                    <div class="card text-white bg-danger">
+                                        <div class="card-header">FAILED</div>
+                                        <div class="card-body">
+                                            <pre class="card-text">Hash 56d00363330cb7d959d6cfdc1335901716e841f54014cb6e657d1c4721384252 doesn&#39;t match hash d1ff0363330cb7d959d6cfdc1335901716e841f54014cb6e657d1c4721384252 in library /home/runner/work/pytest-mpl/pytest-mpl/tests/subtests/subtest/hashes/mpl35_ft261.json for test subtests.subtest.test_classes.TestClassWithSetupMethod.test_hdiff_idiff_testclasswithsetupmethod.</pre>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    
+                                    <div class="card text-white bg-danger mb-3">
+                                        <div class="card-header">Baseline hash differs</div>
+                                        <div class="card-body">
+                                            <div class="mb-3 baseline-hash">
+                                                <label for="baseline_hash" class="form-label">Baseline</label>
+                                                <pre class="form-control baseline-hash-value" id="baseline_hash">d1ff0363330cb7d959d6cfdc1335901716e841f54014cb6e657d1c4721384252</pre>
+                                            </div>
+                                            <div class="mb-3 result-hash">
+                                                <label for="result_hash" class="form-label">Result</label>
+                                                <pre class="form-control result-hash-value" id="result_hash">56d00363330cb7d959d6cfdc1335901716e841f54014cb6e657d1c4721384252</pre>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <h6><small class="text-muted">subtests.subtest.test_classes.TestClassWithSetupMethod</small></h6>
+                        <h5 class="card-title">test_hdiff_idiff_testclasswithsetupmethod</h5>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="btn-group status-badge" role="group" aria-label="status">
+                                <button class="btn btn-sm btn-danger" type="button"
+                                        data-bs-toggle="offcanvas" data-bs-target="#offcanvas03"
+                                        aria-controls="offcanvas03">
+                                    FAILED
+                                </button>
+                                
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div><div class="py-2 col-sm-6 col-lg-4 col-xxl-3 result overall-failed image-none hash-diff">
+                <span class="collected-sort" style="display:none">05</span>
+                <span class="test-name" style="display:none">subtests.subtest.test_classes.TestClassWithSetupClass.test_hdiff_idiff_testclasswithsetupclass</span>
+                <span class="status-sort" style="display:none">11</span>
+                <span class="rms-sort" style="display:none">000001</span>
+                <span class="filter-classes" style="display:none">overall-failed image-none hash-diff</span>
+                <div class="card">
+                    <a class="btn" data-bs-toggle="offcanvas" href="#offcanvas05" role="button"
+                       aria-controls="offcanvas05">
+                        <img src="subtests.subtest.test_classes.TestClassWithSetupClass.test_hdiff_idiff_testclasswithsetupclass/result.png" class="card-img-top" alt="result image">
+                    </a>
+                    <div class="offcanvas offcanvas-bottom mpl-images" tabindex="-1" id="offcanvas05"
+                         aria-labelledby="offcanvas05Label">
+                        <div class="offcanvas-header">
+                            <h6><small class="text-muted">subtests.subtest.test_classes.TestClassWithSetupClass</small></h6>
+                            <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                        </div>
+                        <div class="offcanvas-body">
+                            <h5 class="card-title">test_hdiff_idiff_testclasswithsetupclass</h5>
+                            
+                            <div class="row row-cols-1 row-cols-md-2 g-4">
+                                <div class="col">
+                                    <div class="card text-white bg-danger">
+                                        <div class="card-header">FAILED</div>
+                                        <div class="card-body">
+                                            <pre class="card-text">Hash 8c4fa5f95b2a2b424ad9e441b6aeeced9d51a52fe7f19870eedcdfdcf6d39818 doesn&#39;t match hash d1ffa5f95b2a2b424ad9e441b6aeeced9d51a52fe7f19870eedcdfdcf6d39818 in library /home/runner/work/pytest-mpl/pytest-mpl/tests/subtests/subtest/hashes/mpl35_ft261.json for test subtests.subtest.test_classes.TestClassWithSetupClass.test_hdiff_idiff_testclasswithsetupclass.</pre>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    
+                                    <div class="card text-white bg-danger mb-3">
+                                        <div class="card-header">Baseline hash differs</div>
+                                        <div class="card-body">
+                                            <div class="mb-3 baseline-hash">
+                                                <label for="baseline_hash" class="form-label">Baseline</label>
+                                                <pre class="form-control baseline-hash-value" id="baseline_hash">d1ffa5f95b2a2b424ad9e441b6aeeced9d51a52fe7f19870eedcdfdcf6d39818</pre>
+                                            </div>
+                                            <div class="mb-3 result-hash">
+                                                <label for="result_hash" class="form-label">Result</label>
+                                                <pre class="form-control result-hash-value" id="result_hash">8c4fa5f95b2a2b424ad9e441b6aeeced9d51a52fe7f19870eedcdfdcf6d39818</pre>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <h6><small class="text-muted">subtests.subtest.test_classes.TestClassWithSetupClass</small></h6>
+                        <h5 class="card-title">test_hdiff_idiff_testclasswithsetupclass</h5>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="btn-group status-badge" role="group" aria-label="status">
+                                <button class="btn btn-sm btn-danger" type="button"
+                                        data-bs-toggle="offcanvas" data-bs-target="#offcanvas05"
+                                        aria-controls="offcanvas05">
+                                    FAILED
+                                </button>
+                                
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div><div class="py-2 col-sm-6 col-lg-4 col-xxl-3 result overall-failed image-none hash-diff">
+                <span class="collected-sort" style="display:none">10</span>
+                <span class="test-name" style="display:none">subtests.subtest.test_functions.test_hdiff_imatch</span>
+                <span class="status-sort" style="display:none">11</span>
+                <span class="rms-sort" style="display:none">000001</span>
+                <span class="filter-classes" style="display:none">overall-failed image-none hash-diff</span>
+                <div class="card">
+                    <a class="btn" data-bs-toggle="offcanvas" href="#offcanvas10" role="button"
+                       aria-controls="offcanvas10">
+                        <img src="subtests.subtest.test_functions.test_hdiff_imatch/result.png" class="card-img-top" alt="result image">
+                    </a>
+                    <div class="offcanvas offcanvas-bottom mpl-images" tabindex="-1" id="offcanvas10"
+                         aria-labelledby="offcanvas10Label">
+                        <div class="offcanvas-header">
+                            <h6><small class="text-muted">subtests.subtest.test_functions</small></h6>
+                            <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                        </div>
+                        <div class="offcanvas-body">
+                            <h5 class="card-title">test_hdiff_imatch</h5>
+                            
+                            <div class="row row-cols-1 row-cols-md-2 g-4">
+                                <div class="col">
+                                    <div class="card text-white bg-danger">
+                                        <div class="card-header">FAILED</div>
+                                        <div class="card-body">
+                                            <pre class="card-text">Hash b92c5c6bc631fbdaffa23d3d57fc027768fcded889f3b269941da859110ce282 doesn&#39;t match hash d1ff5c6bc631fbdaffa23d3d57fc027768fcded889f3b269941da859110ce282 in library /home/runner/work/pytest-mpl/pytest-mpl/tests/subtests/subtest/hashes/mpl35_ft261.json for test subtests.subtest.test_functions.test_hdiff_imatch.</pre>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    
+                                    <div class="card text-white bg-danger mb-3">
+                                        <div class="card-header">Baseline hash differs</div>
+                                        <div class="card-body">
+                                            <div class="mb-3 baseline-hash">
+                                                <label for="baseline_hash" class="form-label">Baseline</label>
+                                                <pre class="form-control baseline-hash-value" id="baseline_hash">d1ff5c6bc631fbdaffa23d3d57fc027768fcded889f3b269941da859110ce282</pre>
+                                            </div>
+                                            <div class="mb-3 result-hash">
+                                                <label for="result_hash" class="form-label">Result</label>
+                                                <pre class="form-control result-hash-value" id="result_hash">b92c5c6bc631fbdaffa23d3d57fc027768fcded889f3b269941da859110ce282</pre>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <h6><small class="text-muted">subtests.subtest.test_functions</small></h6>
+                        <h5 class="card-title">test_hdiff_imatch</h5>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="btn-group status-badge" role="group" aria-label="status">
+                                <button class="btn btn-sm btn-danger" type="button"
+                                        data-bs-toggle="offcanvas" data-bs-target="#offcanvas10"
+                                        aria-controls="offcanvas10">
+                                    FAILED
+                                </button>
+                                
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div><div class="py-2 col-sm-6 col-lg-4 col-xxl-3 result overall-failed image-none hash-diff">
+                <span class="collected-sort" style="display:none">12</span>
+                <span class="test-name" style="display:none">subtests.subtest.test_special.test_hdiff_imatch_tolerance</span>
+                <span class="status-sort" style="display:none">11</span>
+                <span class="rms-sort" style="display:none">000001</span>
+                <span class="filter-classes" style="display:none">overall-failed image-none hash-diff</span>
+                <div class="card">
+                    <a class="btn" data-bs-toggle="offcanvas" href="#offcanvas12" role="button"
+                       aria-controls="offcanvas12">
+                        <img src="subtests.subtest.test_special.test_hdiff_imatch_tolerance/result.png" class="card-img-top" alt="result image">
+                    </a>
+                    <div class="offcanvas offcanvas-bottom mpl-images" tabindex="-1" id="offcanvas12"
+                         aria-labelledby="offcanvas12Label">
+                        <div class="offcanvas-header">
+                            <h6><small class="text-muted">subtests.subtest.test_special</small></h6>
+                            <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                        </div>
+                        <div class="offcanvas-body">
+                            <h5 class="card-title">test_hdiff_imatch_tolerance</h5>
+                            
+                            <div class="row row-cols-1 row-cols-md-2 g-4">
+                                <div class="col">
+                                    <div class="card text-white bg-danger">
+                                        <div class="card-header">FAILED</div>
+                                        <div class="card-body">
+                                            <pre class="card-text">Hash f26ca66a7c02ae64c8b2512021e0450cbe64c084c9d5f7e2600a7342a559c0b1 doesn&#39;t match hash d1ffa66a7c02ae64c8b2512021e0450cbe64c084c9d5f7e2600a7342a559c0b1 in library /home/runner/work/pytest-mpl/pytest-mpl/tests/subtests/subtest/hashes/mpl35_ft261.json for test subtests.subtest.test_special.test_hdiff_imatch_tolerance.</pre>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    
+                                    <div class="card text-white bg-danger mb-3">
+                                        <div class="card-header">Baseline hash differs</div>
+                                        <div class="card-body">
+                                            <div class="mb-3 baseline-hash">
+                                                <label for="baseline_hash" class="form-label">Baseline</label>
+                                                <pre class="form-control baseline-hash-value" id="baseline_hash">d1ffa66a7c02ae64c8b2512021e0450cbe64c084c9d5f7e2600a7342a559c0b1</pre>
+                                            </div>
+                                            <div class="mb-3 result-hash">
+                                                <label for="result_hash" class="form-label">Result</label>
+                                                <pre class="form-control result-hash-value" id="result_hash">f26ca66a7c02ae64c8b2512021e0450cbe64c084c9d5f7e2600a7342a559c0b1</pre>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <h6><small class="text-muted">subtests.subtest.test_special</small></h6>
+                        <h5 class="card-title">test_hdiff_imatch_tolerance</h5>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="btn-group status-badge" role="group" aria-label="status">
+                                <button class="btn btn-sm btn-danger" type="button"
+                                        data-bs-toggle="offcanvas" data-bs-target="#offcanvas12"
+                                        aria-controls="offcanvas12">
+                                    FAILED
+                                </button>
+                                
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div><div class="py-2 col-sm-6 col-lg-4 col-xxl-3 result overall-failed image-none hash-diff">
+                <span class="collected-sort" style="display:none">13</span>
+                <span class="test-name" style="display:none">subtests.subtest.test_special.test_hdiff_idiff_tolerance</span>
+                <span class="status-sort" style="display:none">11</span>
+                <span class="rms-sort" style="display:none">000001</span>
+                <span class="filter-classes" style="display:none">overall-failed image-none hash-diff</span>
+                <div class="card">
+                    <a class="btn" data-bs-toggle="offcanvas" href="#offcanvas13" role="button"
+                       aria-controls="offcanvas13">
+                        <img src="subtests.subtest.test_special.test_hdiff_idiff_tolerance/result.png" class="card-img-top" alt="result image">
+                    </a>
+                    <div class="offcanvas offcanvas-bottom mpl-images" tabindex="-1" id="offcanvas13"
+                         aria-labelledby="offcanvas13Label">
+                        <div class="offcanvas-header">
+                            <h6><small class="text-muted">subtests.subtest.test_special</small></h6>
+                            <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                        </div>
+                        <div class="offcanvas-body">
+                            <h5 class="card-title">test_hdiff_idiff_tolerance</h5>
+                            
+                            <div class="row row-cols-1 row-cols-md-2 g-4">
+                                <div class="col">
+                                    <div class="card text-white bg-danger">
+                                        <div class="card-header">FAILED</div>
+                                        <div class="card-body">
+                                            <pre class="card-text">Hash f26ca66a7c02ae64c8b2512021e0450cbe64c084c9d5f7e2600a7342a559c0b1 doesn&#39;t match hash d1ffa66a7c02ae64c8b2512021e0450cbe64c084c9d5f7e2600a7342a559c0b1 in library /home/runner/work/pytest-mpl/pytest-mpl/tests/subtests/subtest/hashes/mpl35_ft261.json for test subtests.subtest.test_special.test_hdiff_idiff_tolerance.</pre>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    
+                                    <div class="card text-white bg-danger mb-3">
+                                        <div class="card-header">Baseline hash differs</div>
+                                        <div class="card-body">
+                                            <div class="mb-3 baseline-hash">
+                                                <label for="baseline_hash" class="form-label">Baseline</label>
+                                                <pre class="form-control baseline-hash-value" id="baseline_hash">d1ffa66a7c02ae64c8b2512021e0450cbe64c084c9d5f7e2600a7342a559c0b1</pre>
+                                            </div>
+                                            <div class="mb-3 result-hash">
+                                                <label for="result_hash" class="form-label">Result</label>
+                                                <pre class="form-control result-hash-value" id="result_hash">f26ca66a7c02ae64c8b2512021e0450cbe64c084c9d5f7e2600a7342a559c0b1</pre>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <h6><small class="text-muted">subtests.subtest.test_special</small></h6>
+                        <h5 class="card-title">test_hdiff_idiff_tolerance</h5>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="btn-group status-badge" role="group" aria-label="status">
+                                <button class="btn btn-sm btn-danger" type="button"
+                                        data-bs-toggle="offcanvas" data-bs-target="#offcanvas13"
+                                        aria-controls="offcanvas13">
+                                    FAILED
+                                </button>
+                                
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div><div class="py-2 col-sm-6 col-lg-4 col-xxl-3 result overall-failed image-none hash-diff">
+                <span class="collected-sort" style="display:none">14</span>
+                <span class="test-name" style="display:none">subtests.subtest.test_special.test_hdiff_imatch_savefig</span>
+                <span class="status-sort" style="display:none">11</span>
+                <span class="rms-sort" style="display:none">000001</span>
+                <span class="filter-classes" style="display:none">overall-failed image-none hash-diff</span>
+                <div class="card">
+                    <a class="btn" data-bs-toggle="offcanvas" href="#offcanvas14" role="button"
+                       aria-controls="offcanvas14">
+                        <img src="subtests.subtest.test_special.test_hdiff_imatch_savefig/result.png" class="card-img-top" alt="result image">
+                    </a>
+                    <div class="offcanvas offcanvas-bottom mpl-images" tabindex="-1" id="offcanvas14"
+                         aria-labelledby="offcanvas14Label">
+                        <div class="offcanvas-header">
+                            <h6><small class="text-muted">subtests.subtest.test_special</small></h6>
+                            <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                        </div>
+                        <div class="offcanvas-body">
+                            <h5 class="card-title">test_hdiff_imatch_savefig</h5>
+                            
+                            <div class="row row-cols-1 row-cols-md-2 g-4">
+                                <div class="col">
+                                    <div class="card text-white bg-danger">
+                                        <div class="card-header">FAILED</div>
+                                        <div class="card-body">
+                                            <pre class="card-text">Hash 0a0514c35f1da18de3f4ceb1901501e5a8a5a0d18eb8a7b4db5cfde170b57423 doesn&#39;t match hash d1ff14c35f1da18de3f4ceb1901501e5a8a5a0d18eb8a7b4db5cfde170b57423 in library /home/runner/work/pytest-mpl/pytest-mpl/tests/subtests/subtest/hashes/mpl35_ft261.json for test subtests.subtest.test_special.test_hdiff_imatch_savefig.</pre>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    
+                                    <div class="card text-white bg-danger mb-3">
+                                        <div class="card-header">Baseline hash differs</div>
+                                        <div class="card-body">
+                                            <div class="mb-3 baseline-hash">
+                                                <label for="baseline_hash" class="form-label">Baseline</label>
+                                                <pre class="form-control baseline-hash-value" id="baseline_hash">d1ff14c35f1da18de3f4ceb1901501e5a8a5a0d18eb8a7b4db5cfde170b57423</pre>
+                                            </div>
+                                            <div class="mb-3 result-hash">
+                                                <label for="result_hash" class="form-label">Result</label>
+                                                <pre class="form-control result-hash-value" id="result_hash">0a0514c35f1da18de3f4ceb1901501e5a8a5a0d18eb8a7b4db5cfde170b57423</pre>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <h6><small class="text-muted">subtests.subtest.test_special</small></h6>
+                        <h5 class="card-title">test_hdiff_imatch_savefig</h5>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="btn-group status-badge" role="group" aria-label="status">
+                                <button class="btn btn-sm btn-danger" type="button"
+                                        data-bs-toggle="offcanvas" data-bs-target="#offcanvas14"
+                                        aria-controls="offcanvas14">
+                                    FAILED
+                                </button>
+                                
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div><div class="py-2 col-sm-6 col-lg-4 col-xxl-3 result overall-failed image-none hash-diff">
+                <span class="collected-sort" style="display:none">15</span>
+                <span class="test-name" style="display:none">subtests.subtest.test_special.test_hdiff_imatch_style</span>
+                <span class="status-sort" style="display:none">11</span>
+                <span class="rms-sort" style="display:none">000001</span>
+                <span class="filter-classes" style="display:none">overall-failed image-none hash-diff</span>
+                <div class="card">
+                    <a class="btn" data-bs-toggle="offcanvas" href="#offcanvas15" role="button"
+                       aria-controls="offcanvas15">
+                        <img src="subtests.subtest.test_special.test_hdiff_imatch_style/result.png" class="card-img-top" alt="result image">
+                    </a>
+                    <div class="offcanvas offcanvas-bottom mpl-images" tabindex="-1" id="offcanvas15"
+                         aria-labelledby="offcanvas15Label">
+                        <div class="offcanvas-header">
+                            <h6><small class="text-muted">subtests.subtest.test_special</small></h6>
+                            <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                        </div>
+                        <div class="offcanvas-body">
+                            <h5 class="card-title">test_hdiff_imatch_style</h5>
+                            
+                            <div class="row row-cols-1 row-cols-md-2 g-4">
+                                <div class="col">
+                                    <div class="card text-white bg-danger">
+                                        <div class="card-header">FAILED</div>
+                                        <div class="card-body">
+                                            <pre class="card-text">Hash 588ad00c4b99c6087d04f84ca071a5997b4ecf76cf859ce3548634e67841a79b doesn&#39;t match hash d1ffd00c4b99c6087d04f84ca071a5997b4ecf76cf859ce3548634e67841a79b in library /home/runner/work/pytest-mpl/pytest-mpl/tests/subtests/subtest/hashes/mpl35_ft261.json for test subtests.subtest.test_special.test_hdiff_imatch_style.</pre>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    
+                                    <div class="card text-white bg-danger mb-3">
+                                        <div class="card-header">Baseline hash differs</div>
+                                        <div class="card-body">
+                                            <div class="mb-3 baseline-hash">
+                                                <label for="baseline_hash" class="form-label">Baseline</label>
+                                                <pre class="form-control baseline-hash-value" id="baseline_hash">d1ffd00c4b99c6087d04f84ca071a5997b4ecf76cf859ce3548634e67841a79b</pre>
+                                            </div>
+                                            <div class="mb-3 result-hash">
+                                                <label for="result_hash" class="form-label">Result</label>
+                                                <pre class="form-control result-hash-value" id="result_hash">588ad00c4b99c6087d04f84ca071a5997b4ecf76cf859ce3548634e67841a79b</pre>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <h6><small class="text-muted">subtests.subtest.test_special</small></h6>
+                        <h5 class="card-title">test_hdiff_imatch_style</h5>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="btn-group status-badge" role="group" aria-label="status">
+                                <button class="btn btn-sm btn-danger" type="button"
+                                        data-bs-toggle="offcanvas" data-bs-target="#offcanvas15"
+                                        aria-controls="offcanvas15">
+                                    FAILED
+                                </button>
+                                
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div><div class="py-2 col-sm-6 col-lg-4 col-xxl-3 result overall-failed image-none hash-diff">
+                <span class="collected-sort" style="display:none">16</span>
+                <span class="test-name" style="display:none">subtests.subtest.test_special.test_hdiff_imatch_removetext</span>
+                <span class="status-sort" style="display:none">11</span>
+                <span class="rms-sort" style="display:none">000001</span>
+                <span class="filter-classes" style="display:none">overall-failed image-none hash-diff</span>
+                <div class="card">
+                    <a class="btn" data-bs-toggle="offcanvas" href="#offcanvas16" role="button"
+                       aria-controls="offcanvas16">
+                        <img src="subtests.subtest.test_special.test_hdiff_imatch_removetext/result.png" class="card-img-top" alt="result image">
+                    </a>
+                    <div class="offcanvas offcanvas-bottom mpl-images" tabindex="-1" id="offcanvas16"
+                         aria-labelledby="offcanvas16Label">
+                        <div class="offcanvas-header">
+                            <h6><small class="text-muted">subtests.subtest.test_special</small></h6>
+                            <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                        </div>
+                        <div class="offcanvas-body">
+                            <h5 class="card-title">test_hdiff_imatch_removetext</h5>
+                            
+                            <div class="row row-cols-1 row-cols-md-2 g-4">
+                                <div class="col">
+                                    <div class="card text-white bg-danger">
+                                        <div class="card-header">FAILED</div>
+                                        <div class="card-body">
+                                            <pre class="card-text">Hash a78ad7512c6d886262b1bcb4501374bfc61ef8569d24930b0258dab08e6eca9a doesn&#39;t match hash d1ffd7512c6d886262b1bcb4501374bfc61ef8569d24930b0258dab08e6eca9a in library /home/runner/work/pytest-mpl/pytest-mpl/tests/subtests/subtest/hashes/mpl35_ft261.json for test subtests.subtest.test_special.test_hdiff_imatch_removetext.</pre>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    
+                                    <div class="card text-white bg-danger mb-3">
+                                        <div class="card-header">Baseline hash differs</div>
+                                        <div class="card-body">
+                                            <div class="mb-3 baseline-hash">
+                                                <label for="baseline_hash" class="form-label">Baseline</label>
+                                                <pre class="form-control baseline-hash-value" id="baseline_hash">d1ffd7512c6d886262b1bcb4501374bfc61ef8569d24930b0258dab08e6eca9a</pre>
+                                            </div>
+                                            <div class="mb-3 result-hash">
+                                                <label for="result_hash" class="form-label">Result</label>
+                                                <pre class="form-control result-hash-value" id="result_hash">a78ad7512c6d886262b1bcb4501374bfc61ef8569d24930b0258dab08e6eca9a</pre>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <h6><small class="text-muted">subtests.subtest.test_special</small></h6>
+                        <h5 class="card-title">test_hdiff_imatch_removetext</h5>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="btn-group status-badge" role="group" aria-label="status">
+                                <button class="btn btn-sm btn-danger" type="button"
+                                        data-bs-toggle="offcanvas" data-bs-target="#offcanvas16"
+                                        aria-controls="offcanvas16">
+                                    FAILED
+                                </button>
+                                
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div><div class="py-2 col-sm-6 col-lg-4 col-xxl-3 result overall-failed image-none hash-diff">
+                <span class="collected-sort" style="display:none">17</span>
+                <span class="test-name" style="display:none">subtests.subtest.test_unittest.TestCase.test_hdiff_idiff_testclass</span>
+                <span class="status-sort" style="display:none">11</span>
+                <span class="rms-sort" style="display:none">000001</span>
+                <span class="filter-classes" style="display:none">overall-failed image-none hash-diff</span>
+                <div class="card">
+                    <a class="btn" data-bs-toggle="offcanvas" href="#offcanvas17" role="button"
+                       aria-controls="offcanvas17">
+                        <img src="subtests.subtest.test_unittest.TestCase.test_hdiff_idiff_testclass/result.png" class="card-img-top" alt="result image">
+                    </a>
+                    <div class="offcanvas offcanvas-bottom mpl-images" tabindex="-1" id="offcanvas17"
+                         aria-labelledby="offcanvas17Label">
+                        <div class="offcanvas-header">
+                            <h6><small class="text-muted">subtests.subtest.test_unittest.TestCase</small></h6>
+                            <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                        </div>
+                        <div class="offcanvas-body">
+                            <h5 class="card-title">test_hdiff_idiff_testclass</h5>
+                            
+                            <div class="row row-cols-1 row-cols-md-2 g-4">
+                                <div class="col">
+                                    <div class="card text-white bg-danger">
+                                        <div class="card-header">FAILED</div>
+                                        <div class="card-body">
+                                            <pre class="card-text">Hash 2bb430367cdf04b7b5f3af8c50652964ff27def9fc0a75a68b4775ba1eb8e827 doesn&#39;t match hash d1ff30367cdf04b7b5f3af8c50652964ff27def9fc0a75a68b4775ba1eb8e827 in library /home/runner/work/pytest-mpl/pytest-mpl/tests/subtests/subtest/hashes/mpl35_ft261.json for test subtests.subtest.test_unittest.TestCase.test_hdiff_idiff_testclass.</pre>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    
+                                    <div class="card text-white bg-danger mb-3">
+                                        <div class="card-header">Baseline hash differs</div>
+                                        <div class="card-body">
+                                            <div class="mb-3 baseline-hash">
+                                                <label for="baseline_hash" class="form-label">Baseline</label>
+                                                <pre class="form-control baseline-hash-value" id="baseline_hash">d1ff30367cdf04b7b5f3af8c50652964ff27def9fc0a75a68b4775ba1eb8e827</pre>
+                                            </div>
+                                            <div class="mb-3 result-hash">
+                                                <label for="result_hash" class="form-label">Result</label>
+                                                <pre class="form-control result-hash-value" id="result_hash">2bb430367cdf04b7b5f3af8c50652964ff27def9fc0a75a68b4775ba1eb8e827</pre>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <h6><small class="text-muted">subtests.subtest.test_unittest.TestCase</small></h6>
+                        <h5 class="card-title">test_hdiff_idiff_testclass</h5>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="btn-group status-badge" role="group" aria-label="status">
+                                <button class="btn btn-sm btn-danger" type="button"
+                                        data-bs-toggle="offcanvas" data-bs-target="#offcanvas17"
+                                        aria-controls="offcanvas17">
+                                    FAILED
+                                </button>
+                                
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div><div class="py-2 col-sm-6 col-lg-4 col-xxl-3 result overall-failed image-none hash-diff">
+                <span class="collected-sort" style="display:none">19</span>
+                <span class="test-name" style="display:none">subtests.subtest.test_unittest.TestCaseWithSetUp.test_hdiff_idiff_testcasewithsetup</span>
+                <span class="status-sort" style="display:none">11</span>
+                <span class="rms-sort" style="display:none">000001</span>
+                <span class="filter-classes" style="display:none">overall-failed image-none hash-diff</span>
+                <div class="card">
+                    <a class="btn" data-bs-toggle="offcanvas" href="#offcanvas19" role="button"
+                       aria-controls="offcanvas19">
+                        <img src="subtests.subtest.test_unittest.TestCaseWithSetUp.test_hdiff_idiff_testcasewithsetup/result.png" class="card-img-top" alt="result image">
+                    </a>
+                    <div class="offcanvas offcanvas-bottom mpl-images" tabindex="-1" id="offcanvas19"
+                         aria-labelledby="offcanvas19Label">
+                        <div class="offcanvas-header">
+                            <h6><small class="text-muted">subtests.subtest.test_unittest.TestCaseWithSetUp</small></h6>
+                            <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                        </div>
+                        <div class="offcanvas-body">
+                            <h5 class="card-title">test_hdiff_idiff_testcasewithsetup</h5>
+                            
+                            <div class="row row-cols-1 row-cols-md-2 g-4">
+                                <div class="col">
+                                    <div class="card text-white bg-danger">
+                                        <div class="card-header">FAILED</div>
+                                        <div class="card-body">
+                                            <pre class="card-text">Hash 56d00363330cb7d959d6cfdc1335901716e841f54014cb6e657d1c4721384252 doesn&#39;t match hash d1ff0363330cb7d959d6cfdc1335901716e841f54014cb6e657d1c4721384252 in library /home/runner/work/pytest-mpl/pytest-mpl/tests/subtests/subtest/hashes/mpl35_ft261.json for test subtests.subtest.test_unittest.TestCaseWithSetUp.test_hdiff_idiff_testcasewithsetup.</pre>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    
+                                    <div class="card text-white bg-danger mb-3">
+                                        <div class="card-header">Baseline hash differs</div>
+                                        <div class="card-body">
+                                            <div class="mb-3 baseline-hash">
+                                                <label for="baseline_hash" class="form-label">Baseline</label>
+                                                <pre class="form-control baseline-hash-value" id="baseline_hash">d1ff0363330cb7d959d6cfdc1335901716e841f54014cb6e657d1c4721384252</pre>
+                                            </div>
+                                            <div class="mb-3 result-hash">
+                                                <label for="result_hash" class="form-label">Result</label>
+                                                <pre class="form-control result-hash-value" id="result_hash">56d00363330cb7d959d6cfdc1335901716e841f54014cb6e657d1c4721384252</pre>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <h6><small class="text-muted">subtests.subtest.test_unittest.TestCaseWithSetUp</small></h6>
+                        <h5 class="card-title">test_hdiff_idiff_testcasewithsetup</h5>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="btn-group status-badge" role="group" aria-label="status">
+                                <button class="btn btn-sm btn-danger" type="button"
+                                        data-bs-toggle="offcanvas" data-bs-target="#offcanvas19"
+                                        aria-controls="offcanvas19">
+                                    FAILED
+                                </button>
+                                
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div><div class="py-2 col-sm-6 col-lg-4 col-xxl-3 result overall-failed image-none hash-diff">
+                <span class="collected-sort" style="display:none">21</span>
+                <span class="test-name" style="display:none">subtests.subtest.test_unittest.TestCaseWithSetUpClass.test_hdiff_idiff_testcasewithsetupclass</span>
+                <span class="status-sort" style="display:none">11</span>
+                <span class="rms-sort" style="display:none">000001</span>
+                <span class="filter-classes" style="display:none">overall-failed image-none hash-diff</span>
+                <div class="card">
+                    <a class="btn" data-bs-toggle="offcanvas" href="#offcanvas21" role="button"
+                       aria-controls="offcanvas21">
+                        <img src="subtests.subtest.test_unittest.TestCaseWithSetUpClass.test_hdiff_idiff_testcasewithsetupclass/result.png" class="card-img-top" alt="result image">
+                    </a>
+                    <div class="offcanvas offcanvas-bottom mpl-images" tabindex="-1" id="offcanvas21"
+                         aria-labelledby="offcanvas21Label">
+                        <div class="offcanvas-header">
+                            <h6><small class="text-muted">subtests.subtest.test_unittest.TestCaseWithSetUpClass</small></h6>
+                            <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                        </div>
+                        <div class="offcanvas-body">
+                            <h5 class="card-title">test_hdiff_idiff_testcasewithsetupclass</h5>
+                            
+                            <div class="row row-cols-1 row-cols-md-2 g-4">
+                                <div class="col">
+                                    <div class="card text-white bg-danger">
+                                        <div class="card-header">FAILED</div>
+                                        <div class="card-body">
+                                            <pre class="card-text">Hash 5f1e6e2b775a1b1d1e9e20a4d929586a9accb08b2fddaec8a24fb4acfc83c602 doesn&#39;t match hash d1ff6e2b775a1b1d1e9e20a4d929586a9accb08b2fddaec8a24fb4acfc83c602 in library /home/runner/work/pytest-mpl/pytest-mpl/tests/subtests/subtest/hashes/mpl35_ft261.json for test subtests.subtest.test_unittest.TestCaseWithSetUpClass.test_hdiff_idiff_testcasewithsetupclass.</pre>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    
+                                    <div class="card text-white bg-danger mb-3">
+                                        <div class="card-header">Baseline hash differs</div>
+                                        <div class="card-body">
+                                            <div class="mb-3 baseline-hash">
+                                                <label for="baseline_hash" class="form-label">Baseline</label>
+                                                <pre class="form-control baseline-hash-value" id="baseline_hash">d1ff6e2b775a1b1d1e9e20a4d929586a9accb08b2fddaec8a24fb4acfc83c602</pre>
+                                            </div>
+                                            <div class="mb-3 result-hash">
+                                                <label for="result_hash" class="form-label">Result</label>
+                                                <pre class="form-control result-hash-value" id="result_hash">5f1e6e2b775a1b1d1e9e20a4d929586a9accb08b2fddaec8a24fb4acfc83c602</pre>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <h6><small class="text-muted">subtests.subtest.test_unittest.TestCaseWithSetUpClass</small></h6>
+                        <h5 class="card-title">test_hdiff_idiff_testcasewithsetupclass</h5>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="btn-group status-badge" role="group" aria-label="status">
+                                <button class="btn btn-sm btn-danger" type="button"
+                                        data-bs-toggle="offcanvas" data-bs-target="#offcanvas21"
+                                        aria-controls="offcanvas21">
+                                    FAILED
+                                </button>
+                                
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div><div class="py-2 col-sm-6 col-lg-4 col-xxl-3 result overall-passed image-none hash-match">
+                <span class="collected-sort" style="display:none">00</span>
+                <span class="test-name" style="display:none">subtests.subtest.test_classes.TestClass.test_hmatch_imatch_testclass</span>
+                <span class="status-sort" style="display:none">00</span>
+                <span class="rms-sort" style="display:none">000001</span>
+                <span class="filter-classes" style="display:none">overall-passed image-none hash-match</span>
+                <div class="card">
+                    <a class="btn" data-bs-toggle="offcanvas" href="#offcanvas00" role="button"
+                       aria-controls="offcanvas00">
+                        <img src="subtests.subtest.test_classes.TestClass.test_hmatch_imatch_testclass/result.png" class="card-img-top" alt="result image">
+                    </a>
+                    <div class="offcanvas offcanvas-bottom mpl-images" tabindex="-1" id="offcanvas00"
+                         aria-labelledby="offcanvas00Label">
+                        <div class="offcanvas-header">
+                            <h6><small class="text-muted">subtests.subtest.test_classes.TestClass</small></h6>
+                            <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                        </div>
+                        <div class="offcanvas-body">
+                            <h5 class="card-title">test_hmatch_imatch_testclass</h5>
+                            
+                            <div class="row row-cols-1 row-cols-md-2 g-4">
+                                <div class="col">
+                                    <div class="card text-white bg-success">
+                                        <div class="card-header">PASSED</div>
+                                        <div class="card-body">
+                                            <pre class="card-text">Test hash matches baseline hash.</pre>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    
+                                    <div class="card text-white bg-success mb-3">
+                                        <div class="card-header">Baseline hash matches</div>
+                                        <div class="card-body">
+                                            <div class="mb-3 baseline-hash">
+                                                <label for="baseline_hash" class="form-label">Baseline</label>
+                                                <pre class="form-control baseline-hash-value" id="baseline_hash">af966da7f2e57908211d559ff0a24a52c363c3fabca9e810138ad60e3fd2bcc9</pre>
+                                            </div>
+                                            <div class="mb-3 result-hash">
+                                                <label for="result_hash" class="form-label">Result</label>
+                                                <pre class="form-control result-hash-value" id="result_hash">af966da7f2e57908211d559ff0a24a52c363c3fabca9e810138ad60e3fd2bcc9</pre>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <h6><small class="text-muted">subtests.subtest.test_classes.TestClass</small></h6>
+                        <h5 class="card-title">test_hmatch_imatch_testclass</h5>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="btn-group status-badge" role="group" aria-label="status">
+                                <button class="btn btn-sm btn-success" type="button"
+                                        data-bs-toggle="offcanvas" data-bs-target="#offcanvas00"
+                                        aria-controls="offcanvas00">
+                                    PASSED
+                                </button>
+                                
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div><div class="py-2 col-sm-6 col-lg-4 col-xxl-3 result overall-passed image-none hash-match">
+                <span class="collected-sort" style="display:none">02</span>
+                <span class="test-name" style="display:none">subtests.subtest.test_classes.TestClassWithSetupMethod.test_hmatch_imatch_testclasswithsetupmethod</span>
+                <span class="status-sort" style="display:none">00</span>
+                <span class="rms-sort" style="display:none">000001</span>
+                <span class="filter-classes" style="display:none">overall-passed image-none hash-match</span>
+                <div class="card">
+                    <a class="btn" data-bs-toggle="offcanvas" href="#offcanvas02" role="button"
+                       aria-controls="offcanvas02">
+                        <img src="subtests.subtest.test_classes.TestClassWithSetupMethod.test_hmatch_imatch_testclasswithsetupmethod/result.png" class="card-img-top" alt="result image">
+                    </a>
+                    <div class="offcanvas offcanvas-bottom mpl-images" tabindex="-1" id="offcanvas02"
+                         aria-labelledby="offcanvas02Label">
+                        <div class="offcanvas-header">
+                            <h6><small class="text-muted">subtests.subtest.test_classes.TestClassWithSetupMethod</small></h6>
+                            <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                        </div>
+                        <div class="offcanvas-body">
+                            <h5 class="card-title">test_hmatch_imatch_testclasswithsetupmethod</h5>
+                            
+                            <div class="row row-cols-1 row-cols-md-2 g-4">
+                                <div class="col">
+                                    <div class="card text-white bg-success">
+                                        <div class="card-header">PASSED</div>
+                                        <div class="card-body">
+                                            <pre class="card-text">Test hash matches baseline hash.</pre>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    
+                                    <div class="card text-white bg-success mb-3">
+                                        <div class="card-header">Baseline hash matches</div>
+                                        <div class="card-body">
+                                            <div class="mb-3 baseline-hash">
+                                                <label for="baseline_hash" class="form-label">Baseline</label>
+                                                <pre class="form-control baseline-hash-value" id="baseline_hash">56d00363330cb7d959d6cfdc1335901716e841f54014cb6e657d1c4721384252</pre>
+                                            </div>
+                                            <div class="mb-3 result-hash">
+                                                <label for="result_hash" class="form-label">Result</label>
+                                                <pre class="form-control result-hash-value" id="result_hash">56d00363330cb7d959d6cfdc1335901716e841f54014cb6e657d1c4721384252</pre>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <h6><small class="text-muted">subtests.subtest.test_classes.TestClassWithSetupMethod</small></h6>
+                        <h5 class="card-title">test_hmatch_imatch_testclasswithsetupmethod</h5>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="btn-group status-badge" role="group" aria-label="status">
+                                <button class="btn btn-sm btn-success" type="button"
+                                        data-bs-toggle="offcanvas" data-bs-target="#offcanvas02"
+                                        aria-controls="offcanvas02">
+                                    PASSED
+                                </button>
+                                
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div><div class="py-2 col-sm-6 col-lg-4 col-xxl-3 result overall-passed image-none hash-match">
+                <span class="collected-sort" style="display:none">04</span>
+                <span class="test-name" style="display:none">subtests.subtest.test_classes.TestClassWithSetupClass.test_hmatch_imatch_testclasswithsetupclass</span>
+                <span class="status-sort" style="display:none">00</span>
+                <span class="rms-sort" style="display:none">000001</span>
+                <span class="filter-classes" style="display:none">overall-passed image-none hash-match</span>
+                <div class="card">
+                    <a class="btn" data-bs-toggle="offcanvas" href="#offcanvas04" role="button"
+                       aria-controls="offcanvas04">
+                        <img src="subtests.subtest.test_classes.TestClassWithSetupClass.test_hmatch_imatch_testclasswithsetupclass/result.png" class="card-img-top" alt="result image">
+                    </a>
+                    <div class="offcanvas offcanvas-bottom mpl-images" tabindex="-1" id="offcanvas04"
+                         aria-labelledby="offcanvas04Label">
+                        <div class="offcanvas-header">
+                            <h6><small class="text-muted">subtests.subtest.test_classes.TestClassWithSetupClass</small></h6>
+                            <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                        </div>
+                        <div class="offcanvas-body">
+                            <h5 class="card-title">test_hmatch_imatch_testclasswithsetupclass</h5>
+                            
+                            <div class="row row-cols-1 row-cols-md-2 g-4">
+                                <div class="col">
+                                    <div class="card text-white bg-success">
+                                        <div class="card-header">PASSED</div>
+                                        <div class="card-body">
+                                            <pre class="card-text">Test hash matches baseline hash.</pre>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    
+                                    <div class="card text-white bg-success mb-3">
+                                        <div class="card-header">Baseline hash matches</div>
+                                        <div class="card-body">
+                                            <div class="mb-3 baseline-hash">
+                                                <label for="baseline_hash" class="form-label">Baseline</label>
+                                                <pre class="form-control baseline-hash-value" id="baseline_hash">8c4fa5f95b2a2b424ad9e441b6aeeced9d51a52fe7f19870eedcdfdcf6d39818</pre>
+                                            </div>
+                                            <div class="mb-3 result-hash">
+                                                <label for="result_hash" class="form-label">Result</label>
+                                                <pre class="form-control result-hash-value" id="result_hash">8c4fa5f95b2a2b424ad9e441b6aeeced9d51a52fe7f19870eedcdfdcf6d39818</pre>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <h6><small class="text-muted">subtests.subtest.test_classes.TestClassWithSetupClass</small></h6>
+                        <h5 class="card-title">test_hmatch_imatch_testclasswithsetupclass</h5>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="btn-group status-badge" role="group" aria-label="status">
+                                <button class="btn btn-sm btn-success" type="button"
+                                        data-bs-toggle="offcanvas" data-bs-target="#offcanvas04"
+                                        aria-controls="offcanvas04">
+                                    PASSED
+                                </button>
+                                
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div><div class="py-2 col-sm-6 col-lg-4 col-xxl-3 result overall-passed image-none hash-match">
+                <span class="collected-sort" style="display:none">06</span>
+                <span class="test-name" style="display:none">subtests.subtest.test_classes.TestClassWithFixture.test_hmatch_imatch_testclasswithfixture</span>
+                <span class="status-sort" style="display:none">00</span>
+                <span class="rms-sort" style="display:none">000001</span>
+                <span class="filter-classes" style="display:none">overall-passed image-none hash-match</span>
+                <div class="card">
+                    <a class="btn" data-bs-toggle="offcanvas" href="#offcanvas06" role="button"
+                       aria-controls="offcanvas06">
+                        <img src="subtests.subtest.test_classes.TestClassWithFixture.test_hmatch_imatch_testclasswithfixture/result.png" class="card-img-top" alt="result image">
+                    </a>
+                    <div class="offcanvas offcanvas-bottom mpl-images" tabindex="-1" id="offcanvas06"
+                         aria-labelledby="offcanvas06Label">
+                        <div class="offcanvas-header">
+                            <h6><small class="text-muted">subtests.subtest.test_classes.TestClassWithFixture</small></h6>
+                            <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                        </div>
+                        <div class="offcanvas-body">
+                            <h5 class="card-title">test_hmatch_imatch_testclasswithfixture</h5>
+                            
+                            <div class="row row-cols-1 row-cols-md-2 g-4">
+                                <div class="col">
+                                    <div class="card text-white bg-success">
+                                        <div class="card-header">PASSED</div>
+                                        <div class="card-body">
+                                            <pre class="card-text">Test hash matches baseline hash.</pre>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    
+                                    <div class="card text-white bg-success mb-3">
+                                        <div class="card-header">Baseline hash matches</div>
+                                        <div class="card-body">
+                                            <div class="mb-3 baseline-hash">
+                                                <label for="baseline_hash" class="form-label">Baseline</label>
+                                                <pre class="form-control baseline-hash-value" id="baseline_hash">ee0c290d66d17e4e40991c31eee0c55bd724922a3ecb66f7300b2ce8abf3d204</pre>
+                                            </div>
+                                            <div class="mb-3 result-hash">
+                                                <label for="result_hash" class="form-label">Result</label>
+                                                <pre class="form-control result-hash-value" id="result_hash">ee0c290d66d17e4e40991c31eee0c55bd724922a3ecb66f7300b2ce8abf3d204</pre>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <h6><small class="text-muted">subtests.subtest.test_classes.TestClassWithFixture</small></h6>
+                        <h5 class="card-title">test_hmatch_imatch_testclasswithfixture</h5>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="btn-group status-badge" role="group" aria-label="status">
+                                <button class="btn btn-sm btn-success" type="button"
+                                        data-bs-toggle="offcanvas" data-bs-target="#offcanvas06"
+                                        aria-controls="offcanvas06">
+                                    PASSED
+                                </button>
+                                
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div><div class="py-2 col-sm-6 col-lg-4 col-xxl-3 result overall-passed image-none hash-match">
+                <span class="collected-sort" style="display:none">07</span>
+                <span class="test-name" style="display:none">subtests.subtest.test_classes.TestMultipleFigures.test_hmatch_imatch_multiplefigures_first</span>
+                <span class="status-sort" style="display:none">00</span>
+                <span class="rms-sort" style="display:none">000001</span>
+                <span class="filter-classes" style="display:none">overall-passed image-none hash-match</span>
+                <div class="card">
+                    <a class="btn" data-bs-toggle="offcanvas" href="#offcanvas07" role="button"
+                       aria-controls="offcanvas07">
+                        <img src="subtests.subtest.test_classes.TestMultipleFigures.test_hmatch_imatch_multiplefigures_first/result.png" class="card-img-top" alt="result image">
+                    </a>
+                    <div class="offcanvas offcanvas-bottom mpl-images" tabindex="-1" id="offcanvas07"
+                         aria-labelledby="offcanvas07Label">
+                        <div class="offcanvas-header">
+                            <h6><small class="text-muted">subtests.subtest.test_classes.TestMultipleFigures</small></h6>
+                            <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                        </div>
+                        <div class="offcanvas-body">
+                            <h5 class="card-title">test_hmatch_imatch_multiplefigures_first</h5>
+                            
+                            <div class="row row-cols-1 row-cols-md-2 g-4">
+                                <div class="col">
+                                    <div class="card text-white bg-success">
+                                        <div class="card-header">PASSED</div>
+                                        <div class="card-body">
+                                            <pre class="card-text">Test hash matches baseline hash.</pre>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    
+                                    <div class="card text-white bg-success mb-3">
+                                        <div class="card-header">Baseline hash matches</div>
+                                        <div class="card-body">
+                                            <div class="mb-3 baseline-hash">
+                                                <label for="baseline_hash" class="form-label">Baseline</label>
+                                                <pre class="form-control baseline-hash-value" id="baseline_hash">3f8d2c1facdf6e34e43b4343abd888bd5ee9d2d451ce285e62bf0c65d6cdcdce</pre>
+                                            </div>
+                                            <div class="mb-3 result-hash">
+                                                <label for="result_hash" class="form-label">Result</label>
+                                                <pre class="form-control result-hash-value" id="result_hash">3f8d2c1facdf6e34e43b4343abd888bd5ee9d2d451ce285e62bf0c65d6cdcdce</pre>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <h6><small class="text-muted">subtests.subtest.test_classes.TestMultipleFigures</small></h6>
+                        <h5 class="card-title">test_hmatch_imatch_multiplefigures_first</h5>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="btn-group status-badge" role="group" aria-label="status">
+                                <button class="btn btn-sm btn-success" type="button"
+                                        data-bs-toggle="offcanvas" data-bs-target="#offcanvas07"
+                                        aria-controls="offcanvas07">
+                                    PASSED
+                                </button>
+                                
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div><div class="py-2 col-sm-6 col-lg-4 col-xxl-3 result overall-passed image-none hash-match">
+                <span class="collected-sort" style="display:none">08</span>
+                <span class="test-name" style="display:none">subtests.subtest.test_classes.TestMultipleFigures.test_hmatch_imatch_multiplefigures_second</span>
+                <span class="status-sort" style="display:none">00</span>
+                <span class="rms-sort" style="display:none">000001</span>
+                <span class="filter-classes" style="display:none">overall-passed image-none hash-match</span>
+                <div class="card">
+                    <a class="btn" data-bs-toggle="offcanvas" href="#offcanvas08" role="button"
+                       aria-controls="offcanvas08">
+                        <img src="subtests.subtest.test_classes.TestMultipleFigures.test_hmatch_imatch_multiplefigures_second/result.png" class="card-img-top" alt="result image">
+                    </a>
+                    <div class="offcanvas offcanvas-bottom mpl-images" tabindex="-1" id="offcanvas08"
+                         aria-labelledby="offcanvas08Label">
+                        <div class="offcanvas-header">
+                            <h6><small class="text-muted">subtests.subtest.test_classes.TestMultipleFigures</small></h6>
+                            <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                        </div>
+                        <div class="offcanvas-body">
+                            <h5 class="card-title">test_hmatch_imatch_multiplefigures_second</h5>
+                            
+                            <div class="row row-cols-1 row-cols-md-2 g-4">
+                                <div class="col">
+                                    <div class="card text-white bg-success">
+                                        <div class="card-header">PASSED</div>
+                                        <div class="card-body">
+                                            <pre class="card-text">Test hash matches baseline hash.</pre>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    
+                                    <div class="card text-white bg-success mb-3">
+                                        <div class="card-header">Baseline hash matches</div>
+                                        <div class="card-body">
+                                            <div class="mb-3 baseline-hash">
+                                                <label for="baseline_hash" class="form-label">Baseline</label>
+                                                <pre class="form-control baseline-hash-value" id="baseline_hash">9a6b008431f0b47a8866d87a9f1e9352fd73407a3ee2dd756a8ccbfa5a835a08</pre>
+                                            </div>
+                                            <div class="mb-3 result-hash">
+                                                <label for="result_hash" class="form-label">Result</label>
+                                                <pre class="form-control result-hash-value" id="result_hash">9a6b008431f0b47a8866d87a9f1e9352fd73407a3ee2dd756a8ccbfa5a835a08</pre>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <h6><small class="text-muted">subtests.subtest.test_classes.TestMultipleFigures</small></h6>
+                        <h5 class="card-title">test_hmatch_imatch_multiplefigures_second</h5>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="btn-group status-badge" role="group" aria-label="status">
+                                <button class="btn btn-sm btn-success" type="button"
+                                        data-bs-toggle="offcanvas" data-bs-target="#offcanvas08"
+                                        aria-controls="offcanvas08">
+                                    PASSED
+                                </button>
+                                
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div><div class="py-2 col-sm-6 col-lg-4 col-xxl-3 result overall-passed image-none hash-match">
+                <span class="collected-sort" style="display:none">09</span>
+                <span class="test-name" style="display:none">subtests.subtest.test_functions.test_hmatch_imatch</span>
+                <span class="status-sort" style="display:none">00</span>
+                <span class="rms-sort" style="display:none">000001</span>
+                <span class="filter-classes" style="display:none">overall-passed image-none hash-match</span>
+                <div class="card">
+                    <a class="btn" data-bs-toggle="offcanvas" href="#offcanvas09" role="button"
+                       aria-controls="offcanvas09">
+                        <img src="subtests.subtest.test_functions.test_hmatch_imatch/result.png" class="card-img-top" alt="result image">
+                    </a>
+                    <div class="offcanvas offcanvas-bottom mpl-images" tabindex="-1" id="offcanvas09"
+                         aria-labelledby="offcanvas09Label">
+                        <div class="offcanvas-header">
+                            <h6><small class="text-muted">subtests.subtest.test_functions</small></h6>
+                            <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                        </div>
+                        <div class="offcanvas-body">
+                            <h5 class="card-title">test_hmatch_imatch</h5>
+                            
+                            <div class="row row-cols-1 row-cols-md-2 g-4">
+                                <div class="col">
+                                    <div class="card text-white bg-success">
+                                        <div class="card-header">PASSED</div>
+                                        <div class="card-body">
+                                            <pre class="card-text">Test hash matches baseline hash.</pre>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    
+                                    <div class="card text-white bg-success mb-3">
+                                        <div class="card-header">Baseline hash matches</div>
+                                        <div class="card-body">
+                                            <div class="mb-3 baseline-hash">
+                                                <label for="baseline_hash" class="form-label">Baseline</label>
+                                                <pre class="form-control baseline-hash-value" id="baseline_hash">d21af7f9a2c1cbaf3c9bca3598f1b32b36891ac9d5db47e81a7bcaa342f7d4fc</pre>
+                                            </div>
+                                            <div class="mb-3 result-hash">
+                                                <label for="result_hash" class="form-label">Result</label>
+                                                <pre class="form-control result-hash-value" id="result_hash">d21af7f9a2c1cbaf3c9bca3598f1b32b36891ac9d5db47e81a7bcaa342f7d4fc</pre>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <h6><small class="text-muted">subtests.subtest.test_functions</small></h6>
+                        <h5 class="card-title">test_hmatch_imatch</h5>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="btn-group status-badge" role="group" aria-label="status">
+                                <button class="btn btn-sm btn-success" type="button"
+                                        data-bs-toggle="offcanvas" data-bs-target="#offcanvas09"
+                                        aria-controls="offcanvas09">
+                                    PASSED
+                                </button>
+                                
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div><div class="py-2 col-sm-6 col-lg-4 col-xxl-3 result overall-passed image-none hash-match">
+                <span class="collected-sort" style="display:none">18</span>
+                <span class="test-name" style="display:none">subtests.subtest.test_unittest.TestCase.test_hmatch_imatch_testclass</span>
+                <span class="status-sort" style="display:none">00</span>
+                <span class="rms-sort" style="display:none">000001</span>
+                <span class="filter-classes" style="display:none">overall-passed image-none hash-match</span>
+                <div class="card">
+                    <a class="btn" data-bs-toggle="offcanvas" href="#offcanvas18" role="button"
+                       aria-controls="offcanvas18">
+                        <img src="subtests.subtest.test_unittest.TestCase.test_hmatch_imatch_testclass/result.png" class="card-img-top" alt="result image">
+                    </a>
+                    <div class="offcanvas offcanvas-bottom mpl-images" tabindex="-1" id="offcanvas18"
+                         aria-labelledby="offcanvas18Label">
+                        <div class="offcanvas-header">
+                            <h6><small class="text-muted">subtests.subtest.test_unittest.TestCase</small></h6>
+                            <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                        </div>
+                        <div class="offcanvas-body">
+                            <h5 class="card-title">test_hmatch_imatch_testclass</h5>
+                            
+                            <div class="row row-cols-1 row-cols-md-2 g-4">
+                                <div class="col">
+                                    <div class="card text-white bg-success">
+                                        <div class="card-header">PASSED</div>
+                                        <div class="card-body">
+                                            <pre class="card-text">Test hash matches baseline hash.</pre>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    
+                                    <div class="card text-white bg-success mb-3">
+                                        <div class="card-header">Baseline hash matches</div>
+                                        <div class="card-body">
+                                            <div class="mb-3 baseline-hash">
+                                                <label for="baseline_hash" class="form-label">Baseline</label>
+                                                <pre class="form-control baseline-hash-value" id="baseline_hash">af966da7f2e57908211d559ff0a24a52c363c3fabca9e810138ad60e3fd2bcc9</pre>
+                                            </div>
+                                            <div class="mb-3 result-hash">
+                                                <label for="result_hash" class="form-label">Result</label>
+                                                <pre class="form-control result-hash-value" id="result_hash">af966da7f2e57908211d559ff0a24a52c363c3fabca9e810138ad60e3fd2bcc9</pre>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <h6><small class="text-muted">subtests.subtest.test_unittest.TestCase</small></h6>
+                        <h5 class="card-title">test_hmatch_imatch_testclass</h5>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="btn-group status-badge" role="group" aria-label="status">
+                                <button class="btn btn-sm btn-success" type="button"
+                                        data-bs-toggle="offcanvas" data-bs-target="#offcanvas18"
+                                        aria-controls="offcanvas18">
+                                    PASSED
+                                </button>
+                                
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div><div class="py-2 col-sm-6 col-lg-4 col-xxl-3 result overall-passed image-none hash-match">
+                <span class="collected-sort" style="display:none">20</span>
+                <span class="test-name" style="display:none">subtests.subtest.test_unittest.TestCaseWithSetUp.test_hmatch_imatch_testcasewithsetup</span>
+                <span class="status-sort" style="display:none">00</span>
+                <span class="rms-sort" style="display:none">000001</span>
+                <span class="filter-classes" style="display:none">overall-passed image-none hash-match</span>
+                <div class="card">
+                    <a class="btn" data-bs-toggle="offcanvas" href="#offcanvas20" role="button"
+                       aria-controls="offcanvas20">
+                        <img src="subtests.subtest.test_unittest.TestCaseWithSetUp.test_hmatch_imatch_testcasewithsetup/result.png" class="card-img-top" alt="result image">
+                    </a>
+                    <div class="offcanvas offcanvas-bottom mpl-images" tabindex="-1" id="offcanvas20"
+                         aria-labelledby="offcanvas20Label">
+                        <div class="offcanvas-header">
+                            <h6><small class="text-muted">subtests.subtest.test_unittest.TestCaseWithSetUp</small></h6>
+                            <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                        </div>
+                        <div class="offcanvas-body">
+                            <h5 class="card-title">test_hmatch_imatch_testcasewithsetup</h5>
+                            
+                            <div class="row row-cols-1 row-cols-md-2 g-4">
+                                <div class="col">
+                                    <div class="card text-white bg-success">
+                                        <div class="card-header">PASSED</div>
+                                        <div class="card-body">
+                                            <pre class="card-text">Test hash matches baseline hash.</pre>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    
+                                    <div class="card text-white bg-success mb-3">
+                                        <div class="card-header">Baseline hash matches</div>
+                                        <div class="card-body">
+                                            <div class="mb-3 baseline-hash">
+                                                <label for="baseline_hash" class="form-label">Baseline</label>
+                                                <pre class="form-control baseline-hash-value" id="baseline_hash">56d00363330cb7d959d6cfdc1335901716e841f54014cb6e657d1c4721384252</pre>
+                                            </div>
+                                            <div class="mb-3 result-hash">
+                                                <label for="result_hash" class="form-label">Result</label>
+                                                <pre class="form-control result-hash-value" id="result_hash">56d00363330cb7d959d6cfdc1335901716e841f54014cb6e657d1c4721384252</pre>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <h6><small class="text-muted">subtests.subtest.test_unittest.TestCaseWithSetUp</small></h6>
+                        <h5 class="card-title">test_hmatch_imatch_testcasewithsetup</h5>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="btn-group status-badge" role="group" aria-label="status">
+                                <button class="btn btn-sm btn-success" type="button"
+                                        data-bs-toggle="offcanvas" data-bs-target="#offcanvas20"
+                                        aria-controls="offcanvas20">
+                                    PASSED
+                                </button>
+                                
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div><div class="py-2 col-sm-6 col-lg-4 col-xxl-3 result overall-passed image-none hash-match">
+                <span class="collected-sort" style="display:none">22</span>
+                <span class="test-name" style="display:none">subtests.subtest.test_unittest.TestCaseWithSetUpClass.test_hmatch_imatch_testcasewithsetupclass</span>
+                <span class="status-sort" style="display:none">00</span>
+                <span class="rms-sort" style="display:none">000001</span>
+                <span class="filter-classes" style="display:none">overall-passed image-none hash-match</span>
+                <div class="card">
+                    <a class="btn" data-bs-toggle="offcanvas" href="#offcanvas22" role="button"
+                       aria-controls="offcanvas22">
+                        <img src="subtests.subtest.test_unittest.TestCaseWithSetUpClass.test_hmatch_imatch_testcasewithsetupclass/result.png" class="card-img-top" alt="result image">
+                    </a>
+                    <div class="offcanvas offcanvas-bottom mpl-images" tabindex="-1" id="offcanvas22"
+                         aria-labelledby="offcanvas22Label">
+                        <div class="offcanvas-header">
+                            <h6><small class="text-muted">subtests.subtest.test_unittest.TestCaseWithSetUpClass</small></h6>
+                            <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                        </div>
+                        <div class="offcanvas-body">
+                            <h5 class="card-title">test_hmatch_imatch_testcasewithsetupclass</h5>
+                            
+                            <div class="row row-cols-1 row-cols-md-2 g-4">
+                                <div class="col">
+                                    <div class="card text-white bg-success">
+                                        <div class="card-header">PASSED</div>
+                                        <div class="card-body">
+                                            <pre class="card-text">Test hash matches baseline hash.</pre>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    
+                                    <div class="card text-white bg-success mb-3">
+                                        <div class="card-header">Baseline hash matches</div>
+                                        <div class="card-body">
+                                            <div class="mb-3 baseline-hash">
+                                                <label for="baseline_hash" class="form-label">Baseline</label>
+                                                <pre class="form-control baseline-hash-value" id="baseline_hash">5f1e6e2b775a1b1d1e9e20a4d929586a9accb08b2fddaec8a24fb4acfc83c602</pre>
+                                            </div>
+                                            <div class="mb-3 result-hash">
+                                                <label for="result_hash" class="form-label">Result</label>
+                                                <pre class="form-control result-hash-value" id="result_hash">5f1e6e2b775a1b1d1e9e20a4d929586a9accb08b2fddaec8a24fb4acfc83c602</pre>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <h6><small class="text-muted">subtests.subtest.test_unittest.TestCaseWithSetUpClass</small></h6>
+                        <h5 class="card-title">test_hmatch_imatch_testcasewithsetupclass</h5>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="btn-group status-badge" role="group" aria-label="status">
+                                <button class="btn btn-sm btn-success" type="button"
+                                        data-bs-toggle="offcanvas" data-bs-target="#offcanvas22"
+                                        aria-controls="offcanvas22">
+                                    PASSED
+                                </button>
+                                
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="offcanvas offcanvas-start" tabindex="-1"></div>
+<div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasFilter" aria-labelledby="offcanvasFilterLabel">
+    <div class="offcanvas-header">
+        <h6>Sort and filter results</h6>
+        <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body">
+        <h5>Sort tests by...</h5>
+        <div class="btn-group m-2 pb-2" role="group" aria-label="Select sorting">
+            <input type="radio" class="btn-check sort" data-sort="status-sort"
+                   data-order="desc"
+                   name="sort" id="sortstatus"
+                   autocomplete="off" checked>
+            <label class="btn btn-outline-secondary" for="sortstatus">status</label>
+            <input type="radio" class="btn-check sort" data-sort="collected-sort"
+                   data-order="asc"
+                   name="sort" id="sortcollected"
+                   autocomplete="off">
+            <label class="btn btn-outline-secondary" for="sortcollected">collected</label>
+            <input type="radio" class="btn-check sort" data-sort="test-name"
+                   
+                   name="sort" id="sortname"
+                   autocomplete="off">
+            <label class="btn btn-outline-secondary" for="sortname">name</label>
+            
+        </div>
+        <form id="filterForm" onsubmit="return false;">
+            <h5>Show tests which have...</h5>
+            <div class="list-group m-2">
+                <label class="list-group-item list-group-item-success">
+                    <input class="form-check-input me-1 filter" type="checkbox" value="" id="overall-passed"
+                           onclick="applyFilters()">
+                    passed <span class="badge bg-light text-dark">?</span>
+                </label>
+                <label class="list-group-item list-group-item-danger">
+                    <input class="form-check-input me-1 filter" type="checkbox" value="" id="overall-failed"
+                           onclick="applyFilters()">
+                    failed <span class="badge bg-light text-dark">?</span>
+                </label>
+                <label class="list-group-item list-group-item-warning">
+                    <input class="form-check-input me-1 filter" type="checkbox" value="" id="overall-skipped"
+                           onclick="applyFilters()">
+                    skipped <span class="badge bg-light text-dark">?</span>
+                </label>
+            </div>
+            
+            <div class="list-group m-2">
+                <label class="list-group-item list-group-item-success">
+                    <input class="form-check-input me-1 filter" type="checkbox" value="" id="hash-match"
+                           onclick="applyFilters()">
+                    matching hashes <span class="badge bg-light text-dark">?</span>
+                </label>
+                <label class="list-group-item list-group-item-danger">
+                    <input class="form-check-input me-1 filter" type="checkbox" value="" id="hash-diff"
+                           onclick="applyFilters()">
+                    differing hashes <span class="badge bg-light text-dark">?</span>
+                </label>
+                <label class="list-group-item list-group-item-warning">
+                    <input class="form-check-input me-1 filter" type="checkbox" value="" id="hash-missing"
+                           onclick="applyFilters()">
+                    no baseline hash <span class="badge bg-light text-dark">?</span>
+                </label>
+            </div>
+            <div class="d-flex">
+                <button type="submit" class="btn btn-primary m-2" data-bs-dismiss="offcanvas">Apply</button>
+                <button type="submit" class="btn btn-outline-secondary m-2" onclick="resetFilters()">Reset</button>
+                <div class="spacer"></div>
+                <div class="btn-group m-2" role="group" aria-label="Select condition">
+                    <input type="radio" class="btn-check" name="condition" id="conditionand" value="and"
+                           autocomplete="off" onclick="applyFilters()" checked>
+                    <label class="btn btn-outline-secondary" for="conditionand">AND</label>
+                    <input type="radio" class="btn-check" name="condition" id="conditionor" value="or"
+                           autocomplete="off" onclick="applyFilters()">
+                    <label class="btn btn-outline-secondary" for="conditionor">OR</label>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
+        crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/list.js@1.5.0/dist/list.min.js"
+        integrity="sha256-YqOIp4MygNx9/lcWr5lpcR88Ki/MNMWvJJkH0eK+fHM="
+        crossorigin="anonymous"></script>
+<script src="extra.js"></script>
+</body>
+</html>

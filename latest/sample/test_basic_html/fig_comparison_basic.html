@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        table, th, td {
+            border: 1px solid black;
+        }
+
+        td:first-child {
+            padding: 1em;
+        }
+
+        td div {
+            padding: 0.15em 0;
+            max-width: 20rem;
+            overflow-wrap: break-word;
+        }
+
+        .test-name {
+            font-size: 1.5em;
+        }
+
+        .status {
+            padding: 0.8em 0;
+        }
+
+        img {
+            width: 100%;
+        }
+    </style>
+    <title>Image comparison</title>
+</head>
+<body>
+<h2>Image test comparison</h2>
+<p>
+    13 passed
+    hash comparison, although 3
+    of those have a different baseline image
+</p>
+<p>
+    19 failed
+    hash comparison, although 6
+    of those have a matching baseline image
+</p>
+<p>
+    <a href="mpl35_ft261.json" download>Download generated hash library</a>
+</p>
+<table>
+    <tr>
+        <th></th>
+        <th>Baseline</th>
+        <th>Diff</th>
+        <th>Result</th>
+    </tr>
+    <tr>
+        <td>
+            <div>subtests.subtest.test_functions</div>
+            <div class="test-name">test_hmissing_imissing</div>
+            <div class="status">FAILED</div>
+            <div>RMS: None (missing)</div>
+            <div>Result hash: 2d15274f0e9b44f1c16e6b237710cd36a3de5c5b7596ef0e65e7a33ce4624cf4 (missing)</div>
+        </td>
+        <td></td>
+        <td></td>
+        <td><img src="subtests.subtest.test_functions.test_hmissing_imissing/result.png"></td>
+    </tr><tr>
+        <td>
+            <div>subtests.subtest.test_functions</div>
+            <div class="test-name">test_hmissing_idiff</div>
+            <div class="status">FAILED</div>
+            <div>RMS: 24.6217358806762 (diff)</div>
+            <div>Result hash: 9e98dbd2027525c776212daa061180b4fc40ad12dfc2cdfe4b86694ede14e0c3 (missing)</div>
+        </td>
+        <td><img src="subtests.subtest.test_functions.test_hmissing_idiff/baseline.png"></td>
+        <td><img src="subtests.subtest.test_functions.test_hmissing_idiff/result-failed-diff.png"></td>
+        <td><img src="subtests.subtest.test_functions.test_hmissing_idiff/result.png"></td>
+    </tr><tr>
+        <td>
+            <div>subtests.subtest.test_functions</div>
+            <div class="test-name">test_hmissing_idiffshape</div>
+            <div class="status">FAILED</div>
+            <div>RMS: None (diff)</div>
+            <div>Result hash: 5534324f9da5c1c104c3ef3435dc6fa9792c0d0d8b762fad5d7f81abd91fbb89 (missing)</div>
+        </td>
+        <td><img src="subtests.subtest.test_functions.test_hmissing_idiffshape/baseline.png"></td>
+        <td></td>
+        <td><img src="subtests.subtest.test_functions.test_hmissing_idiffshape/result.png"></td>
+    </tr><tr>
+        <td>
+            <div>subtests.subtest.test_functions</div>
+            <div class="test-name">test_hdiff_imissing</div>
+            <div class="status">FAILED</div>
+            <div>RMS: None (missing)</div>
+            <div>Result hash: e37bd5868d14547557653c051d23d3fd48d198d3f59006dc5ba390433d6670ff (diff)</div>
+        </td>
+        <td></td>
+        <td></td>
+        <td><img src="subtests.subtest.test_functions.test_hdiff_imissing/result.png"></td>
+    </tr><tr>
+        <td>
+            <div>subtests.subtest.test_functions</div>
+            <div class="test-name">test_hmissing_imatch</div>
+            <div class="status">FAILED</div>
+            <div>RMS: &lt; tolerance (match)</div>
+            <div>Result hash: 592d12cc2d5749a6607bbf98d715b95c06a2af6572a7e298bcae349648b9997e (missing)</div>
+        </td>
+        <td><img src="subtests.subtest.test_functions.test_hmissing_imatch/baseline.png"></td>
+        <td></td>
+        <td><img src="subtests.subtest.test_functions.test_hmissing_imatch/result.png"></td>
+    </tr><tr>
+        <td>
+            <div>subtests.subtest.test_classes.TestClass</div>
+            <div class="test-name">test_hdiff_idiff_testclass</div>
+            <div class="status">FAILED</div>
+            <div>RMS: 24.536840442259244 (diff)</div>
+            <div>Result hash: 2bb430367cdf04b7b5f3af8c50652964ff27def9fc0a75a68b4775ba1eb8e827 (diff)</div>
+        </td>
+        <td><img src="subtests.subtest.test_classes.TestClass.test_hdiff_idiff_testclass/baseline.png"></td>
+        <td><img src="subtests.subtest.test_classes.TestClass.test_hdiff_idiff_testclass/result-failed-diff.png"></td>
+        <td><img src="subtests.subtest.test_classes.TestClass.test_hdiff_idiff_testclass/result.png"></td>
+    </tr><tr>
+        <td>
+            <div>subtests.subtest.test_classes.TestClassWithSetupMethod</div>
+            <div class="test-name">test_hdiff_idiff_testclasswithsetupmethod</div>
+            <div class="status">FAILED</div>
+            <div>RMS: 24.537034749650488 (diff)</div>
+            <div>Result hash: 56d00363330cb7d959d6cfdc1335901716e841f54014cb6e657d1c4721384252 (diff)</div>
+        </td>
+        <td><img src="subtests.subtest.test_classes.TestClassWithSetupMethod.test_hdiff_idiff_testclasswithsetupmethod/baseline.png"></td>
+        <td><img src="subtests.subtest.test_classes.TestClassWithSetupMethod.test_hdiff_idiff_testclasswithsetupmethod/result-failed-diff.png"></td>
+        <td><img src="subtests.subtest.test_classes.TestClassWithSetupMethod.test_hdiff_idiff_testclasswithsetupmethod/result.png"></td>
+    </tr><tr>
+        <td>
+            <div>subtests.subtest.test_classes.TestClassWithSetupClass</div>
+            <div class="test-name">test_hdiff_idiff_testclasswithsetupclass</div>
+            <div class="status">FAILED</div>
+            <div>RMS: 24.563779228775037 (diff)</div>
+            <div>Result hash: 8c4fa5f95b2a2b424ad9e441b6aeeced9d51a52fe7f19870eedcdfdcf6d39818 (diff)</div>
+        </td>
+        <td><img src="subtests.subtest.test_classes.TestClassWithSetupClass.test_hdiff_idiff_testclasswithsetupclass/baseline.png"></td>
+        <td><img src="subtests.subtest.test_classes.TestClassWithSetupClass.test_hdiff_idiff_testclasswithsetupclass/result-failed-diff.png"></td>
+        <td><img src="subtests.subtest.test_classes.TestClassWithSetupClass.test_hdiff_idiff_testclasswithsetupclass/result.png"></td>
+    </tr><tr>
+        <td>
+            <div>subtests.subtest.test_functions</div>
+            <div class="test-name">test_hdiff_idiff</div>
+            <div class="status">FAILED</div>
+            <div>RMS: 24.620185259705547 (diff)</div>
+            <div>Result hash: 567f014f73cdfea555e46a29aaac43c4394c3c4c21998e54971edb773eee6c95 (diff)</div>
+        </td>
+        <td><img src="subtests.subtest.test_functions.test_hdiff_idiff/baseline.png"></td>
+        <td><img src="subtests.subtest.test_functions.test_hdiff_idiff/result-failed-diff.png"></td>
+        <td><img src="subtests.subtest.test_functions.test_hdiff_idiff/result.png"></td>
+    </tr><tr>
+        <td>
+            <div>subtests.subtest.test_functions</div>
+            <div class="test-name">test_hdiff_idiffshape</div>
+            <div class="status">FAILED</div>
+            <div>RMS: None (diff)</div>
+            <div>Result hash: b6673bafdcc8350c612bc925269fc4332dd9062a6399701067863b178568b219 (diff)</div>
+        </td>
+        <td><img src="subtests.subtest.test_functions.test_hdiff_idiffshape/baseline.png"></td>
+        <td></td>
+        <td><img src="subtests.subtest.test_functions.test_hdiff_idiffshape/result.png"></td>
+    </tr><tr>
+        <td>
+            <div>subtests.subtest.test_special</div>
+            <div class="test-name">test_hdiff_idiff_tolerance</div>
+            <div class="status">FAILED</div>
+            <div>RMS: 24.576566752362574 (diff)</div>
+            <div>Result hash: f26ca66a7c02ae64c8b2512021e0450cbe64c084c9d5f7e2600a7342a559c0b1 (diff)</div>
+        </td>
+        <td><img src="subtests.subtest.test_special.test_hdiff_idiff_tolerance/baseline.png"></td>
+        <td><img src="subtests.subtest.test_special.test_hdiff_idiff_tolerance/result-failed-diff.png"></td>
+        <td><img src="subtests.subtest.test_special.test_hdiff_idiff_tolerance/result.png"></td>
+    </tr><tr>
+        <td>
+            <div>subtests.subtest.test_unittest.TestCase</div>
+            <div class="test-name">test_hdiff_idiff_testclass</div>
+            <div class="status">FAILED</div>
+            <div>RMS: 24.536840442259244 (diff)</div>
+            <div>Result hash: 2bb430367cdf04b7b5f3af8c50652964ff27def9fc0a75a68b4775ba1eb8e827 (diff)</div>
+        </td>
+        <td><img src="subtests.subtest.test_unittest.TestCase.test_hdiff_idiff_testclass/baseline.png"></td>
+        <td><img src="subtests.subtest.test_unittest.TestCase.test_hdiff_idiff_testclass/result-failed-diff.png"></td>
+        <td><img src="subtests.subtest.test_unittest.TestCase.test_hdiff_idiff_testclass/result.png"></td>
+    </tr><tr>
+        <td>
+            <div>subtests.subtest.test_unittest.TestCaseWithSetUp</div>
+            <div class="test-name">test_hdiff_idiff_testcasewithsetup</div>
+            <div class="status">FAILED</div>
+            <div>RMS: 24.537034749650488 (diff)</div>
+            <div>Result hash: 56d00363330cb7d959d6cfdc1335901716e841f54014cb6e657d1c4721384252 (diff)</div>
+        </td>
+        <td><img src="subtests.subtest.test_unittest.TestCaseWithSetUp.test_hdiff_idiff_testcasewithsetup/baseline.png"></td>
+        <td><img src="subtests.subtest.test_unittest.TestCaseWithSetUp.test_hdiff_idiff_testcasewithsetup/result-failed-diff.png"></td>
+        <td><img src="subtests.subtest.test_unittest.TestCaseWithSetUp.test_hdiff_idiff_testcasewithsetup/result.png"></td>
+    </tr><tr>
+        <td>
+            <div>subtests.subtest.test_unittest.TestCaseWithSetUpClass</div>
+            <div class="test-name">test_hdiff_idiff_testcasewithsetupclass</div>
+            <div class="status">FAILED</div>
+            <div>RMS: 24.520257314106637 (diff)</div>
+            <div>Result hash: 5f1e6e2b775a1b1d1e9e20a4d929586a9accb08b2fddaec8a24fb4acfc83c602 (diff)</div>
+        </td>
+        <td><img src="subtests.subtest.test_unittest.TestCaseWithSetUpClass.test_hdiff_idiff_testcasewithsetupclass/baseline.png"></td>
+        <td><img src="subtests.subtest.test_unittest.TestCaseWithSetUpClass.test_hdiff_idiff_testcasewithsetupclass/result-failed-diff.png"></td>
+        <td><img src="subtests.subtest.test_unittest.TestCaseWithSetUpClass.test_hdiff_idiff_testcasewithsetupclass/result.png"></td>
+    </tr><tr>
+        <td>
+            <div>subtests.subtest.test_functions</div>
+            <div class="test-name">test_hdiff_imatch</div>
+            <div class="status">FAILED</div>
+            <div>RMS: &lt; tolerance (match)</div>
+            <div>Result hash: b92c5c6bc631fbdaffa23d3d57fc027768fcded889f3b269941da859110ce282 (diff)</div>
+        </td>
+        <td><img src="subtests.subtest.test_functions.test_hdiff_imatch/baseline.png"></td>
+        <td></td>
+        <td><img src="subtests.subtest.test_functions.test_hdiff_imatch/result.png"></td>
+    </tr><tr>
+        <td>
+            <div>subtests.subtest.test_special</div>
+            <div class="test-name">test_hdiff_imatch_tolerance</div>
+            <div class="status">FAILED</div>
+            <div>RMS: &lt; tolerance (match)</div>
+            <div>Result hash: f26ca66a7c02ae64c8b2512021e0450cbe64c084c9d5f7e2600a7342a559c0b1 (diff)</div>
+        </td>
+        <td><img src="subtests.subtest.test_special.test_hdiff_imatch_tolerance/baseline.png"></td>
+        <td></td>
+        <td><img src="subtests.subtest.test_special.test_hdiff_imatch_tolerance/result.png"></td>
+    </tr><tr>
+        <td>
+            <div>subtests.subtest.test_special</div>
+            <div class="test-name">test_hdiff_imatch_savefig</div>
+            <div class="status">FAILED</div>
+            <div>RMS: &lt; tolerance (match)</div>
+            <div>Result hash: 0a0514c35f1da18de3f4ceb1901501e5a8a5a0d18eb8a7b4db5cfde170b57423 (diff)</div>
+        </td>
+        <td><img src="subtests.subtest.test_special.test_hdiff_imatch_savefig/baseline.png"></td>
+        <td></td>
+        <td><img src="subtests.subtest.test_special.test_hdiff_imatch_savefig/result.png"></td>
+    </tr><tr>
+        <td>
+            <div>subtests.subtest.test_special</div>
+            <div class="test-name">test_hdiff_imatch_style</div>
+            <div class="status">FAILED</div>
+            <div>RMS: &lt; tolerance (match)</div>
+            <div>Result hash: 588ad00c4b99c6087d04f84ca071a5997b4ecf76cf859ce3548634e67841a79b (diff)</div>
+        </td>
+        <td><img src="subtests.subtest.test_special.test_hdiff_imatch_style/baseline.png"></td>
+        <td></td>
+        <td><img src="subtests.subtest.test_special.test_hdiff_imatch_style/result.png"></td>
+    </tr><tr>
+        <td>
+            <div>subtests.subtest.test_special</div>
+            <div class="test-name">test_hdiff_imatch_removetext</div>
+            <div class="status">FAILED</div>
+            <div>RMS: &lt; tolerance (match)</div>
+            <div>Result hash: a78ad7512c6d886262b1bcb4501374bfc61ef8569d24930b0258dab08e6eca9a (diff)</div>
+        </td>
+        <td><img src="subtests.subtest.test_special.test_hdiff_imatch_removetext/baseline.png"></td>
+        <td></td>
+        <td><img src="subtests.subtest.test_special.test_hdiff_imatch_removetext/result.png"></td>
+    </tr><tr>
+        <td>
+            <div>subtests.subtest.test_functions</div>
+            <div class="test-name">test_hmatch_imissing</div>
+            <div class="status">PASSED</div>
+            <div>RMS: None (missing)</div>
+            <div>Result hash: f06e910b6c80db28e1eb08fdb8e1ab9211434498c134d00820900a13a4f2568c (match)</div>
+        </td>
+        <td></td>
+        <td></td>
+        <td><img src="subtests.subtest.test_functions.test_hmatch_imissing/result.png"></td>
+    </tr><tr>
+        <td>
+            <div>subtests.subtest.test_functions</div>
+            <div class="test-name">test_hmatch_idiff</div>
+            <div class="status">PASSED</div>
+            <div>RMS: 24.618234716477044 (diff)</div>
+            <div>Result hash: 085fcb22e9d6cfbb2bb6e0efbf749fa598be27e837c348130adc21a6dc2fc5fe (match)</div>
+        </td>
+        <td><img src="subtests.subtest.test_functions.test_hmatch_idiff/baseline.png"></td>
+        <td><img src="subtests.subtest.test_functions.test_hmatch_idiff/result-failed-diff.png"></td>
+        <td><img src="subtests.subtest.test_functions.test_hmatch_idiff/result.png"></td>
+    </tr><tr>
+        <td>
+            <div>subtests.subtest.test_functions</div>
+            <div class="test-name">test_hmatch_idiffshape</div>
+            <div class="status">PASSED</div>
+            <div>RMS: None (diff)</div>
+            <div>Result hash: a8f866c3b765e274c217d49ba72c9ce3bd4b316491ffd34a124ef03643ce45b8 (match)</div>
+        </td>
+        <td><img src="subtests.subtest.test_functions.test_hmatch_idiffshape/baseline.png"></td>
+        <td></td>
+        <td><img src="subtests.subtest.test_functions.test_hmatch_idiffshape/result.png"></td>
+    </tr><tr>
+        <td>
+            <div>subtests.subtest.test_classes.TestClass</div>
+            <div class="test-name">test_hmatch_imatch_testclass</div>
+            <div class="status">PASSED</div>
+            <div>RMS: &lt; tolerance (match)</div>
+            <div>Result hash: af966da7f2e57908211d559ff0a24a52c363c3fabca9e810138ad60e3fd2bcc9 (match)</div>
+        </td>
+        <td><img src="subtests.subtest.test_classes.TestClass.test_hmatch_imatch_testclass/baseline.png"></td>
+        <td></td>
+        <td><img src="subtests.subtest.test_classes.TestClass.test_hmatch_imatch_testclass/result.png"></td>
+    </tr><tr>
+        <td>
+            <div>subtests.subtest.test_classes.TestClassWithSetupMethod</div>
+            <div class="test-name">test_hmatch_imatch_testclasswithsetupmethod</div>
+            <div class="status">PASSED</div>
+            <div>RMS: &lt; tolerance (match)</div>
+            <div>Result hash: 56d00363330cb7d959d6cfdc1335901716e841f54014cb6e657d1c4721384252 (match)</div>
+        </td>
+        <td><img src="subtests.subtest.test_classes.TestClassWithSetupMethod.test_hmatch_imatch_testclasswithsetupmethod/baseline.png"></td>
+        <td></td>
+        <td><img src="subtests.subtest.test_classes.TestClassWithSetupMethod.test_hmatch_imatch_testclasswithsetupmethod/result.png"></td>
+    </tr><tr>
+        <td>
+            <div>subtests.subtest.test_classes.TestClassWithSetupClass</div>
+            <div class="test-name">test_hmatch_imatch_testclasswithsetupclass</div>
+            <div class="status">PASSED</div>
+            <div>RMS: &lt; tolerance (match)</div>
+            <div>Result hash: 8c4fa5f95b2a2b424ad9e441b6aeeced9d51a52fe7f19870eedcdfdcf6d39818 (match)</div>
+        </td>
+        <td><img src="subtests.subtest.test_classes.TestClassWithSetupClass.test_hmatch_imatch_testclasswithsetupclass/baseline.png"></td>
+        <td></td>
+        <td><img src="subtests.subtest.test_classes.TestClassWithSetupClass.test_hmatch_imatch_testclasswithsetupclass/result.png"></td>
+    </tr><tr>
+        <td>
+            <div>subtests.subtest.test_classes.TestClassWithFixture</div>
+            <div class="test-name">test_hmatch_imatch_testclasswithfixture</div>
+            <div class="status">PASSED</div>
+            <div>RMS: &lt; tolerance (match)</div>
+            <div>Result hash: ee0c290d66d17e4e40991c31eee0c55bd724922a3ecb66f7300b2ce8abf3d204 (match)</div>
+        </td>
+        <td><img src="subtests.subtest.test_classes.TestClassWithFixture.test_hmatch_imatch_testclasswithfixture/baseline.png"></td>
+        <td></td>
+        <td><img src="subtests.subtest.test_classes.TestClassWithFixture.test_hmatch_imatch_testclasswithfixture/result.png"></td>
+    </tr><tr>
+        <td>
+            <div>subtests.subtest.test_classes.TestMultipleFigures</div>
+            <div class="test-name">test_hmatch_imatch_multiplefigures_first</div>
+            <div class="status">PASSED</div>
+            <div>RMS: &lt; tolerance (match)</div>
+            <div>Result hash: 3f8d2c1facdf6e34e43b4343abd888bd5ee9d2d451ce285e62bf0c65d6cdcdce (match)</div>
+        </td>
+        <td><img src="subtests.subtest.test_classes.TestMultipleFigures.test_hmatch_imatch_multiplefigures_first/baseline.png"></td>
+        <td></td>
+        <td><img src="subtests.subtest.test_classes.TestMultipleFigures.test_hmatch_imatch_multiplefigures_first/result.png"></td>
+    </tr><tr>
+        <td>
+            <div>subtests.subtest.test_classes.TestMultipleFigures</div>
+            <div class="test-name">test_hmatch_imatch_multiplefigures_second</div>
+            <div class="status">PASSED</div>
+            <div>RMS: &lt; tolerance (match)</div>
+            <div>Result hash: 9a6b008431f0b47a8866d87a9f1e9352fd73407a3ee2dd756a8ccbfa5a835a08 (match)</div>
+        </td>
+        <td><img src="subtests.subtest.test_classes.TestMultipleFigures.test_hmatch_imatch_multiplefigures_second/baseline.png"></td>
+        <td></td>
+        <td><img src="subtests.subtest.test_classes.TestMultipleFigures.test_hmatch_imatch_multiplefigures_second/result.png"></td>
+    </tr><tr>
+        <td>
+            <div>subtests.subtest.test_functions</div>
+            <div class="test-name">test_hmatch_imatch</div>
+            <div class="status">PASSED</div>
+            <div>RMS: &lt; tolerance (match)</div>
+            <div>Result hash: d21af7f9a2c1cbaf3c9bca3598f1b32b36891ac9d5db47e81a7bcaa342f7d4fc (match)</div>
+        </td>
+        <td><img src="subtests.subtest.test_functions.test_hmatch_imatch/baseline.png"></td>
+        <td></td>
+        <td><img src="subtests.subtest.test_functions.test_hmatch_imatch/result.png"></td>
+    </tr><tr>
+        <td>
+            <div>subtests.subtest.test_unittest.TestCase</div>
+            <div class="test-name">test_hmatch_imatch_testclass</div>
+            <div class="status">PASSED</div>
+            <div>RMS: &lt; tolerance (match)</div>
+            <div>Result hash: af966da7f2e57908211d559ff0a24a52c363c3fabca9e810138ad60e3fd2bcc9 (match)</div>
+        </td>
+        <td><img src="subtests.subtest.test_unittest.TestCase.test_hmatch_imatch_testclass/baseline.png"></td>
+        <td></td>
+        <td><img src="subtests.subtest.test_unittest.TestCase.test_hmatch_imatch_testclass/result.png"></td>
+    </tr><tr>
+        <td>
+            <div>subtests.subtest.test_unittest.TestCaseWithSetUp</div>
+            <div class="test-name">test_hmatch_imatch_testcasewithsetup</div>
+            <div class="status">PASSED</div>
+            <div>RMS: &lt; tolerance (match)</div>
+            <div>Result hash: 56d00363330cb7d959d6cfdc1335901716e841f54014cb6e657d1c4721384252 (match)</div>
+        </td>
+        <td><img src="subtests.subtest.test_unittest.TestCaseWithSetUp.test_hmatch_imatch_testcasewithsetup/baseline.png"></td>
+        <td></td>
+        <td><img src="subtests.subtest.test_unittest.TestCaseWithSetUp.test_hmatch_imatch_testcasewithsetup/result.png"></td>
+    </tr><tr>
+        <td>
+            <div>subtests.subtest.test_unittest.TestCaseWithSetUpClass</div>
+            <div class="test-name">test_hmatch_imatch_testcasewithsetupclass</div>
+            <div class="status">PASSED</div>
+            <div>RMS: &lt; tolerance (match)</div>
+            <div>Result hash: 5f1e6e2b775a1b1d1e9e20a4d929586a9accb08b2fddaec8a24fb4acfc83c602 (match)</div>
+        </td>
+        <td><img src="subtests.subtest.test_unittest.TestCaseWithSetUpClass.test_hmatch_imatch_testcasewithsetupclass/baseline.png"></td>
+        <td></td>
+        <td><img src="subtests.subtest.test_unittest.TestCaseWithSetUpClass.test_hmatch_imatch_testcasewithsetupclass/result.png"></td>
+    </tr>
+</table>
+</body>
+</html>
