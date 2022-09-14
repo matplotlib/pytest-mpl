@@ -9,3 +9,6 @@ __pycache__
 build
 dist
 .tmp
+.DS_Store
+/docs/sample
+/docs/_build
