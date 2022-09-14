@@ -1,0 +1,8 @@
+<nav class="bd-links" id="bd-docs-nav" aria-label="{{ _('Site navigation') }}">
+  <p class="bd-links__title" role="heading" aria-level="1">
+    <a href="{{ pathto('index') }}">{{ project }} Documentation</a>
+  </p>
+  <div class="bd-toc-item navbar-nav">
+    {{ generate_toctree_html("sidebar", startdepth=0, maxdepth=1, collapse=True, includehidden=True, titles_only=True) }}
+  </div>
+</nav>

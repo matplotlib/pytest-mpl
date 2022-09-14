@@ -3,7 +3,6 @@
 .. module:: pytest-mpl
 
 .. toctree::
-    :caption: pytest-mpl Documentation
     :hidden:
 
     installing

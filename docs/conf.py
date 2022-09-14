@@ -38,7 +38,6 @@ is_release = not (pytest_mpl_version.is_prerelease or pytest_mpl_version.is_devr
 # ones.
 extensions = [
     'sample_summaries',
-    'sidebar',
     'sphinx_design',
 ]
 
@@ -58,13 +57,18 @@ exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 #
 html_theme = "mpl_sphinx_theme"
 html_theme_options = {
-    "native_site": False,
+    "navbar_links": "absolute",
     "show_prev_next": False,
-    "logo": {"image_light": "images/logo2.svg",
+    "logo": {"link": "https://matplotlib.org/stable/",
+             "image_light": "images/logo2.svg",
              "image_dark": "images/logo_dark.svg"},
+    "collapse_navigation": False,
+}
+html_sidebars = {
+    "**": ["mpl_third_party_sidebar.html", "sidebar-nav-bs.html"]
 }
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = ['_static']
+# html_static_path = ['_static']
