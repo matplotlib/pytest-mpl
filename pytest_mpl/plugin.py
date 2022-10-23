@@ -298,11 +298,22 @@ class ImageComparison:
         self._test_stats = None
         self.return_value = {}
 
-        # https://stackoverflow.com/questions/51737378/how-should-i-log-in-my-pytest-plugin
-        # turn debug prints on only if "-vv" or more passed
+        # configure a separate logger for this pluggin which is independent
+        # of the options that are configured for pytest or for the code that
+        # is tested; turn debug prints on only if "-vv" or more passed
         level = logging.DEBUG if config.option.verbose > 1 else logging.INFO
-        logging.basicConfig(level=level)
+        if config.option.log_cli_format is not None:
+            fmt = config.option.log_cli_format
+        else:
+            # use pytest's default fmt
+            fmt = "%(levelname)-8s %(name)s:%(filename)s:%(lineno)d %(message)s"
+        formatter = logging.Formatter(fmt)
+        handler = logging.StreamHandler()
+        handler.setFormatter(formatter)
         self.logger = logging.getLogger('pytest-mpl')
+        self.logger.propagate = False
+        self.logger.setLevel(level)
+        self.logger.addHandler(handler)
 
     def generate_filename(self, item):
         """
