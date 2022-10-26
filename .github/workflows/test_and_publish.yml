@@ -20,9 +20,9 @@ jobs:
       envs: |
         # Test the oldest and newest configuration on Mac and Windows
         - macos: py36-test-mpl20
-        - macos: py310-test-mpl35
+        - macos: py310-test-mpl36
         - windows: py36-test-mpl20
-        - windows: py310-test-mpl35
+        - windows: py310-test-mpl36
         # Test all configurations on Linux
         - linux: py36-test-mpl20
         - linux: py36-test-mpl21
@@ -33,10 +33,11 @@ jobs:
         - linux: py38-test-mpl33
         - linux: py39-test-mpl34
         - linux: py310-test-mpl35
+        - linux: py310-test-mpl36
         # Test different versions of pytest
-        - linux: py310-test-mpl35-pytestdev
-        - linux: py310-test-mpl35-pytest62
-        - linux: py38-test-mpl35-pytest54
+        - linux: py310-test-mpl36-pytestdev
+        - linux: py310-test-mpl36-pytest62
+        - linux: py38-test-mpl36-pytest54
       coverage: 'codecov'
 
   publish:
