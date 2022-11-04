@@ -86,3 +86,8 @@ against, the tests can be run with::
 and the tests will pass if the images are the same. If you omit the
 ``--mpl`` option, the tests will run but will only check that the code
 runs, without checking the output images.
+
+If pytest-mpl is not installed, the image comparison tests will cause pytest
+to show a warning, ``PytestReturnNotNoneWarning``. Installing pytest-mpl will
+solve this issue. Alternativly, the image comparison tests can be deselected
+by running pytest with ``-m "not mpl_image_compare"``.
