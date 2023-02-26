@@ -398,9 +398,8 @@ class ImageComparison:
                 self.logger.info(f'Downloading {base_url + filename} failed: {repr(e)}')
             else:
                 break
-        else:
-            raise Exception("Could not download baseline image from any of the "
-                            "available URLs")
+        else:  # Could not download baseline image from any of the available URLs
+            return
         result_dir = Path(tempfile.mkdtemp())
         filename = result_dir / 'downloaded'
         with open(str(filename), 'wb') as tmpfile:
@@ -471,8 +470,6 @@ class ImageComparison:
 
         ext = self._file_extension(item)
 
-        baseline_image_ref = self.obtain_baseline_image(item)
-
         test_image = (result_dir / f"result.{ext}").absolute()
         self.save_figure(item, fig, test_image)
 
@@ -481,11 +478,20 @@ class ImageComparison:
         else:
             summary['result_image'] = (result_dir / f"result_{ext}.png").relative_to(self.results_dir).as_posix()
 
-        if not os.path.exists(baseline_image_ref):
+        baseline_image_ref = self.obtain_baseline_image(item)
+
+        baseline_missing = None
+        if baseline_image_ref is None:
+            baseline_missing = ("Could not download the baseline image from "
+                                "any of the available URLs.\n")
+        elif not os.path.exists(baseline_image_ref):
+            baseline_missing = ("Image file not found for comparison test in: \n\t"
+                                f"{self.get_baseline_directory(item)}\n")
+
+        if baseline_missing:
             summary['status'] = 'failed'
             summary['image_status'] = 'missing'
-            error_message = ("Image file not found for comparison test in: \n\t"
-                             f"{self.get_baseline_directory(item)}\n"
+            error_message = (baseline_missing +
                              "(This is expected for new tests.)\n"
                              "Generated Image: \n\t"
                              f"{test_image}")
