@@ -407,7 +407,7 @@ class ImageComparison:
             tmpfile.write(content)
         return Path(filename)
 
-    def obtain_baseline_image(self, item, target_dir):
+    def obtain_baseline_image(self, item):
         """
         Copy the baseline image to our working directory.
 
@@ -471,7 +471,7 @@ class ImageComparison:
 
         ext = self._file_extension(item)
 
-        baseline_image_ref = self.obtain_baseline_image(item, result_dir)
+        baseline_image_ref = self.obtain_baseline_image(item)
 
         test_image = (result_dir / f"result.{ext}").absolute()
         self.save_figure(item, fig, test_image)
