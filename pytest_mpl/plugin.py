@@ -657,6 +657,7 @@ class ImageComparison:
                 baseline_comparison = self.compare_image_to_baseline(item, fig, result_dir,
                                                                      summary=baseline_summary)
             except Exception as baseline_error:  # Append to test error later
+                summary['image_status'] = 'diff'  # (not necessarily diff, but makes user aware)
                 baseline_comparison = str(baseline_error)
             else:  # Update main summary
                 for k in ['image_status', 'baseline_image', 'diff_image',
@@ -697,25 +698,14 @@ class ImageComparison:
 
         with plt.style.context(style, after_reset=True), switch_backend(backend):
 
-            # Run test and get figure object
-            wrap_figure_interceptor(self, item)
-            yield
             test_name = generate_test_name(item)
-            if test_name not in self.return_value:
-                # Test function did not complete successfully
-                return
-            fig = self.return_value[test_name]
 
-            if remove_text:
-                remove_ticks_and_titles(fig)
-
-            result_dir = self.make_test_results_dir(item)
-
+            # Store fallback summary in case of exceptions
             summary = {
-                'status': None,
+                'status': 'failed',
                 'image_status': None,
                 'hash_status': None,
-                'status_msg': None,
+                'status_msg': 'An exception was raised while testing the figure.',
                 'baseline_image': None,
                 'diff_image': None,
                 'rms': None,
@@ -724,6 +714,24 @@ class ImageComparison:
                 'baseline_hash': None,
                 'result_hash': None,
             }
+            self._test_results[test_name] = summary
+
+            # Run test and get figure object
+            wrap_figure_interceptor(self, item)
+            yield
+            if test_name not in self.return_value:
+                # Test function did not complete successfully
+                summary['status'] = 'failed'
+                summary['status_msg'] = ('Test function raised an exception '
+                                         'before returning a figure.')
+                self._test_results[test_name] = summary
+                return
+            fig = self.return_value[test_name]
+
+            if remove_text:
+                remove_ticks_and_titles(fig)
+
+            result_dir = self.make_test_results_dir(item)
 
             # What we do now depends on whether we are generating the
             # reference images or simply running the test.
