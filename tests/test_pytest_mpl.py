@@ -698,7 +698,8 @@ def test_formats(pytester, use_hash_library, passes, file_format):
         @pytest.mark.mpl_image_compare(baseline_dir=r"{baseline_dir_abs}",
                                        {f'hash_library=r"{hash_library}",' if use_hash_library else ''}
                                        tolerance={DEFAULT_TOLERANCE},
-                                       savefig_kwargs={{'format': '{file_format}'}})
+                                       savefig_kwargs={{'format': '{file_format}',
+                                                        'metadata': {{"Software": None}}}})
         def test_format_{file_format}():
             fig = plt.figure()
             ax = fig.add_subplot(1, 1, 1)
