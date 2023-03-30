@@ -670,3 +670,50 @@ def test_user_function_raises(pytester, runpytest_args):
     result = pytester.runpytest(*runpytest_args)
     result.assert_outcomes(failed=1)
     result.stdout.fnmatch_lines("FAILED*ValueError*User code*")
+
+
+@pytest.mark.parametrize("file_format", ['eps', 'pdf', 'png', 'eps'])
+def test_formats(pytester, file_format):
+    """
+    Note that we don't test all possible formats as some do not compress well
+    and would bloat the baseline directory.
+    """
+    pytester.makepyfile(
+        f"""
+        import pytest
+        import matplotlib.pyplot as plt
+        @pytest.mark.mpl_image_compare(baseline_dir='{baseline_dir_abs}',
+                                       tolerance={DEFAULT_TOLERANCE},
+                                       savefig_kwargs={{'format': '{file_format}'}})
+        def test_format_{file_format}():
+            fig = plt.figure()
+            ax = fig.add_subplot(1, 1, 1)
+            ax.plot([1, 2, 3])
+            return fig
+        """
+    )
+    result = pytester.runpytest('--mpl')
+    result.assert_outcomes(passed=1)
+
+
+@pytest.mark.parametrize("file_format", ['eps', 'pdf', 'png', 'eps'])
+def test_formats_check_fail(pytester, file_format):
+    """
+    As for test_formats but make sure the tests fail if there are differences
+    """
+    pytester.makepyfile(
+        f"""
+        import pytest
+        import matplotlib.pyplot as plt
+        @pytest.mark.mpl_image_compare(baseline_dir='{baseline_dir_abs}',
+                                       tolerance={DEFAULT_TOLERANCE},
+                                       savefig_kwargs={{'format': '{file_format}'}})
+        def test_format_{file_format}():
+            fig = plt.figure()
+            ax = fig.add_subplot(1, 1, 1)
+            ax.plot([3, 2, 3])
+            return fig
+        """
+    )
+    result = pytester.runpytest('--mpl')
+    result.assert_outcomes(failed=1)
