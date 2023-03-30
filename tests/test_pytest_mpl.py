@@ -9,9 +9,8 @@ import matplotlib
 import matplotlib.ft2font
 import matplotlib.pyplot as plt
 import pytest
-from packaging.version import Version
-
 from matplotlib.testing.compare import converter
+from packaging.version import Version
 
 MPL_VERSION = Version(matplotlib.__version__)
 
