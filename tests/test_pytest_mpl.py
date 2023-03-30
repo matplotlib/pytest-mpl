@@ -11,6 +11,8 @@ import matplotlib.pyplot as plt
 import pytest
 from packaging.version import Version
 
+from matplotlib.testing.compare import converter
+
 MPL_VERSION = Version(matplotlib.__version__)
 
 baseline_dir = 'baseline'
@@ -672,48 +674,44 @@ def test_user_function_raises(pytester, runpytest_args):
     result.stdout.fnmatch_lines("FAILED*ValueError*User code*")
 
 
+@pytest.mark.parametrize('use_hash_library', (False, True))
+@pytest.mark.parametrize('passes', (False, True))
 @pytest.mark.parametrize("file_format", ['eps', 'pdf', 'png', 'svg'])
-def test_formats(pytester, file_format):
+def test_formats(pytester, use_hash_library, passes, file_format):
     """
     Note that we don't test all possible formats as some do not compress well
     and would bloat the baseline directory.
     """
+
+    if file_format == 'svg' and MPL_VERSION < Version('3.3'):
+        pytest.skip('SVG comparison is only supported in Matplotlib 3.3 and above')
+
+    if file_format != 'png' and file_format not in converter:
+        if file_format == 'svg':
+            pytest.skip('Comparing SVG files requires inkscape to be installed')
+        else:
+            pytest.skip('Comparing EPS and PDF files requires ghostscript to be installed')
+
+    if use_hash_library:
+        pytest.skip('Using the hash library does not currently work because the hashes are not deterministic')
+
     pytester.makepyfile(
         f"""
         import pytest
         import matplotlib.pyplot as plt
         @pytest.mark.mpl_image_compare(baseline_dir='{baseline_dir_abs}',
+                                       {f'hash_library="{hash_library}",' if use_hash_library else ''}
                                        tolerance={DEFAULT_TOLERANCE},
                                        savefig_kwargs={{'format': '{file_format}'}})
         def test_format_{file_format}():
             fig = plt.figure()
             ax = fig.add_subplot(1, 1, 1)
-            ax.plot([1, 2, 3])
+            ax.plot([{1 if passes else 3}, 2, 3])
             return fig
         """
     )
     result = pytester.runpytest('--mpl', '-rs')
-    result.assert_outcomes(passed=1)
-
-
-@pytest.mark.parametrize("file_format", ['eps', 'pdf', 'png', 'svg'])
-def test_formats_check_fail(pytester, file_format):
-    """
-    As for test_formats but make sure the tests fail if there are differences
-    """
-    pytester.makepyfile(
-        f"""
-        import pytest
-        import matplotlib.pyplot as plt
-        @pytest.mark.mpl_image_compare(baseline_dir='{baseline_dir_abs}',
-                                       tolerance={DEFAULT_TOLERANCE},
-                                       savefig_kwargs={{'format': '{file_format}'}})
-        def test_format_{file_format}():
-            fig = plt.figure()
-            ax = fig.add_subplot(1, 1, 1)
-            ax.plot([3, 2, 3])
-            return fig
-        """
-    )
-    result = pytester.runpytest('--mpl', '-rs')
-    result.assert_outcomes(failed=1)
+    if passes:
+        result.assert_outcomes(passed=1)
+    else:
+        result.assert_outcomes(failed=1)
