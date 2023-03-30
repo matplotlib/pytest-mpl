@@ -692,7 +692,7 @@ def test_formats(pytester, file_format):
             return fig
         """
     )
-    result = pytester.runpytest('--mpl')
+    result = pytester.runpytest('--mpl', '-rs')
     result.assert_outcomes(passed=1)
 
 
@@ -715,5 +715,5 @@ def test_formats_check_fail(pytester, file_format):
             return fig
         """
     )
-    result = pytester.runpytest('--mpl')
+    result = pytester.runpytest('--mpl', '-rs')
     result.assert_outcomes(failed=1)
