@@ -15,6 +15,6 @@
   "test.test_unmodified": "ce07de6b726c3b01afb03aa7c9e939d584bc71a54b9737d69853a0d915cd6181",
   "test_formats.test_format_eps": "8ad5b5795b65e16790d1b57889540597fe18f164ddc38f50086f29e725b5c223",
   "test_formats.test_format_pdf": "18858c67f1362e6d53975b66ffc221bda0c9f714185851fbf714bd73f0a80729",
-  "test_formats.test_format_png": "55ad74a44c99606f1df1e79f67a59a4986bddc2b48ea2b2d7ea8365db91dc7ca",
+  "test_formats.test_format_png": "e73d228183ddfdced366191399cdecef9685d1248b852162f179750fc7b8b904",
   "test_formats.test_format_svg": "f21b81fdc6163a13caf7fa675d42b996ab7f0070c063a287a00d13d50c5b38f1"
 }

@@ -691,6 +691,11 @@ def test_formats(pytester, use_hash_library, passes, file_format):
         else:
             pytest.skip('Comparing EPS and PDF files requires ghostscript to be installed')
 
+    if file_format == 'png':
+        metadata = '{"Software": None}'
+    else:
+        metadata = '{}'
+
     pytester.makepyfile(
         f"""
         import pytest
@@ -699,7 +704,7 @@ def test_formats(pytester, use_hash_library, passes, file_format):
                                        {f'hash_library=r"{hash_library}",' if use_hash_library else ''}
                                        tolerance={DEFAULT_TOLERANCE},
                                        savefig_kwargs={{'format': '{file_format}',
-                                                        'metadata': {{"Software": None}}}})
+                                                        'metadata': {metadata}}})
         def test_format_{file_format}():
             fig = plt.figure()
             ax = fig.add_subplot(1, 1, 1)
