@@ -685,6 +685,9 @@ def test_formats(pytester, use_hash_library, passes, file_format):
     if file_format == 'svg' and MPL_VERSION < Version('3.3'):
         pytest.skip('SVG comparison is only supported in Matplotlib 3.3 and above')
 
+    if use_hash_library and MPL_VERSION >= Version('3.4'):
+        pytest.skip('No hash library for Matplotlib >= 3.4')
+
     if file_format != 'png' and file_format not in converter:
         if file_format == 'svg':
             pytest.skip('Comparing SVG files requires inkscape to be installed')
