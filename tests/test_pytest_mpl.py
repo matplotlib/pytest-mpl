@@ -688,6 +688,9 @@ def test_formats(pytester, use_hash_library, passes, file_format):
     if use_hash_library and MPL_VERSION >= Version('3.4'):
         pytest.skip('No hash library for Matplotlib >= 3.4')
 
+    if use_hash_library and file_format != 'png' and not sys.platform.startswith('linux'):
+        pytest.skip('Hashes for vector graphics are only provided in the hash library for Linux')
+
     if file_format != 'png' and file_format not in converter:
         if file_format == 'svg':
             pytest.skip('Comparing SVG files requires inkscape to be installed')
