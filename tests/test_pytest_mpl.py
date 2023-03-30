@@ -698,8 +698,8 @@ def test_formats(pytester, use_hash_library, passes, file_format):
         f"""
         import pytest
         import matplotlib.pyplot as plt
-        @pytest.mark.mpl_image_compare(baseline_dir='{baseline_dir_abs}',
-                                       {f'hash_library="{hash_library}",' if use_hash_library else ''}
+        @pytest.mark.mpl_image_compare(baseline_dir=r"{baseline_dir_abs}",
+                                       {f'hash_library=r"{hash_library}",' if use_hash_library else ''}
                                        tolerance={DEFAULT_TOLERANCE},
                                        savefig_kwargs={{'format': '{file_format}'}})
         def test_format_{file_format}():
