@@ -691,9 +691,6 @@ def test_formats(pytester, use_hash_library, passes, file_format):
         else:
             pytest.skip('Comparing EPS and PDF files requires ghostscript to be installed')
 
-    if use_hash_library:
-        pytest.skip('Using the hash library does not currently work because the hashes are not deterministic')
-
     pytester.makepyfile(
         f"""
         import pytest
