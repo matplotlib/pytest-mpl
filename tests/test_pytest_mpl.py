@@ -672,7 +672,7 @@ def test_user_function_raises(pytester, runpytest_args):
     result.stdout.fnmatch_lines("FAILED*ValueError*User code*")
 
 
-@pytest.mark.parametrize("file_format", ['eps', 'pdf', 'png', 'eps'])
+@pytest.mark.parametrize("file_format", ['eps', 'pdf', 'png', 'svg'])
 def test_formats(pytester, file_format):
     """
     Note that we don't test all possible formats as some do not compress well
@@ -696,7 +696,7 @@ def test_formats(pytester, file_format):
     result.assert_outcomes(passed=1)
 
 
-@pytest.mark.parametrize("file_format", ['eps', 'pdf', 'png', 'eps'])
+@pytest.mark.parametrize("file_format", ['eps', 'pdf', 'png', 'svg'])
 def test_formats_check_fail(pytester, file_format):
     """
     As for test_formats but make sure the tests fail if there are differences
