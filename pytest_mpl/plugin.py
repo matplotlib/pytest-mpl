@@ -483,7 +483,11 @@ class ImageComparison:
 
         test_image = (result_dir / f"result.{ext}").absolute()
         fig.savefig(str(test_image), **savefig_kwargs)
-        summary['result_image'] = test_image.relative_to(self.results_dir).as_posix()
+
+        if ext in ['png', 'svg']:  # Use original file
+            summary['result_image'] = test_image.relative_to(self.results_dir).as_posix()
+        else:
+            summary['result_image'] = (result_dir / f"result_{ext}.png").relative_to(self.results_dir).as_posix()
 
         if not os.path.exists(baseline_image_ref):
             summary['status'] = 'failed'
@@ -500,7 +504,11 @@ class ImageComparison:
         # copy to our tmpdir to be sure to keep them in case of failure
         baseline_image = (result_dir / f"baseline.{ext}").absolute()
         shutil.copyfile(baseline_image_ref, baseline_image)
-        summary['baseline_image'] = baseline_image.relative_to(self.results_dir).as_posix()
+
+        if ext in ['png', 'svg']:  # Use original file
+            summary['baseline_image'] = baseline_image.relative_to(self.results_dir).as_posix()
+        else:
+            summary['baseline_image'] = (result_dir / f"baseline_{ext}.png").relative_to(self.results_dir).as_posix()
 
         # Compare image size ourselves since the Matplotlib
         # exception is a bit cryptic in this case and doesn't show
@@ -520,6 +528,7 @@ class ImageComparison:
                 return error_message
 
         results = compare_images(str(baseline_image), str(test_image), tol=tolerance, in_decorator=True)
+
         summary['tolerance'] = tolerance
         if results is None:
             summary['status'] = 'passed'
@@ -530,8 +539,7 @@ class ImageComparison:
             summary['status'] = 'failed'
             summary['image_status'] = 'diff'
             summary['rms'] = results['rms']
-            diff_image = (result_dir / 'result-failed-diff.png').absolute()
-            summary['diff_image'] = diff_image.relative_to(self.results_dir).as_posix()
+            summary['diff_image'] = Path(results['diff']).relative_to(self.results_dir).as_posix()
             template = ['Error: Image files did not match.',
                         'RMS Value: {rms}',
                         'Expected:  \n    {expected}',
