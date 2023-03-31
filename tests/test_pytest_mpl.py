@@ -702,7 +702,7 @@ def test_formats(pytester, use_hash_library, passes, file_format):
     elif file_format == 'pdf':
         metadata = '{"Creator": None, "Producer": None, "CreationDate": None}'
     elif file_format == 'eps':
-        metadata = '{"Creator": None}'
+        metadata = '{"Creator": "test"}'
     elif file_format == 'svg':
         metadata = '{"Date": None}'
 
