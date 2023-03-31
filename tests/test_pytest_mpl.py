@@ -685,8 +685,15 @@ def test_formats(pytester, use_hash_library, passes, file_format):
     if file_format == 'svg' and MPL_VERSION < Version('3.3'):
         pytest.skip('SVG comparison is only supported in Matplotlib 3.3 and above')
 
-    if use_hash_library and MPL_VERSION >= Version('3.4'):
-        pytest.skip('No hash library for Matplotlib >= 3.4')
+    if use_hash_library:
+
+        if file_format == 'pdf' and MPL_VERSION < Version('2.1'):
+            pytest.skip('PDF hashes are only deterministic in Matplotlib 2.1 and above')
+        elif file_format == 'eps' and MPL_VERSION < Version('2.1'):
+            pytest.skip('EPS hashes are only deterministic in Matplotlib 2.1 and above')
+
+        if MPL_VERSION >= Version('3.4'):
+            pytest.skip('No hash library in test suite for Matplotlib >= 3.4')
 
     if use_hash_library and not sys.platform.startswith('linux'):
         pytest.skip('Hashes for vector graphics are only provided in the hash library for Linux')
