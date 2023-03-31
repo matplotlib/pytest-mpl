@@ -13,8 +13,8 @@
   "test.test_modified": "ce07de6b726c3b01afb03aa7c9e939d584bc71a54b9737d69853a0d915cd6181",
   "test.test_new": "ce07de6b726c3b01afb03aa7c9e939d584bc71a54b9737d69853a0d915cd6181",
   "test.test_unmodified": "ce07de6b726c3b01afb03aa7c9e939d584bc71a54b9737d69853a0d915cd6181",
-  "test_formats.test_format_eps": "8ad5b5795b65e16790d1b57889540597fe18f164ddc38f50086f29e725b5c223",
-  "test_formats.test_format_pdf": "18858c67f1362e6d53975b66ffc221bda0c9f714185851fbf714bd73f0a80729",
+  "test_formats.test_format_eps": "4a605a2cd24101b9292151f5ab6d6846ba1b9c856cfda2bee6a142380e257b04",
+  "test_formats.test_format_pdf": "34a9eb10372b35c0bd26472e8571a91031c055ab47cc3682ebc0c5e47c2b6cbd",
   "test_formats.test_format_png": "e73d228183ddfdced366191399cdecef9685d1248b852162f179750fc7b8b904",
-  "test_formats.test_format_svg": "0c0515081a578b3673aafb99ac389e292d125793fa1e3c848524c4fe1484dc2c"
+  "test_formats.test_format_svg": "b7f85f4b44e0c5871f5cc230b5a9042f2e73aa70384ab584d6cd8cde29344cd2"
 }
