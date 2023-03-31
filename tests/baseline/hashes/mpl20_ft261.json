@@ -13,7 +13,7 @@
   "test.test_modified": "54f6cf83d5b06fa2ecb7fa23d6e87898679178ef5d0dfdd2551a139f1932127b",
   "test.test_new": "54f6cf83d5b06fa2ecb7fa23d6e87898679178ef5d0dfdd2551a139f1932127b",
   "test.test_unmodified": "54f6cf83d5b06fa2ecb7fa23d6e87898679178ef5d0dfdd2551a139f1932127b",
-  "test_formats.test_format_eps": "396d67b9a51519a312903e817211abef713151225deeb6735cca6059ace3ca4e",
-  "test_formats.test_format_pdf": "a73ea1bd1a9edc68da280240a080c3b8ae11a3b1170d27f7229e95ba3019c098",
+  "test_formats.test_format_eps": "d43d276873ee3a46e4dfc86feba5b814a76fa72163dfc6e9624a2750ff625f2f",
+  "test_formats.test_format_pdf": "917a633ed43b288ecd4ccad64c2f61eee5f2a1b6383a808572dd5a63671298f6",
   "test_formats.test_format_png": "480062c2239ed9d70e361d1a5b578dc2aa756971161ac6e7287b492ae6118c59"
 }
