@@ -455,19 +455,10 @@ class ImageComparison:
 
         ext = self._file_extension(item)
 
-        if ext == 'png':
-            imgdata = io.BytesIO()
-            fig.savefig(imgdata, **savefig_kwargs)
-            out = _hash_file(imgdata)
-            imgdata.close()
-        else:
-            # Always convert to PNG to compute hash as some vector graphics
-            # outputs cannot be made deterministic
-            from matplotlib.testing.compare import convert as convert_to_png
-            img_filename = tempfile.mktemp() + f'.{ext}'
-            fig.savefig(img_filename, **savefig_kwargs)
-            png_filename = convert_to_png(img_filename, cache=True)
-            out = _hash_file(open(png_filename, 'rb'))
+        imgdata = io.BytesIO()
+        fig.savefig(imgdata, **savefig_kwargs)
+        out = _hash_file(imgdata)
+        imgdata.close()
 
         close_mpl_figure(fig)
         return out

@@ -699,11 +699,16 @@ def test_formats(pytester, use_hash_library, passes, file_format):
 
     if file_format == 'png':
         metadata = '{"Software": None}'
-    else:
-        metadata = '{}'
+    elif file_format == 'pdf':
+        metadata = '{"Creator": None, "Producer": None, "CreationDate": None}'
+    elif file_format == 'eps':
+        metadata = '{"Creator": None}'
+    elif file_format == 'svg':
+        metadata = '{"Date": None}'
 
     pytester.makepyfile(
         f"""
+        import os
         import pytest
         import matplotlib.pyplot as plt
         @pytest.mark.mpl_image_compare(baseline_dir=r"{baseline_dir_abs}",
@@ -712,6 +717,13 @@ def test_formats(pytester, use_hash_library, passes, file_format):
                                        savefig_kwargs={{'format': '{file_format}',
                                                         'metadata': {metadata}}})
         def test_format_{file_format}():
+
+            # For reproducible EPS output
+            os.environ['SOURCE_DATE_EPOCH'] = '1680254601'
+
+            # For reproducible SVG output
+            plt.rcParams['svg.hashsalt'] = 'test'
+
             fig = plt.figure()
             ax = fig.add_subplot(1, 1, 1)
             ax.plot([{1 if passes else 3}, 2, 3])
