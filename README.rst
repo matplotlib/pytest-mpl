@@ -293,14 +293,18 @@ In order to enforce that the output is deterministic, you will need to do the fo
 PNG
 ^^^
 
-For PNG files, the output can be made deterministic by setting::
+For PNG files, the output can be made deterministic by setting:
+
+.. code:: python
 
     @pytest.mark.mpl_image_compare(savefig_kwargs={'metadata': {"Software": None}})
 
 PDF
 ^^^
 
-For PDF files, the output can be made deterministic by setting::
+For PDF files, the output can be made deterministic by setting:
+
+.. code:: python
 
     @pytest.mark.mpl_image_compare(savefig_kwargs={'format': 'pdf',
                                                    'metadata': {"Creator": None,
@@ -310,13 +314,17 @@ For PDF files, the output can be made deterministic by setting::
 EPS
 ^^^
 
-For PDF files, the output can be made deterministic by setting::
+For PDF files, the output can be made deterministic by setting:
+
+.. code:: python
 
     @pytest.mark.mpl_image_compare(savefig_kwargs={'format': 'pdf',
                                                    'metadata': {"Creator": "test"})
 
 and in addition you will need to set the SOURCE_DATE_EPOCH environment variable to
-a constant value (this is a unit timestamp)::
+a constant value (this is a unit timestamp):
+
+.. code:: python
 
     os.environ['SOURCE_DATE_EPOCH'] = '1680254601'
 
@@ -325,11 +333,15 @@ You could do this inside the test.
 SVG
 ^^^
 
-For SVG files, the output can be made deterministic by setting::
+For SVG files, the output can be made deterministic by setting:
+
+.. code:: python
 
     @pytest.mark.mpl_image_compare(savefig_kwargs={'metadata': '{"Date": None}})
 
-and in addition, you should make sure the following rcParam is set to a constant string::
+and in addition, you should make sure the following rcParam is set to a constant string:
+
+.. code:: python
 
     plt.rcParams['svg.hashsalt'] = 'test'
 
