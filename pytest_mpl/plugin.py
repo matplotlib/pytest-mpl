@@ -557,6 +557,8 @@ class ImageComparison:
         savefig_kwargs = compare.kwargs.get('savefig_kwargs', {})
         deterministic = compare.kwargs.get('deterministic', False)
 
+        original_source_date_epoch = os.environ.get('SOURCE_DATE_EPOCH', None)
+
         if deterministic:
 
             # Make sure we don't modify the original dictionary in case is a common
@@ -568,18 +570,28 @@ class ImageComparison:
 
             ext = self._file_extension(item)
 
+            extra_rcparams = {}
+
             if ext == 'png':
                 extra_metadata = {"Software": None}
             elif ext == 'pdf':
                 extra_metadata = {"Creator": None, "Producer": None, "CreationDate": None}
             elif ext == 'eps':
                 extra_metadata = {"Creator": "test"}
+                os.environ['SOURCE_DATE_EPOCH'] = '1234567890'
             elif ext == 'svg':
                 extra_metadata = {"Date": None}
+                extra_rcparams["svg.hashsalt"] = "test"
 
             savefig_kwargs['metadata'].update(extra_metadata)
 
-        fig.savefig(filename, **savefig_kwargs)
+        import matplotlib.pyplot as plt
+
+        with plt.rc_context(**extra_rcparams):
+            fig.savefig(filename, **savefig_kwargs)
+
+        if original_source_date_epoch is not None:
+            os.environ['SOURCE_DATE_EPOCH'] = original_source_date_epoch
 
     def compare_image_to_hash_library(self, item, fig, result_dir, summary=None):
         hash_comparison_pass = False
