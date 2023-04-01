@@ -583,7 +583,7 @@ class ImageComparison:
 
         import matplotlib.pyplot as plt
 
-        with plt.rc_context(**extra_rcparams):
+        with plt.rc_context(rc=extra_rcparams):
             fig.savefig(filename, **savefig_kwargs)
 
         if original_source_date_epoch is not None:
