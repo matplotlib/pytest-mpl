@@ -90,7 +90,6 @@ When generating a hash library, the tests will also be run as usual against the
 existing hash library specified by ``--mpl-hash-library`` or the keyword argument.
 However, generating baseline images will always result in the tests being skipped.
 
-
 Hybrid Mode: Hashes and Images
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -277,6 +276,81 @@ decorator:
 
 This will make the test insensitive to changes in e.g. the freetype
 library.
+
+Supported formats and deterministic output
+------------------------------------------
+
+By default, pytest-mpl will save and compare figures in PNG format. However,
+it is possible to set the format to use by setting e.g. ``savefig_kwargs={'format': 'pdf'}``
+in ``mpl_image_compare``. Supported formats are ``'eps'``, ``'pdf'``, ``'png'``, and ``'svg'``.
+Note that Ghostscript is required to be installed for comparing PDF and EPS figures, while
+Inkscape is required for SVG comparison.
+
+By default, Matplotlib does not produce deterministic output that will have a
+consistent hash every time it is run, or over different Matplotlib versions. In
+order to enforce that the output is deterministic, you will need to set metadata
+as described in the following subsections.
+
+PNG
+^^^
+
+For PNG files, the output can be made deterministic by setting:
+
+.. code:: python
+
+    @pytest.mark.mpl_image_compare(savefig_kwargs={'metadata': {"Software": None}})
+
+PDF
+^^^
+
+For PDF files, the output can be made deterministic by setting:
+
+.. code:: python
+
+    @pytest.mark.mpl_image_compare(savefig_kwargs={'format': 'pdf',
+                                                   'metadata': {"Creator": None,
+                                                                "Producer": None,
+                                                                "CreationDate": None}})
+
+Note that deterministic PDF output can only be achieved with Matplotlib 2.1 and above
+
+EPS
+^^^
+
+For PDF files, the output can be made deterministic by setting:
+
+.. code:: python
+
+    @pytest.mark.mpl_image_compare(savefig_kwargs={'format': 'pdf',
+                                                   'metadata': {"Creator": "test"})
+
+and in addition you will need to set the SOURCE_DATE_EPOCH environment variable to
+a constant value (this is a unit timestamp):
+
+.. code:: python
+
+    os.environ['SOURCE_DATE_EPOCH'] = '1680254601'
+
+You could do this inside the test.
+
+Note that deterministic PDF output can only be achieved with Matplotlib 2.1 and above
+
+SVG
+^^^
+
+For SVG files, the output can be made deterministic by setting:
+
+.. code:: python
+
+    @pytest.mark.mpl_image_compare(savefig_kwargs={'metadata': '{"Date": None}})
+
+and in addition, you should make sure the following rcParam is set to a constant string:
+
+.. code:: python
+
+    plt.rcParams['svg.hashsalt'] = 'test'
+
+Note that SVG files can only be used in pytest-mpl with Matplotlib 3.3 and above.
 
 Test failure example
 --------------------

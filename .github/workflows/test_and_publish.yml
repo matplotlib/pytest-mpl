@@ -17,6 +17,10 @@ jobs:
   test:
     uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@v1
     with:
+      libraries: |
+        apt:
+          - ghostscript
+          - inkscape
       envs: |
         # Test the oldest and newest configuration on Mac and Windows
         - macos: py36-test-mpl20

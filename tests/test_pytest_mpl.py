@@ -9,6 +9,7 @@ import matplotlib
 import matplotlib.ft2font
 import matplotlib.pyplot as plt
 import pytest
+from matplotlib.testing.compare import converter
 from packaging.version import Version
 
 MPL_VERSION = Version(matplotlib.__version__)
@@ -670,3 +671,74 @@ def test_user_function_raises(pytester, runpytest_args):
     result = pytester.runpytest(*runpytest_args)
     result.assert_outcomes(failed=1)
     result.stdout.fnmatch_lines("FAILED*ValueError*User code*")
+
+
+@pytest.mark.parametrize('use_hash_library', (False, True))
+@pytest.mark.parametrize('passes', (False, True))
+@pytest.mark.parametrize("file_format", ['eps', 'pdf', 'png', 'svg'])
+def test_formats(pytester, use_hash_library, passes, file_format):
+    """
+    Note that we don't test all possible formats as some do not compress well
+    and would bloat the baseline directory.
+    """
+
+    if file_format == 'svg' and MPL_VERSION < Version('3.3'):
+        pytest.skip('SVG comparison is only supported in Matplotlib 3.3 and above')
+
+    if use_hash_library:
+
+        if file_format == 'pdf' and MPL_VERSION < Version('2.1'):
+            pytest.skip('PDF hashes are only deterministic in Matplotlib 2.1 and above')
+        elif file_format == 'eps' and MPL_VERSION < Version('2.1'):
+            pytest.skip('EPS hashes are only deterministic in Matplotlib 2.1 and above')
+
+        if MPL_VERSION >= Version('3.4'):
+            pytest.skip('No hash library in test suite for Matplotlib >= 3.4')
+
+    if use_hash_library and not sys.platform.startswith('linux'):
+        pytest.skip('Hashes for vector graphics are only provided in the hash library for Linux')
+
+    if file_format != 'png' and file_format not in converter:
+        if file_format == 'svg':
+            pytest.skip('Comparing SVG files requires inkscape to be installed')
+        else:
+            pytest.skip('Comparing EPS and PDF files requires ghostscript to be installed')
+
+    if file_format == 'png':
+        metadata = '{"Software": None}'
+    elif file_format == 'pdf':
+        metadata = '{"Creator": None, "Producer": None, "CreationDate": None}'
+    elif file_format == 'eps':
+        metadata = '{"Creator": "test"}'
+    elif file_format == 'svg':
+        metadata = '{"Date": None}'
+
+    pytester.makepyfile(
+        f"""
+        import os
+        import pytest
+        import matplotlib.pyplot as plt
+        @pytest.mark.mpl_image_compare(baseline_dir=r"{baseline_dir_abs}",
+                                       {f'hash_library=r"{hash_library}",' if use_hash_library else ''}
+                                       tolerance={DEFAULT_TOLERANCE},
+                                       savefig_kwargs={{'format': '{file_format}',
+                                                        'metadata': {metadata}}})
+        def test_format_{file_format}():
+
+            # For reproducible EPS output
+            os.environ['SOURCE_DATE_EPOCH'] = '1680254601'
+
+            # For reproducible SVG output
+            plt.rcParams['svg.hashsalt'] = 'test'
+
+            fig = plt.figure()
+            ax = fig.add_subplot(1, 1, 1)
+            ax.plot([{1 if passes else 3}, 2, 3])
+            return fig
+        """
+    )
+    result = pytester.runpytest('--mpl', '-rs')
+    if passes:
+        result.assert_outcomes(passed=1)
+    else:
+        result.assert_outcomes(failed=1)

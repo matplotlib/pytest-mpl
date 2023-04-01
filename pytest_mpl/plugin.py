@@ -52,6 +52,12 @@ SHAPE_MISMATCH_ERROR = """Error: Image dimensions did not match.
   Actual shape: {actual_shape}
     {actual_path}"""
 
+# The following are the subsets of formats supported by the Matplotlib image
+# comparison machinery
+RASTER_IMAGE_FORMATS = ['png']
+VECTOR_IMAGE_FORMATS = ['eps', 'pdf', 'svg']
+ALL_IMAGE_FORMATS = RASTER_IMAGE_FORMATS + VECTOR_IMAGE_FORMATS
+
 
 def _hash_file(in_stream):
     """
@@ -70,8 +76,8 @@ def pathify(path):
     """
     path = Path(path)
     ext = ''
-    if path.suffixes[-1] == '.png':
-        ext = '.png'
+    if path.suffixes[-1][1:] in ALL_IMAGE_FORMATS:
+        ext = path.suffixes[-1]
         path = str(path).split(ext)[0]
     path = str(path)
     path = path.replace('[', '_').replace(']', '_')
@@ -315,18 +321,24 @@ class ImageComparison:
         self.logger.setLevel(level)
         self.logger.addHandler(handler)
 
+    def _file_extension(self, item):
+        compare = get_compare(item)
+        savefig_kwargs = compare.kwargs.get('savefig_kwargs', {})
+        return savefig_kwargs.get('format', 'png')
+
     def generate_filename(self, item):
         """
         Given a pytest item, generate the figure filename.
         """
+        ext = self._file_extension(item)
         if self.config.getini('mpl-use-full-test-name'):
-            filename = generate_test_name(item) + '.png'
+            filename = generate_test_name(item) + f'.{ext}'
         else:
             compare = get_compare(item)
             # Find test name to use as plot name
             filename = compare.kwargs.get('filename', None)
             if filename is None:
-                filename = item.name + '.png'
+                filename = item.name + f'.{ext}'
 
         filename = str(pathify(filename))
         return filename
@@ -441,10 +453,10 @@ class ImageComparison:
         compare = get_compare(item)
         savefig_kwargs = compare.kwargs.get('savefig_kwargs', {})
 
+        ext = self._file_extension(item)
+
         imgdata = io.BytesIO()
-
         fig.savefig(imgdata, **savefig_kwargs)
-
         out = _hash_file(imgdata)
         imgdata.close()
 
@@ -465,11 +477,17 @@ class ImageComparison:
         tolerance = compare.kwargs.get('tolerance', 2)
         savefig_kwargs = compare.kwargs.get('savefig_kwargs', {})
 
+        ext = self._file_extension(item)
+
         baseline_image_ref = self.obtain_baseline_image(item, result_dir)
 
-        test_image = (result_dir / "result.png").absolute()
+        test_image = (result_dir / f"result.{ext}").absolute()
         fig.savefig(str(test_image), **savefig_kwargs)
-        summary['result_image'] = test_image.relative_to(self.results_dir).as_posix()
+
+        if ext in ['png', 'svg']:  # Use original file
+            summary['result_image'] = test_image.relative_to(self.results_dir).as_posix()
+        else:
+            summary['result_image'] = (result_dir / f"result_{ext}.png").relative_to(self.results_dir).as_posix()
 
         if not os.path.exists(baseline_image_ref):
             summary['status'] = 'failed'
@@ -484,26 +502,33 @@ class ImageComparison:
 
         # setuptools may put the baseline images in non-accessible places,
         # copy to our tmpdir to be sure to keep them in case of failure
-        baseline_image = (result_dir / "baseline.png").absolute()
+        baseline_image = (result_dir / f"baseline.{ext}").absolute()
         shutil.copyfile(baseline_image_ref, baseline_image)
-        summary['baseline_image'] = baseline_image.relative_to(self.results_dir).as_posix()
+
+        if ext in ['png', 'svg']:  # Use original file
+            summary['baseline_image'] = baseline_image.relative_to(self.results_dir).as_posix()
+        else:
+            summary['baseline_image'] = (result_dir / f"baseline_{ext}.png").relative_to(self.results_dir).as_posix()
 
         # Compare image size ourselves since the Matplotlib
         # exception is a bit cryptic in this case and doesn't show
-        # the filenames
-        expected_shape = imread(str(baseline_image)).shape[:2]
-        actual_shape = imread(str(test_image)).shape[:2]
-        if expected_shape != actual_shape:
-            summary['status'] = 'failed'
-            summary['image_status'] = 'diff'
-            error_message = SHAPE_MISMATCH_ERROR.format(expected_path=baseline_image,
-                                                        expected_shape=expected_shape,
-                                                        actual_path=test_image,
-                                                        actual_shape=actual_shape)
-            summary['status_msg'] = error_message
-            return error_message
+        # the filenames. However imread won't work for vector graphics so we
+        # only do this for raster files.
+        if ext in RASTER_IMAGE_FORMATS:
+            expected_shape = imread(str(baseline_image)).shape[:2]
+            actual_shape = imread(str(test_image)).shape[:2]
+            if expected_shape != actual_shape:
+                summary['status'] = 'failed'
+                summary['image_status'] = 'diff'
+                error_message = SHAPE_MISMATCH_ERROR.format(expected_path=baseline_image,
+                                                            expected_shape=expected_shape,
+                                                            actual_path=test_image,
+                                                            actual_shape=actual_shape)
+                summary['status_msg'] = error_message
+                return error_message
 
         results = compare_images(str(baseline_image), str(test_image), tol=tolerance, in_decorator=True)
+
         summary['tolerance'] = tolerance
         if results is None:
             summary['status'] = 'passed'
@@ -514,8 +539,7 @@ class ImageComparison:
             summary['status'] = 'failed'
             summary['image_status'] = 'diff'
             summary['rms'] = results['rms']
-            diff_image = (result_dir / 'result-failed-diff.png').absolute()
-            summary['diff_image'] = diff_image.relative_to(self.results_dir).as_posix()
+            summary['diff_image'] = Path(results['diff']).relative_to(self.results_dir).as_posix()
             template = ['Error: Image files did not match.',
                         'RMS Value: {rms}',
                         'Expected:  \n    {expected}',
@@ -537,6 +561,8 @@ class ImageComparison:
 
         compare = get_compare(item)
         savefig_kwargs = compare.kwargs.get('savefig_kwargs', {})
+
+        ext = self._file_extension(item)
 
         if not self.results_hash_library_name:
             # Use hash library name of current test as results hash library name
@@ -574,7 +600,7 @@ class ImageComparison:
                                      f"{hash_library_filename} for test {hash_name}.")
 
         # Save the figure for later summary (will be removed later if not needed)
-        test_image = (result_dir / "result.png").absolute()
+        test_image = (result_dir / f"result.{ext}").absolute()
         fig.savefig(str(test_image), **savefig_kwargs)
         summary['result_image'] = test_image.relative_to(self.results_dir).as_posix()
 
@@ -627,6 +653,8 @@ class ImageComparison:
         remove_text = compare.kwargs.get('remove_text', False)
         backend = compare.kwargs.get('backend', 'agg')
 
+        ext = self._file_extension(item)
+
         with plt.style.context(style, after_reset=True), switch_backend(backend):
 
             # Run test and get figure object
@@ -665,7 +693,7 @@ class ImageComparison:
                 summary['status_msg'] = 'Skipped test, since generating image.'
                 generate_image = self.generate_baseline_image(item, fig)
                 if self.results_always:  # Make baseline image available in HTML
-                    result_image = (result_dir / "baseline.png").absolute()
+                    result_image = (result_dir / f"baseline.{ext}").absolute()
                     shutil.copy(generate_image, result_image)
                     summary['baseline_image'] = \
                         result_image.relative_to(self.results_dir).as_posix()

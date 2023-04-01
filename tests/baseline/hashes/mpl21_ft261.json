@@ -12,5 +12,8 @@
   "test_pytest_mpl.test_hash_succeeds": "17b65dd0247b0dfd8c1b4b079352414ae0fe03c0a3e79d63c8b8670d84d4098f",
   "test.test_modified": "14d326881467bc613e6504b87bd7d556a5e58668ff16b896fa3c15745cfb6336",
   "test.test_new": "14d326881467bc613e6504b87bd7d556a5e58668ff16b896fa3c15745cfb6336",
-  "test.test_unmodified": "14d326881467bc613e6504b87bd7d556a5e58668ff16b896fa3c15745cfb6336"
+  "test.test_unmodified": "14d326881467bc613e6504b87bd7d556a5e58668ff16b896fa3c15745cfb6336",
+  "test_formats.test_format_eps": "f8a0fbb33dcd473ef5cfdd69317db6eb58d64a7f5f3b5072e0de69aa9e201224",
+  "test_formats.test_format_pdf": "82b2b58fc3a74591c85cdf2f06b2f72dfc154820fca98e7cfd5cb6904ed60b23",
+  "test_formats.test_format_png": "d577a3c8c7550413d8d50bc26a68f3e8d9c35d4763c52cbcc15df4f61c8406b2"
 }
