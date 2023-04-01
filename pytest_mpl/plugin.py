@@ -431,7 +431,6 @@ class ImageComparison:
         """
         Generate reference figures.
         """
-        compare = get_compare(item)
 
         if not os.path.exists(self.generate_dir):
             os.makedirs(self.generate_dir)
@@ -469,8 +468,6 @@ class ImageComparison:
 
         compare = get_compare(item)
         tolerance = compare.kwargs.get('tolerance', 2)
-        savefig_kwargs = compare.kwargs.get('savefig_kwargs', {})
-        deterministic = compare.kwargs.get('deterministic', False)
 
         ext = self._file_extension(item)
 
