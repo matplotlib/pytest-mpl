@@ -574,7 +574,7 @@ class ImageComparison:
                 extra_metadata = {"Creator": None, "Producer": None, "CreationDate": None}
             elif ext == 'eps':
                 extra_metadata = {"Creator": "test"}
-                os.environ['SOURCE_DATE_EPOCH'] = '1234567890'
+                os.environ['SOURCE_DATE_EPOCH'] = '1680254601'
             elif ext == 'svg':
                 extra_metadata = {"Date": None}
                 extra_rcparams["svg.hashsalt"] = "test"
