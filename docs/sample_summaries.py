@@ -36,7 +36,7 @@ def run_pytest(test_name):
         lambda x: x.name[:-1] in test_name,
         pathlib.Path(tmp_dir).glob("*0")
     )) / "results"
-    os.replace(src, dest)
+    shutil.copytree(src, dest)
 
     return dest
 
