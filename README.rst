@@ -288,69 +288,15 @@ Inkscape is required for SVG comparison.
 
 By default, Matplotlib does not produce deterministic output that will have a
 consistent hash every time it is run, or over different Matplotlib versions. In
-order to enforce that the output is deterministic, you will need to set metadata
-as described in the following subsections.
-
-PNG
-^^^
-
-For PNG files, the output can be made deterministic by setting:
+order to enforce that the output is deterministic, you can set the ``deterministic``
+keyword argument in ``mpl_image_compare``:
 
 .. code:: python
 
-    @pytest.mark.mpl_image_compare(savefig_kwargs={'metadata': {"Software": None}})
+    @pytest.mark.mpl_image_compare(deterministic=True)
 
-PDF
-^^^
-
-For PDF files, the output can be made deterministic by setting:
-
-.. code:: python
-
-    @pytest.mark.mpl_image_compare(savefig_kwargs={'format': 'pdf',
-                                                   'metadata': {"Creator": None,
-                                                                "Producer": None,
-                                                                "CreationDate": None}})
-
-Note that deterministic PDF output can only be achieved with Matplotlib 2.1 and above
-
-EPS
-^^^
-
-For PDF files, the output can be made deterministic by setting:
-
-.. code:: python
-
-    @pytest.mark.mpl_image_compare(savefig_kwargs={'format': 'pdf',
-                                                   'metadata': {"Creator": "test"})
-
-and in addition you will need to set the SOURCE_DATE_EPOCH environment variable to
-a constant value (this is a unit timestamp):
-
-.. code:: python
-
-    os.environ['SOURCE_DATE_EPOCH'] = '1680254601'
-
-You could do this inside the test.
-
-Note that deterministic PDF output can only be achieved with Matplotlib 2.1 and above
-
-SVG
-^^^
-
-For SVG files, the output can be made deterministic by setting:
-
-.. code:: python
-
-    @pytest.mark.mpl_image_compare(savefig_kwargs={'metadata': '{"Date": None}})
-
-and in addition, you should make sure the following rcParam is set to a constant string:
-
-.. code:: python
-
-    plt.rcParams['svg.hashsalt'] = 'test'
-
-Note that SVG files can only be used in pytest-mpl with Matplotlib 3.3 and above.
+This does a number of things such as e.g., setting the creation date in the
+metadata to be constant, and avoids hard-coding the Matplotlib in the files.
 
 Test failure example
 --------------------
