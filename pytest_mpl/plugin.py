@@ -39,7 +39,6 @@ import warnings
 import contextlib
 from pathlib import Path
 from urllib.request import urlopen
-from contextlib import nullcontext
 
 import pytest
 
