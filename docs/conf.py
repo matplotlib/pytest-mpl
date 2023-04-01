@@ -60,7 +60,7 @@ html_theme_options = {
     "navbar_links": "absolute",
     "show_prev_next": False,
     "logo": {"link": "https://matplotlib.org/stable/",
-             "image_light": "images/logo2.svg",
+             "image_light": "images/logo_light.svg",
              "image_dark": "images/logo_dark.svg"},
     "collapse_navigation": False,
 }
