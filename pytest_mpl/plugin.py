@@ -555,6 +555,8 @@ class ImageComparison:
 
         original_source_date_epoch = os.environ.get('SOURCE_DATE_EPOCH', None)
 
+        extra_rcparams = {}
+
         if deterministic:
 
             # Make sure we don't modify the original dictionary in case is a common
@@ -565,8 +567,6 @@ class ImageComparison:
                 savefig_kwargs['metadata'] = {}
 
             ext = self._file_extension(item)
-
-            extra_rcparams = {}
 
             if ext == 'png':
                 extra_metadata = {"Software": None}
