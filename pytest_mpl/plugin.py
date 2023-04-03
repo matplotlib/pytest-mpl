@@ -431,16 +431,13 @@ class ImageComparison:
         """
         Generate reference figures.
         """
-        compare = get_compare(item)
-        savefig_kwargs = compare.kwargs.get('savefig_kwargs', {})
 
         if not os.path.exists(self.generate_dir):
             os.makedirs(self.generate_dir)
 
         baseline_filename = self.generate_filename(item)
         baseline_path = (self.generate_dir / baseline_filename).absolute()
-        fig.savefig(str(baseline_path), **savefig_kwargs)
-
+        self.save_figure(item, fig, baseline_path)
         close_mpl_figure(fig)
 
         return baseline_path
@@ -450,13 +447,9 @@ class ImageComparison:
         For a `matplotlib.figure.Figure`, returns the SHA256 hash as a hexadecimal
         string.
         """
-        compare = get_compare(item)
-        savefig_kwargs = compare.kwargs.get('savefig_kwargs', {})
-
-        ext = self._file_extension(item)
 
         imgdata = io.BytesIO()
-        fig.savefig(imgdata, **savefig_kwargs)
+        self.save_figure(item, fig, imgdata)
         out = _hash_file(imgdata)
         imgdata.close()
 
@@ -475,14 +468,13 @@ class ImageComparison:
 
         compare = get_compare(item)
         tolerance = compare.kwargs.get('tolerance', 2)
-        savefig_kwargs = compare.kwargs.get('savefig_kwargs', {})
 
         ext = self._file_extension(item)
 
         baseline_image_ref = self.obtain_baseline_image(item, result_dir)
 
         test_image = (result_dir / f"result.{ext}").absolute()
-        fig.savefig(str(test_image), **savefig_kwargs)
+        self.save_figure(item, fig, test_image)
 
         if ext in ['png', 'svg']:  # Use original file
             summary['result_image'] = test_image.relative_to(self.results_dir).as_posix()
@@ -554,13 +546,55 @@ class ImageComparison:
         with open(str(library_path)) as fp:
             return json.load(fp)
 
+    def save_figure(self, item, fig, filename):
+        if isinstance(filename, Path):
+            filename = str(filename)
+        compare = get_compare(item)
+        savefig_kwargs = compare.kwargs.get('savefig_kwargs', {})
+        deterministic = compare.kwargs.get('deterministic', False)
+
+        original_source_date_epoch = os.environ.get('SOURCE_DATE_EPOCH', None)
+
+        extra_rcparams = {}
+
+        if deterministic:
+
+            # Make sure we don't modify the original dictionary in case is a common
+            # object used by different tests
+            savefig_kwargs = savefig_kwargs.copy()
+
+            if 'metadata' not in savefig_kwargs:
+                savefig_kwargs['metadata'] = {}
+
+            ext = self._file_extension(item)
+
+            if ext == 'png':
+                extra_metadata = {"Software": None}
+            elif ext == 'pdf':
+                extra_metadata = {"Creator": None, "Producer": None, "CreationDate": None}
+            elif ext == 'eps':
+                extra_metadata = {"Creator": "test"}
+                os.environ['SOURCE_DATE_EPOCH'] = '1680254601'
+            elif ext == 'svg':
+                extra_metadata = {"Date": None}
+                extra_rcparams["svg.hashsalt"] = "test"
+
+            savefig_kwargs['metadata'].update(extra_metadata)
+
+        import matplotlib.pyplot as plt
+
+        with plt.rc_context(rc=extra_rcparams):
+            fig.savefig(filename, **savefig_kwargs)
+
+        if original_source_date_epoch is not None:
+            os.environ['SOURCE_DATE_EPOCH'] = original_source_date_epoch
+
     def compare_image_to_hash_library(self, item, fig, result_dir, summary=None):
         hash_comparison_pass = False
         if summary is None:
             summary = {}
 
         compare = get_compare(item)
-        savefig_kwargs = compare.kwargs.get('savefig_kwargs', {})
 
         ext = self._file_extension(item)
 
@@ -601,7 +635,7 @@ class ImageComparison:
 
         # Save the figure for later summary (will be removed later if not needed)
         test_image = (result_dir / f"result.{ext}").absolute()
-        fig.savefig(str(test_image), **savefig_kwargs)
+        self.save_figure(item, fig, test_image)
         summary['result_image'] = test_image.relative_to(self.results_dir).as_posix()
 
         # Hybrid mode (hash and image comparison)

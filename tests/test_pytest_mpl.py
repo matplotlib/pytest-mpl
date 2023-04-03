@@ -704,15 +704,6 @@ def test_formats(pytester, use_hash_library, passes, file_format):
         else:
             pytest.skip('Comparing EPS and PDF files requires ghostscript to be installed')
 
-    if file_format == 'png':
-        metadata = '{"Software": None}'
-    elif file_format == 'pdf':
-        metadata = '{"Creator": None, "Producer": None, "CreationDate": None}'
-    elif file_format == 'eps':
-        metadata = '{"Creator": "test"}'
-    elif file_format == 'svg':
-        metadata = '{"Date": None}'
-
     pytester.makepyfile(
         f"""
         import os
@@ -721,16 +712,9 @@ def test_formats(pytester, use_hash_library, passes, file_format):
         @pytest.mark.mpl_image_compare(baseline_dir=r"{baseline_dir_abs}",
                                        {f'hash_library=r"{hash_library}",' if use_hash_library else ''}
                                        tolerance={DEFAULT_TOLERANCE},
-                                       savefig_kwargs={{'format': '{file_format}',
-                                                        'metadata': {metadata}}})
+                                       deterministic=True,
+                                       savefig_kwargs={{'format': '{file_format}'}})
         def test_format_{file_format}():
-
-            # For reproducible EPS output
-            os.environ['SOURCE_DATE_EPOCH'] = '1680254601'
-
-            # For reproducible SVG output
-            plt.rcParams['svg.hashsalt'] = 'test'
-
             fig = plt.figure()
             ax = fig.add_subplot(1, 1, 1)
             ax.plot([{1 if passes else 3}, 2, 3])
