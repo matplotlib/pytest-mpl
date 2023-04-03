@@ -639,11 +639,44 @@ class ImageComparison:
             filename = str(filename)
         compare = get_compare(item)
         savefig_kwargs = compare.kwargs.get('savefig_kwargs', {})
-        deterministic = compare.kwargs.get('deterministic', False)
+        deterministic = compare.kwargs.get('deterministic', None)
 
         original_source_date_epoch = os.environ.get('SOURCE_DATE_EPOCH', None)
 
         extra_rcparams = {}
+
+        ext = self._file_extension(item)
+
+        if deterministic is None:
+
+            # The deterministic option should only matter for hash-based tests,
+            # so we first check if a hash library is being used
+
+            if self.hash_library or compare.kwargs.get('hash_library', None):
+
+                if ext == 'png':
+                    if 'metadata' not in savefig_kwargs or 'Software' not in savefig_kwargs['metadata']:
+                        warnings.warn("deterministic option not set (currently defaulting to False), "
+                                      "in future this will default to True to give consistent "
+                                      "hashes across Matplotlib versions. To suppress this warning, "
+                                      "set deterministic to True if you are happy with the future "
+                                      "behavior or to False if you want to preserve the old behavior.",
+                                      FutureWarning)
+                    else:
+                        # Set to False but in practice because Software is set to a constant value
+                        # by the caller, the output will be deterministic (we don't want to change
+                        # Software to None if the caller set it to e.g. 'test')
+                        deterministic = False
+                else:
+                    deterministic = True
+
+            else:
+
+                # We can just default to True since it shouldn't matter and in
+                # case generated images are somehow used in future to compute
+                # hashes
+
+                deterministic = True
 
         if deterministic:
 
@@ -653,8 +686,6 @@ class ImageComparison:
 
             if 'metadata' not in savefig_kwargs:
                 savefig_kwargs['metadata'] = {}
-
-            ext = self._file_extension(item)
 
             if ext == 'png':
                 extra_metadata = {"Software": None}
