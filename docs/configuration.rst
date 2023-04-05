@@ -131,6 +131,27 @@ decorator:
 This will make the test insensitive to changes in e.g. the freetype
 library.
 
+Supported formats and deterministic output
+------------------------------------------
+
+By default, pytest-mpl will save and compare figures in PNG format. However,
+it is possible to set the format to use by setting e.g. ``savefig_kwargs={'format': 'pdf'}``
+in ``mpl_image_compare``. Supported formats are ``'eps'``, ``'pdf'``, ``'png'``, and ``'svg'``.
+Note that Ghostscript is required to be installed for comparing PDF and EPS figures, while
+Inkscape is required for SVG comparison.
+
+By default, Matplotlib does not produce deterministic output that will have a
+consistent hash every time it is run, or over different Matplotlib versions. In
+order to enforce that the output is deterministic, you can set the ``deterministic``
+keyword argument in ``mpl_image_compare``:
+
+.. code:: python
+
+    @pytest.mark.mpl_image_compare(deterministic=True)
+
+This does a number of things such as e.g., setting the creation date in the
+metadata to be constant, and avoids hard-coding the Matplotlib in the files.
+
 Test failure example
 --------------------
 
