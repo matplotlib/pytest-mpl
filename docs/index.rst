@@ -14,7 +14,11 @@
 pytest-mpl |release| documentation
 ##################################
 
-This is a plugin to facilitate image comparison for Matplotlib figures in pytest.
+``pytest-mpl`` is a `pytest <https://docs.pytest.org>`__ plugin to facilitate image comparison for `Matplotlib <http://www.matplotlib.org>`__ figures.
+
+For each figure to test, an image is generated and then subtracted from an existing reference image.
+If the RMS of the residual is larger than a user-specified tolerance, the test will fail.
+Alternatively, the generated image can be hashed and compared to an expected value.
 
 ************
 Installation
