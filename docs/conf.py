@@ -38,6 +38,7 @@ is_release = not (pytest_mpl_version.is_prerelease or pytest_mpl_version.is_devr
 # ones.
 extensions = [
     'sample_summaries',
+    'sphinx.ext.intersphinx',
     'sphinx_design',
 ]
 
@@ -49,6 +50,9 @@ templates_path = ['_templates']
 # This pattern also affects html_static_path and html_extra_path.
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 
+intersphinx_mapping = {
+    "matplotlib": ("https://matplotlib.org/stable", None),
+}
 
 # -- Options for HTML output -------------------------------------------------
 

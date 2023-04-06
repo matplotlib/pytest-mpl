@@ -6,6 +6,8 @@ Basic Usage
 
 For each figure to test, the reference image is subtracted from the generated image, and the RMS of the residual is compared to a user-specified tolerance. If the residual is too large, the test will fail (this is implemented using helper functions from ``matplotlib.testing``).
 
+.. _image-comparison-mode:
+
 With Baseline Images
 ^^^^^^^^^^^^^^^^^^^^
 
@@ -39,6 +41,8 @@ sub-directory called ``baseline`` relative to the test files (this name
 is configurable, see below). You can also generate the baseline image
 directly in the right directory.
 
+.. _hash-comparison-mode:
+
 With a Hash Library
 ^^^^^^^^^^^^^^^^^^^
 
@@ -57,6 +61,7 @@ When generating a hash library, the tests will also be run as usual against the
 existing hash library specified by ``--mpl-hash-library`` or the keyword argument.
 However, generating baseline images will always result in the tests being skipped.
 
+.. _hybrid-mode:
 
 Hybrid Mode: Hashes and Images
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
