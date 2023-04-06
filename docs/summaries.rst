@@ -30,7 +30,9 @@ summary can also be saved. Multiple options can be specified comma-separated.
 
     .. code-block:: bash
 
-        pytest --mpl --mpl-results-path=results --mpl-generate-summary=html,json
+        pytest --mpl \
+          --mpl-results-path=results \
+          --mpl-generate-summary=html,json
 
     :summary:`test_html_images_only`
 
@@ -38,7 +40,10 @@ summary can also be saved. Multiple options can be specified comma-separated.
 
     .. code-block:: bash
 
-        pytest --mpl --mpl-hash-library=mpl35_ft261.json --mpl-results-path=results --mpl-generate-summary=html,json
+        pytest --mpl \
+          --mpl-hash-library=mpl35_ft261.json \
+          --mpl-results-path=results \
+          --mpl-generate-summary=html,json
 
     :summary:`test_html_hashes_only`
 
@@ -46,7 +51,11 @@ summary can also be saved. Multiple options can be specified comma-separated.
 
     .. code-block:: bash
 
-        pytest --mpl --mpl-hash-library=mpl35_ft261.json --mpl-baseline-path=baseline --mpl-results-path=results --mpl-generate-summary=html,json
+        pytest --mpl \
+          --mpl-hash-library=mpl35_ft261.json \
+          --mpl-baseline-path=baseline \
+          --mpl-results-path=results \
+          --mpl-generate-summary=html,json
 
     :summary:`test_html`
 
@@ -54,7 +63,11 @@ summary can also be saved. Multiple options can be specified comma-separated.
 
     .. code-block:: bash
 
-        pytest --mpl --mpl-generate-path=baseline --mpl-generate-hash-library=test_hashes.json --mpl-results-path=results --mpl-generate-summary=html,json
+        pytest --mpl \
+          --mpl-generate-path=baseline \
+          --mpl-generate-hash-library=test_hashes.json \
+          --mpl-results-path=results \
+          --mpl-generate-summary=html,json
 
     :summary:`test_html_generate`
 
@@ -62,7 +75,10 @@ summary can also be saved. Multiple options can be specified comma-separated.
 
     .. code-block:: bash
 
-        pytest --mpl --mpl-generate-path=baseline --mpl-results-path=results --mpl-generate-summary=html,json
+        pytest --mpl \
+          --mpl-generate-path=baseline \
+          --mpl-results-path=results \
+          --mpl-generate-summary=html,json
 
     :summary:`test_html_generate_images_only`
 
@@ -70,7 +86,10 @@ summary can also be saved. Multiple options can be specified comma-separated.
 
     .. code-block:: bash
 
-        pytest --mpl --mpl-generate-hash-library=test_hashes.json --mpl-results-path=results --mpl-generate-summary=html,json
+        pytest --mpl \
+          --mpl-generate-hash-library=test_hashes.json \
+          --mpl-results-path=results \
+          --mpl-generate-summary=html,json
 
     :summary:`test_html_generate_hashes_only`
 
@@ -78,7 +97,11 @@ summary can also be saved. Multiple options can be specified comma-separated.
 
     .. code-block:: bash
 
-        pytest --mpl --mpl-generate-hash-library=test_hashes.json --mpl-hash-library=mpl35_ft261.json --mpl-results-path=results --mpl-generate-summary=html,json
+        pytest --mpl \
+          --mpl-generate-hash-library=test_hashes.json \
+          --mpl-hash-library=mpl35_ft261.json \
+          --mpl-results-path=results \
+          --mpl-generate-summary=html,json
 
     :summary:`test_html_run_generate_hashes_only`
 
@@ -86,7 +109,11 @@ summary can also be saved. Multiple options can be specified comma-separated.
 
     .. code-block:: bash
 
-        pytest --mpl --mpl-hash-library=mpl35_ft261.json --mpl-baseline-path=baseline --mpl-results-path=results --mpl-generate-summary=basic-html,json
+        pytest --mpl \
+          --mpl-hash-library=mpl35_ft261.json \
+          --mpl-baseline-path=baseline \
+          --mpl-results-path=results \
+          --mpl-generate-summary=basic-html,json
 
     :summary:`test_basic_html`
 
