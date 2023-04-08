@@ -7,8 +7,10 @@
 
     installing
     usage
+    image_mode
+    hash_mode
+    hybrid_mode
     configuration
-    summaries
 
 ##################################
 pytest-mpl |release| documentation
@@ -57,7 +59,7 @@ Learning resources
         Tutorials
         ^^^
 
-        - :doc:`Basic usage <usage>`
+        - :doc:`Get started <usage>`
 
     .. grid-item-card::
         :padding: 2
@@ -65,6 +67,9 @@ Learning resources
         How-tos
         ^^^
 
+        - :doc:`Image comparison mode <image_mode>`
+        - :doc:`Hash comparison mode <hash_mode>`
+        - :doc:`Hybrid mode <hybrid_mode>`
 
     .. grid-item-card::
         :padding: 2
@@ -72,6 +77,7 @@ Learning resources
         Understand how pytest-mpl works
         ^^^
 
+        Explanatory information is included where relevant throughout the documentation.
 
     .. grid-item-card::
         :padding: 2
@@ -80,14 +86,12 @@ Learning resources
         ^^^
 
         - :doc:`Configuration <configuration>`
-        - :doc:`Summary Reports <summaries>`
-
 
 ************
 Contributing
 ************
 
-pytest-mpl is a community project maintained for and by its users.
+``pytest-mpl`` is a community project maintained for and by its users.
 There are many ways you can help!
 
 - Report a bug or request a feature `on GitHub <https://github.com/matplotlib/pytest-mpl/issues>`__
