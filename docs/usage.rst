@@ -108,7 +108,16 @@ Even through the figure has changed, the test will pass, because image compariso
 If ``pytest-mpl`` is not installed, the image comparison tests will cause pytest to show a warning, ``PytestReturnNotNoneWarning``.
 Installing pytest-mpl will solve this issue.
 When ``pytest-mpl`` is installed but not enabled, it will intercept the returned figure and close it without doing any comparison.
+
 Alternatively, the image comparison tests can be deselected by running pytest with ``-m "not mpl_image_compare"``.
+Or the following can be included in your test functions to skip if ``pytest-mpl`` is not installed:
+
+.. code-block:: python
+
+   @pytest.mark.mpl_image_compare
+   def test_plot():
+       pytest.importorskip("pytest_mpl")
+       ...
 
 .. rubric:: Tests can fail when Matplotlib and FreeType versions change
 
