@@ -133,11 +133,16 @@ def pytest_addoption(parser):
     group.addoption('--mpl-generate-hash-library',
                     help="filepath to save a generated hash library, relative "
                     "to location where py.test is run", action='store')
-    group.addoption('--mpl-baseline-path',
-                    help="directory containing baseline images, relative to "
-                    "location where py.test is run unless --mpl-baseline-relative is given. "
-                    "This can also be a URL or a set of comma-separated URLs (in case "
-                    "mirrors are specified)", action='store')
+
+    baseline_path_help = (
+        "directory containing baseline images, relative to "
+        "location where py.test is run unless --mpl-baseline-relative is given. "
+        "This can also be a URL or a set of comma-separated URLs (in case "
+        "mirrors are specified)"
+    )
+    group.addoption("--mpl-baseline-path", help=baseline_path_help, action="store")
+    parser.addini("mpl-baseline-path", help=baseline_path_help)
+
     group.addoption("--mpl-baseline-relative", help="interpret the baseline directory as "
                     "relative to the test location.", action="store_true")
     group.addoption('--mpl-hash-library',
@@ -181,7 +186,8 @@ def pytest_configure(config):
             config.getoption("--mpl-generate-path") is not None or
             config.getoption("--mpl-generate-hash-library") is not None):
 
-        baseline_dir = config.getoption("--mpl-baseline-path")
+        baseline_dir = (config.getoption("--mpl-baseline-path") or
+                        config.getini("mpl-baseline-path"))
         generate_dir = config.getoption("--mpl-generate-path")
         generate_hash_lib = config.getoption("--mpl-generate-hash-library")
         results_dir = config.getoption("--mpl-results-path") or config.getini("mpl-results-path")

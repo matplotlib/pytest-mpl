@@ -84,11 +84,11 @@ Directory containing baseline images
 ------------------------------------
 | **kwarg**: ``baseline_dir=<path>``
 | **CLI**: ``--mpl-baseline-path=<path>``
-| **INI**: ---
+| **INI**: ``mpl-baseline-path``
 | Default: ``baseline/`` *(relative to the test file)*
 
 The directory containing the baseline images that will be compared to the test figures.
-The kwarg option (``baseline_dir``) is relative to the test file, while the CLI option (``--mpl-baseline-path``) is relative to where pytest was run.
+The kwarg option (``baseline_dir``) is relative to the test file, while the CLI option (``--mpl-baseline-path``) and INI option (``mpl-baseline-path``) are relative to where pytest was run.
 Absolute paths can also be used.
 If the directory does not exist, it will be created along with any missing parent directories.
 
