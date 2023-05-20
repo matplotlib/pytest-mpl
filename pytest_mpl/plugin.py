@@ -211,10 +211,12 @@ def pytest_configure(config):
             results_dir = os.path.abspath(results_dir)
 
         default_style = (config.getoption("--mpl-default-style") or
-                         config.getini("mpl-default-style"))
+                         config.getini("mpl-default-style") or
+                         "classic")
 
-        default_tolerance = (config.getoption("--mpl-default-tolerance") or
-                             config.getini("mpl-default-tolerance"))
+        default_tolerance = float(config.getoption("--mpl-default-tolerance") or
+                                  config.getini("mpl-default-tolerance") or
+                                  "2")
 
         config.pluginmanager.register(ImageComparison(config,
                                                       baseline_dir=baseline_dir,
