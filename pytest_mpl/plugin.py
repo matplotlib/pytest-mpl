@@ -148,11 +148,15 @@ def pytest_addoption(parser):
     mpl_hash_library_help = "json library of image hashes, relative to location where py.test is run"
     group.addoption('--mpl-hash-library', help=mpl_hash_library_help, action='store')
     parser.addini("mpl-hash-library", help=mpl_hash_library_help)
-    group.addoption('--mpl-generate-summary', action='store',
-                    help="Generate a summary report of any failed tests"
-                    ", in --mpl-results-path. The type of the report should be "
-                    "specified. Supported types are `html`, `json` and `basic-html`. "
-                    "Multiple types can be specified separated by commas.")
+
+    mpl_generate_summary_help = (
+        "Generate a summary report of any failed tests"
+        ", in --mpl-results-path. The type of the report should be "
+        "specified. Supported types are `html`, `json` and `basic-html`. "
+        "Multiple types can be specified separated by commas."
+    )
+    group.addoption("--mpl-generate-summary", help=mpl_generate_summary_help, action="store")
+    parser.addini("mpl-generate-summary", help=mpl_generate_summary_help)
 
     results_path_help = "directory for test results, relative to location where py.test is run"
     group.addoption('--mpl-results-path', help=results_path_help, action='store')
@@ -199,7 +203,8 @@ def pytest_configure(config):
         results_dir = config.getoption("--mpl-results-path") or config.getini("mpl-results-path")
         hash_library = config.getoption("--mpl-hash-library") or config.getini("mpl-hash-library")
         _hash_library_from_cli = bool(config.getoption("--mpl-hash-library"))  # for backwards compatibility
-        generate_summary = config.getoption("--mpl-generate-summary")
+        generate_summary = (config.getoption("--mpl-generate-summary") or
+                            config.getini("mpl-generate-summary"))
         results_always = (config.getoption("--mpl-results-always") or
                           config.getini("mpl-results-always"))
         use_full_test_name = (config.getoption("--mpl-use-full-test-name") or

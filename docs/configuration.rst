@@ -399,7 +399,7 @@ Generate test summaries
 -----------------------
 | **kwarg**: ---
 | **CLI**: ``--mpl-generate-summary={html,json,basic-html}``
-| **INI**: ---
+| **INI**: ``mpl-generate-summary = {html,json,basic-html}``
 | Default: ``None``
 
 This option specifies the format of the test summary report to generate, if any.
