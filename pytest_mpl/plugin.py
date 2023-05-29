@@ -145,9 +145,9 @@ def pytest_addoption(parser):
 
     group.addoption("--mpl-baseline-relative", help="interpret the baseline directory as "
                     "relative to the test location.", action="store_true")
-    group.addoption('--mpl-hash-library',
-                    help="json library of image hashes, relative to "
-                    "location where py.test is run", action='store')
+    mpl_hash_library_help = "json library of image hashes, relative to location where py.test is run"
+    group.addoption('--mpl-hash-library', help=mpl_hash_library_help, action='store')
+    parser.addini("mpl-hash-library", help=mpl_hash_library_help)
     group.addoption('--mpl-generate-summary', action='store',
                     help="Generate a summary report of any failed tests"
                     ", in --mpl-results-path. The type of the report should be "
@@ -192,7 +192,8 @@ def pytest_configure(config):
         generate_dir = config.getoption("--mpl-generate-path")
         generate_hash_lib = config.getoption("--mpl-generate-hash-library")
         results_dir = config.getoption("--mpl-results-path") or config.getini("mpl-results-path")
-        hash_library = config.getoption("--mpl-hash-library")
+        hash_library = config.getoption("--mpl-hash-library") or config.getini("mpl-hash-library")
+        _hash_library_from_cli = bool(config.getoption("--mpl-hash-library"))  # for backwards compatibility
         generate_summary = config.getoption("--mpl-generate-summary")
         results_always = (config.getoption("--mpl-results-always") or
                           config.getini("mpl-results-always"))
@@ -218,6 +219,10 @@ def pytest_configure(config):
             baseline_dir = os.path.abspath(generate_dir)
         if results_dir is not None:
             results_dir = os.path.abspath(results_dir)
+        if hash_library is not None:
+            # For backwards compatibility, don't make absolute if set via CLI option
+            if not _hash_library_from_cli:
+                hash_library = os.path.abspath(hash_library)
 
         default_style = (config.getoption("--mpl-default-style") or
                          config.getini("mpl-default-style") or
@@ -238,7 +243,8 @@ def pytest_configure(config):
                                                       results_always=results_always,
                                                       use_full_test_name=use_full_test_name,
                                                       default_style=default_style,
-                                                      default_tolerance=default_tolerance))
+                                                      default_tolerance=default_tolerance,
+                                                      _hash_library_from_cli=_hash_library_from_cli))
 
     else:
 
@@ -297,7 +303,8 @@ class ImageComparison:
                  results_always=False,
                  use_full_test_name=False,
                  default_style='classic',
-                 default_tolerance=2
+                 default_tolerance=2,
+                 _hash_library_from_cli=False,  # for backwards compatibility
                  ):
         self.config = config
         self.baseline_dir = baseline_dir
@@ -305,6 +312,7 @@ class ImageComparison:
         self.generate_dir = path_is_not_none(generate_dir)
         self.results_dir = path_is_not_none(results_dir)
         self.hash_library = path_is_not_none(hash_library)
+        self._hash_library_from_cli = _hash_library_from_cli  # for backwards compatibility
         self.generate_hash_library = path_is_not_none(generate_hash_library)
         if generate_summary:
             generate_summary = {i.lower() for i in generate_summary.split(',')}
@@ -637,7 +645,10 @@ class ImageComparison:
             # Use hash library name of current test as results hash library name
             self.results_hash_library_name = Path(compare.kwargs.get("hash_library", "")).name
 
-        hash_library_filename = self.hash_library or compare.kwargs.get('hash_library', None)
+        # Order of precedence for hash library: CLI, kwargs, INI (for backwards compatibility)
+        hash_library_filename = compare.kwargs.get("hash_library", None) or self.hash_library
+        if self._hash_library_from_cli:  # for backwards compatibility
+            hash_library_filename = self.hash_library
         hash_library_filename = (Path(item.fspath).parent / hash_library_filename).absolute()
 
         if not Path(hash_library_filename).exists():
