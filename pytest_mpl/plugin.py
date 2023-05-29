@@ -45,7 +45,7 @@ import pytest
 from pytest_mpl.summary.html import generate_summary_basic_html, generate_summary_html
 
 DEFAULT_STYLE = "classic"
-DEFAULT_TOLERANCE: float = 2
+DEFAULT_TOLERANCE = 2
 DEFAULT_BACKEND = "agg"
 
 SUPPORTED_FORMATS = {"html", "json", "basic-html"}
@@ -230,7 +230,12 @@ def pytest_configure(config):
         hash_library = get_cli_or_ini("mpl-hash-library")
         _hash_library_from_cli = bool(config.getoption("--mpl-hash-library"))  # for backwards compatibility
 
-        default_tolerance = float(get_cli_or_ini("mpl-default-tolerance", DEFAULT_TOLERANCE))
+        default_tolerance = get_cli_or_ini("mpl-default-tolerance", DEFAULT_TOLERANCE)
+        if isinstance(default_tolerance, str):
+            if default_tolerance.isdigit():  # prefer int if possible
+                default_tolerance = int(default_tolerance)
+            else:
+                default_tolerance = float(default_tolerance)
         default_style = get_cli_or_ini("mpl-default-style", DEFAULT_STYLE)
         default_backend = get_cli_or_ini("mpl-default-backend", DEFAULT_BACKEND)
 
