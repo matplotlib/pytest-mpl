@@ -160,7 +160,7 @@ If you specify a filename that has an extension other than ``png``, you must als
 Whether to include the module name in the filename
 --------------------------------------------------
 | **kwarg**: ---
-| **CLI**: ---
+| **CLI**: ``--mpl-use-full-test-name``
 | **INI**: ``mpl-use-full-test-name``
 | Default: ``False``
 

@@ -164,8 +164,9 @@ def pytest_addoption(parser):
                     help=results_always_help)
     parser.addini('mpl-results-always', help=results_always_help)
 
-    parser.addini('mpl-use-full-test-name', help="use fully qualified test name as the filename.",
-                  type='bool')
+    use_full_test_name_help = "use fully qualified test name as the filename."
+    group.addoption("--mpl-use-full-test-name", help=use_full_test_name_help, action="store_true")
+    parser.addini('mpl-use-full-test-name', help=use_full_test_name_help, type='bool')
 
     style_help = "default style to use for tests, unless specified in the mpl_image_compare decorator"
     group.addoption('--mpl-default-style', help=style_help, action='store')
@@ -195,6 +196,8 @@ def pytest_configure(config):
         generate_summary = config.getoption("--mpl-generate-summary")
         results_always = (config.getoption("--mpl-results-always") or
                           config.getini("mpl-results-always"))
+        use_full_test_name = (config.getoption("--mpl-use-full-test-name") or
+                              config.getini("mpl-use-full-test-name"))
 
         if config.getoption("--mpl-baseline-relative"):
             baseline_relative_dir = config.getoption("--mpl-baseline-path")
@@ -233,6 +236,7 @@ def pytest_configure(config):
                                                       generate_hash_library=generate_hash_lib,
                                                       generate_summary=generate_summary,
                                                       results_always=results_always,
+                                                      use_full_test_name=use_full_test_name,
                                                       default_style=default_style,
                                                       default_tolerance=default_tolerance))
 
@@ -291,6 +295,7 @@ class ImageComparison:
                  generate_hash_library=None,
                  generate_summary=None,
                  results_always=False,
+                 use_full_test_name=False,
                  default_style='classic',
                  default_tolerance=2
                  ):
@@ -312,6 +317,7 @@ class ImageComparison:
                 results_always = True
         self.generate_summary = generate_summary
         self.results_always = results_always
+        self.use_full_test_name = use_full_test_name
 
         self.default_style = default_style
         self.default_tolerance = default_tolerance
@@ -360,7 +366,7 @@ class ImageComparison:
         Given a pytest item, generate the figure filename.
         """
         ext = self._file_extension(item)
-        if self.config.getini('mpl-use-full-test-name'):
+        if self.use_full_test_name:
             filename = generate_test_name(item) + f'.{ext}'
         else:
             compare = get_compare(item)
