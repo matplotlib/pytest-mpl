@@ -176,6 +176,11 @@ def pytest_addoption(parser):
     group.addoption('--mpl-default-tolerance', help=tolerance_help, action='store')
     parser.addini('mpl-default-tolerance', help=tolerance_help)
 
+    msg = "default backend to use for tests, unless specified in the mpl_image_compare decorator"
+    option = "mpl-default-backend"
+    group.addoption(f"--{option}", help=msg, action="store")
+    parser.addini(option, help=msg)
+
 
 def pytest_configure(config):
 
@@ -232,6 +237,10 @@ def pytest_configure(config):
                                   config.getini("mpl-default-tolerance") or
                                   "2")
 
+        default_backend = (config.getoption("--mpl-default-backend") or
+                           config.getini("mpl-default-backend") or
+                           "agg")
+
         config.pluginmanager.register(ImageComparison(config,
                                                       baseline_dir=baseline_dir,
                                                       baseline_relative_dir=baseline_relative_dir,
@@ -244,6 +253,7 @@ def pytest_configure(config):
                                                       use_full_test_name=use_full_test_name,
                                                       default_style=default_style,
                                                       default_tolerance=default_tolerance,
+                                                      default_backend=default_backend,
                                                       _hash_library_from_cli=_hash_library_from_cli))
 
     else:
@@ -304,6 +314,7 @@ class ImageComparison:
                  use_full_test_name=False,
                  default_style='classic',
                  default_tolerance=2,
+                 default_backend='agg',
                  _hash_library_from_cli=False,  # for backwards compatibility
                  ):
         self.config = config
@@ -329,6 +340,7 @@ class ImageComparison:
 
         self.default_style = default_style
         self.default_tolerance = default_tolerance
+        self.default_backend = default_backend
 
         # Generate the containing dir for all test results
         if not self.results_dir:
@@ -731,7 +743,7 @@ class ImageComparison:
 
         style = compare.kwargs.get('style', self.default_style)
         remove_text = compare.kwargs.get('remove_text', False)
-        backend = compare.kwargs.get('backend', 'agg')
+        backend = compare.kwargs.get('backend', self.default_backend)
 
         ext = self._file_extension(item)
 

@@ -340,8 +340,8 @@ See the :func:`matplotlib.style.context` ``style`` documentation for the options
 Matplotlib backend
 ------------------
 | **kwarg**: ``backend=<name>``
-| **CLI**: ---
-| **INI**: ---
+| **CLI**: ``--mpl-default-backend=<name>``
+| **INI**: ``mpl-default-backend = <name>``
 | Default: ``"agg"``
 
 The Matplotlib backend to use when saving the figure.
