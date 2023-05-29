@@ -226,8 +226,8 @@ Adjusting these options *may* allow tests to pass across a range of Matplotlib a
 RMS tolerance
 -------------
 | **kwarg**: ``tolerance=<value>``
-| **CLI**: ---
-| **INI**: ---
+| **CLI**: ``--mpl-default-tolerance=<value>``
+| **INI**: ``mpl-default-tolerance = <value>``
 | Default: ``2``
 
 The maximum RMS difference between the result image and the baseline image before the test fails.
@@ -310,8 +310,8 @@ A dictionary of keyword arguments to pass to :func:`matplotlib.pyplot.savefig`.
 Matplotlib style
 ----------------
 | **kwarg**: ``style=<name>``
-| **CLI**: ---
-| **INI**: ---
+| **CLI**: ``--mpl-default-style=<name>``
+| **INI**: ``mpl-default-style = <name>``
 | Default: ``"classic"``
 
 The Matplotlib style to use when saving the figure.
