@@ -1,6 +1,7 @@
 import json
 
 import pytest
+from helpers import pytester_path
 
 
 @pytest.mark.parametrize(
@@ -13,11 +14,12 @@ import pytest
     ],
 )
 def test_config(pytester, ini, cli, expected):
+    path = pytester_path(pytester)
     ini = f"mpl-generate-summary = {ini}" if ini else ""
     pytester.makeini(
         f"""
         [pytest]
-        mpl-results-path = {pytester.path}
+        mpl-results-path = {path}
         {ini}
         """
     )
@@ -36,7 +38,7 @@ def test_config(pytester, ini, cli, expected):
     result = pytester.runpytest("--mpl", cli)
     result.assert_outcomes(failed=1)
 
-    json_summary = pytester.path / "results.json"
+    json_summary = path / "results.json"
     if "json" in expected:
         with open(json_summary) as fp:
             results = json.load(fp)
@@ -44,7 +46,7 @@ def test_config(pytester, ini, cli, expected):
     else:
         assert not json_summary.exists()
 
-    html_summary = pytester.path / "fig_comparison.html"
+    html_summary = path / "fig_comparison.html"
     if "html" in expected:
         with open(html_summary) as fp:
             raw = fp.read()
@@ -53,7 +55,7 @@ def test_config(pytester, ini, cli, expected):
     else:
         assert not html_summary.exists()
 
-    basic_html_summary = pytester.path / "fig_comparison_basic.html"
+    basic_html_summary = path / "fig_comparison_basic.html"
     if "basic-html" in expected:
         with open(basic_html_summary) as fp:
             raw = fp.read()

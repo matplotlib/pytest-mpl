@@ -2,6 +2,7 @@ import shutil
 from pathlib import Path
 
 import pytest
+from helpers import pytester_path
 
 FULL_TEST_NAME = "test_config.TestClass.test_mpl"
 SHORT_TEST_NAME = "test_mpl"
@@ -19,16 +20,17 @@ SHORT_TEST_NAME = "test_mpl"
     ],
 )
 def test_config(pytester, ini, cli, expected_baseline_name, success_expected):
+    path = pytester_path(pytester)
     shutil.copyfile(  # Test will only pass if baseline is at expected path
         Path(__file__).parent / "baseline" / "2.0.x" / "test_base_style.png",
-        pytester.path / f"{expected_baseline_name}.png",
+        path / f"{expected_baseline_name}.png",
     )
     ini = f"mpl-use-full-test-name = {ini}" if ini is not None else ""
     pytester.makeini(
         f"""
         [pytest]
         mpl-default-style = fivethirtyeight
-        mpl-baseline-path = {pytester.path}
+        mpl-baseline-path = {path}
         {ini}
         """
     )

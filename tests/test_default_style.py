@@ -1,4 +1,5 @@
 import pytest
+from helpers import pytester_path
 
 
 @pytest.mark.parametrize(
@@ -14,7 +15,7 @@ def test_config(pytester, ini, cli, kwarg, expected):
     pytester.makeini(
         f"""
         [pytest]
-        mpl-baseline-path = {pytester.path}
+        mpl-baseline-path = {pytester_path(pytester)}
         {ini}
         """
     )

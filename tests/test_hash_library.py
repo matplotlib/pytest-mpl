@@ -1,6 +1,7 @@
 import json
 
 import pytest
+from helpers import pytester_path
 
 
 @pytest.mark.parametrize(
@@ -14,9 +15,10 @@ import pytest
     ],
 )
 def test_config(pytester, ini, cli, kwarg, success_expected):
+    path = pytester_path(pytester)
     hash_libraries = {
-        "good": pytester.path / "good_hash_library.json",
-        "bad": pytester.path / "bad_hash_library.json",
+        "good": path / "good_hash_library.json",
+        "bad": path / "bad_hash_library.json",
     }
     ini = f"mpl-hash-library = {hash_libraries[ini]}" if ini else ""
     pytester.makeini(

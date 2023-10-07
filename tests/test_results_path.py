@@ -1,4 +1,5 @@
 import pytest
+from helpers import pytester_path
 
 
 @pytest.mark.parametrize(
@@ -31,4 +32,4 @@ def test_config(pytester, ini, cli, expected):
     cli = f"--mpl-results-path={cli}" if cli else ""
     result = pytester.runpytest("--mpl", cli)
     result.assert_outcomes(failed=1)
-    assert (pytester.path / expected / "test_config.test_mpl" / "result.png").exists()
+    assert (pytester_path(pytester) / expected / "test_config.test_mpl" / "result.png").exists()

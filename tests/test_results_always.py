@@ -1,6 +1,7 @@
 from pathlib import Path
 
 import pytest
+from helpers import pytester_path
 
 
 @pytest.mark.parametrize(
@@ -14,13 +15,14 @@ import pytest
     ],
 )
 def test_config(pytester, ini, cli, enabled_expected):
+    path = pytester_path(pytester)
     ini = f"mpl-results-always = {ini}" if ini else ""
     pytester.makeini(
         f"""
         [pytest]
         mpl-default-style = fivethirtyeight
         mpl-baseline-path = {Path(__file__).parent / "baseline" / "2.0.x"}
-        mpl-results-path = {pytester.path}
+        mpl-results-path = {path}
         {ini}
         """
     )
@@ -38,4 +40,4 @@ def test_config(pytester, ini, cli, enabled_expected):
     cli = "--mpl-results-always" if cli else ""
     result = pytester.runpytest("--mpl", cli)
     result.assert_outcomes(passed=1)
-    assert (pytester.path / "test_config.test_base_style" / "result.png").exists() == enabled_expected
+    assert (path / "test_config.test_base_style" / "result.png").exists() == enabled_expected

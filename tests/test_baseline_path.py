@@ -2,6 +2,7 @@ import shutil
 from pathlib import Path
 
 import pytest
+from helpers import pytester_path
 
 
 @pytest.mark.parametrize(
@@ -15,12 +16,13 @@ import pytest
     ],
 )
 def test_config(pytester, ini, cli, kwarg, expected_baseline_path, success_expected):
-    (pytester.path / expected_baseline_path).mkdir()
+    path = pytester_path(pytester)
+    (path / expected_baseline_path).mkdir()
     shutil.copyfile(  # Test will only pass if baseline is at expected path
         Path(__file__).parent / "baseline" / "2.0.x" / "test_base_style.png",
-        pytester.path / expected_baseline_path / "test_mpl.png",
+        path / expected_baseline_path / "test_mpl.png",
     )
-    ini = f"mpl-baseline-path = {pytester.path / ini}" if ini is not None else ""
+    ini = f"mpl-baseline-path = {path / ini}" if ini is not None else ""
     pytester.makeini(
         f"""
         [pytest]
@@ -28,7 +30,7 @@ def test_config(pytester, ini, cli, kwarg, expected_baseline_path, success_expec
         {ini}
         """
     )
-    kwarg = f"baseline_dir=r'{pytester.path / kwarg}'" if kwarg else ""
+    kwarg = f"baseline_dir=r'{path / kwarg}'" if kwarg else ""
     pytester.makepyfile(
         f"""
         import matplotlib.pyplot as plt
@@ -40,7 +42,7 @@ def test_config(pytester, ini, cli, kwarg, expected_baseline_path, success_expec
             return fig
         """
     )
-    cli = f"--mpl-baseline-path={pytester.path / cli}" if cli else ""
+    cli = f"--mpl-baseline-path={path / cli}" if cli else ""
     result = pytester.runpytest("--mpl", cli)
     if success_expected:
         result.assert_outcomes(passed=1)
