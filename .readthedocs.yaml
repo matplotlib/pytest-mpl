@@ -6,7 +6,6 @@ build:
     python: "3.11"
 
 python:
-  system_packages: false
   install:
     - method: pip
       path: .
