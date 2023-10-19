@@ -44,7 +44,11 @@ import pytest
 
 from pytest_mpl.summary.html import generate_summary_basic_html, generate_summary_html
 
-SUPPORTED_FORMATS = {'html', 'json', 'basic-html'}
+DEFAULT_STYLE = "classic"
+DEFAULT_TOLERANCE = 2
+DEFAULT_BACKEND = "agg"
+
+SUPPORTED_FORMATS = {"html", "json", "basic-html"}
 
 SHAPE_MISMATCH_ERROR = """Error: Image dimensions did not match.
   Expected shape: {expected_shape}
@@ -125,71 +129,119 @@ def pytest_report_header(config, startdir):
 
 def pytest_addoption(parser):
     group = parser.getgroup("matplotlib image comparison")
-    group.addoption('--mpl', action='store_true',
-                    help="Enable comparison of matplotlib figures to reference files")
-    group.addoption('--mpl-generate-path',
-                    help="directory to generate reference images in, relative "
-                    "to location where py.test is run", action='store')
-    group.addoption('--mpl-generate-hash-library',
-                    help="filepath to save a generated hash library, relative "
-                    "to location where py.test is run", action='store')
-    group.addoption('--mpl-baseline-path',
-                    help="directory containing baseline images, relative to "
-                    "location where py.test is run unless --mpl-baseline-relative is given. "
-                    "This can also be a URL or a set of comma-separated URLs (in case "
-                    "mirrors are specified)", action='store')
-    group.addoption("--mpl-baseline-relative", help="interpret the baseline directory as "
-                    "relative to the test location.", action="store_true")
-    group.addoption('--mpl-hash-library',
-                    help="json library of image hashes, relative to "
-                    "location where py.test is run", action='store')
-    group.addoption('--mpl-generate-summary', action='store',
-                    help="Generate a summary report of any failed tests"
-                    ", in --mpl-results-path. The type of the report should be "
-                    "specified. Supported types are `html`, `json` and `basic-html`. "
-                    "Multiple types can be specified separated by commas.")
 
-    results_path_help = "directory for test results, relative to location where py.test is run"
-    group.addoption('--mpl-results-path', help=results_path_help, action='store')
-    parser.addini('mpl-results-path', help=results_path_help)
+    msg = "Enable comparison of matplotlib figures to reference files"
+    group.addoption("--mpl", help=msg, action="store_true")
 
-    results_always_help = ("Always compare to baseline images and save result images, even for passing tests. "
-                           "This option is automatically applied when generating a HTML summary.")
-    group.addoption('--mpl-results-always', action='store_true',
-                    help=results_always_help)
-    parser.addini('mpl-results-always', help=results_always_help)
+    msg = "directory to generate reference images in, relative to location where py.test is run"
+    group.addoption("--mpl-generate-path", help=msg, action="store")
 
-    parser.addini('mpl-use-full-test-name', help="use fully qualified test name as the filename.",
-                  type='bool')
+    msg = "filepath to save a generated hash library, relative to location where py.test is run"
+    group.addoption("--mpl-generate-hash-library", help=msg, action="store")
+
+    msg = (
+        "directory containing baseline images, relative to "
+        "location where py.test is run unless --mpl-baseline-relative is given. "
+        "This can also be a URL or a set of comma-separated URLs (in case "
+        "mirrors are specified)"
+    )
+    option = "mpl-baseline-path"
+    group.addoption(f"--{option}", help=msg, action="store")
+    parser.addini(option, help=msg)
+
+    msg = "interpret the baseline directory as relative to the test location."
+    group.addoption("--mpl-baseline-relative", help=msg, action="store_true")
+
+    msg = "json library of image hashes, relative to location where py.test is run"
+    option = "mpl-hash-library"
+    group.addoption(f"--{option}", help=msg, action="store")
+    parser.addini(option, help=msg)
+
+    msg = (
+        "Generate a summary report of any failed tests"
+        ", in --mpl-results-path. The type of the report should be "
+        "specified. Supported types are `html`, `json` and `basic-html`. "
+        "Multiple types can be specified separated by commas."
+    )
+    option = "mpl-generate-summary"
+    group.addoption(f"--{option}", help=msg, action="store")
+    parser.addini(option, help=msg)
+
+    msg = "directory for test results, relative to location where py.test is run"
+    option = "mpl-results-path"
+    group.addoption(f"--{option}", help=msg, action="store")
+    parser.addini(option, help=msg)
+
+    msg = (
+        "Always compare to baseline images and save result images, even for passing tests. "
+        "This option is automatically applied when generating a HTML summary."
+    )
+    option = "mpl-results-always"
+    group.addoption(f"--{option}", help=msg, action="store_true")
+    parser.addini(option, help=msg)
+
+    msg = "use fully qualified test name as the filename."
+    option = "mpl-use-full-test-name"
+    group.addoption(f"--{option}", help=msg, action="store_true")
+    parser.addini(option, help=msg, type="bool")
+
+    msg = "default style to use for tests, unless specified in the mpl_image_compare decorator"
+    option = "mpl-default-style"
+    group.addoption(f"--{option}", help=msg, action="store")
+    parser.addini(option, help=msg)
+
+    msg = "default tolerance to use for tests, unless specified in the mpl_image_compare decorator"
+    option = "mpl-default-tolerance"
+    group.addoption(f"--{option}", help=msg, action="store")
+    parser.addini(option, help=msg)
+
+    msg = "default backend to use for tests, unless specified in the mpl_image_compare decorator"
+    option = "mpl-default-backend"
+    group.addoption(f"--{option}", help=msg, action="store")
+    parser.addini(option, help=msg)
 
 
 def pytest_configure(config):
 
-    config.addinivalue_line('markers',
-                            "mpl_image_compare: Compares matplotlib figures "
-                            "against a baseline image")
+    config.addinivalue_line(
+        "markers",
+        "mpl_image_compare: Compares matplotlib figures against a baseline image",
+    )
 
-    if (config.getoption("--mpl") or
-            config.getoption("--mpl-generate-path") is not None or
-            config.getoption("--mpl-generate-hash-library") is not None):
+    if (
+        config.getoption("--mpl")
+        or config.getoption("--mpl-generate-path") is not None
+        or config.getoption("--mpl-generate-hash-library") is not None
+    ):
 
-        baseline_dir = config.getoption("--mpl-baseline-path")
+        def get_cli_or_ini(name, default=None):
+            return config.getoption(f"--{name}") or config.getini(name) or default
+
         generate_dir = config.getoption("--mpl-generate-path")
         generate_hash_lib = config.getoption("--mpl-generate-hash-library")
-        results_dir = config.getoption("--mpl-results-path") or config.getini("mpl-results-path")
-        hash_library = config.getoption("--mpl-hash-library")
-        generate_summary = config.getoption("--mpl-generate-summary")
-        results_always = (config.getoption("--mpl-results-always") or
-                          config.getini("mpl-results-always"))
 
+        baseline_dir = get_cli_or_ini("mpl-baseline-path")
         if config.getoption("--mpl-baseline-relative"):
             baseline_relative_dir = config.getoption("--mpl-baseline-path")
         else:
             baseline_relative_dir = None
+        use_full_test_name = get_cli_or_ini("mpl-use-full-test-name")
 
-        # Note that results_dir is an empty string if not specified
-        if not results_dir:
-            results_dir = None
+        hash_library = get_cli_or_ini("mpl-hash-library")
+        _hash_library_from_cli = bool(config.getoption("--mpl-hash-library"))  # for backwards compatibility
+
+        default_tolerance = get_cli_or_ini("mpl-default-tolerance", DEFAULT_TOLERANCE)
+        if isinstance(default_tolerance, str):
+            if default_tolerance.isdigit():  # prefer int if possible
+                default_tolerance = int(default_tolerance)
+            else:
+                default_tolerance = float(default_tolerance)
+        default_style = get_cli_or_ini("mpl-default-style", DEFAULT_STYLE)
+        default_backend = get_cli_or_ini("mpl-default-backend", DEFAULT_BACKEND)
+
+        results_dir = get_cli_or_ini("mpl-results-path")
+        results_always = get_cli_or_ini("mpl-results-always")
+        generate_summary = get_cli_or_ini("mpl-generate-summary")
 
         if generate_dir is not None:
             if baseline_dir is not None:
@@ -201,19 +253,30 @@ def pytest_configure(config):
             baseline_dir = os.path.abspath(generate_dir)
         if results_dir is not None:
             results_dir = os.path.abspath(results_dir)
+        if hash_library is not None:
+            # For backwards compatibility, don't make absolute if set via CLI option
+            if not _hash_library_from_cli:
+                hash_library = os.path.abspath(hash_library)
 
-        config.pluginmanager.register(ImageComparison(config,
-                                                      baseline_dir=baseline_dir,
-                                                      baseline_relative_dir=baseline_relative_dir,
-                                                      generate_dir=generate_dir,
-                                                      results_dir=results_dir,
-                                                      hash_library=hash_library,
-                                                      generate_hash_library=generate_hash_lib,
-                                                      generate_summary=generate_summary,
-                                                      results_always=results_always))
+        plugin = ImageComparison(
+            config,
+            baseline_dir=baseline_dir,
+            baseline_relative_dir=baseline_relative_dir,
+            generate_dir=generate_dir,
+            results_dir=results_dir,
+            hash_library=hash_library,
+            generate_hash_library=generate_hash_lib,
+            generate_summary=generate_summary,
+            results_always=results_always,
+            use_full_test_name=use_full_test_name,
+            default_style=default_style,
+            default_tolerance=default_tolerance,
+            default_backend=default_backend,
+            _hash_library_from_cli=_hash_library_from_cli,
+        )
+        config.pluginmanager.register(plugin)
 
     else:
-
         config.pluginmanager.register(FigureCloser(config))
 
 
@@ -256,24 +319,30 @@ def path_is_not_none(apath):
 
 
 class ImageComparison:
-
-    def __init__(self,
-                 config,
-                 baseline_dir=None,
-                 baseline_relative_dir=None,
-                 generate_dir=None,
-                 results_dir=None,
-                 hash_library=None,
-                 generate_hash_library=None,
-                 generate_summary=None,
-                 results_always=False
-                 ):
+    def __init__(
+        self,
+        config,
+        baseline_dir=None,
+        baseline_relative_dir=None,
+        generate_dir=None,
+        results_dir=None,
+        hash_library=None,
+        generate_hash_library=None,
+        generate_summary=None,
+        results_always=False,
+        use_full_test_name=False,
+        default_style=DEFAULT_STYLE,
+        default_tolerance=DEFAULT_TOLERANCE,
+        default_backend=DEFAULT_BACKEND,
+        _hash_library_from_cli=False,  # for backwards compatibility
+    ):
         self.config = config
         self.baseline_dir = baseline_dir
         self.baseline_relative_dir = path_is_not_none(baseline_relative_dir)
         self.generate_dir = path_is_not_none(generate_dir)
         self.results_dir = path_is_not_none(results_dir)
         self.hash_library = path_is_not_none(hash_library)
+        self._hash_library_from_cli = _hash_library_from_cli  # for backwards compatibility
         self.generate_hash_library = path_is_not_none(generate_hash_library)
         if generate_summary:
             generate_summary = {i.lower() for i in generate_summary.split(',')}
@@ -286,6 +355,11 @@ class ImageComparison:
                 results_always = True
         self.generate_summary = generate_summary
         self.results_always = results_always
+        self.use_full_test_name = use_full_test_name
+
+        self.default_style = default_style
+        self.default_tolerance = default_tolerance
+        self.default_backend = default_backend
 
         # Generate the containing dir for all test results
         if not self.results_dir:
@@ -331,7 +405,7 @@ class ImageComparison:
         Given a pytest item, generate the figure filename.
         """
         ext = self._file_extension(item)
-        if self.config.getini('mpl-use-full-test-name'):
+        if self.use_full_test_name:
             filename = generate_test_name(item) + f'.{ext}'
         else:
             compare = get_compare(item)
@@ -467,7 +541,7 @@ class ImageComparison:
             summary = {}
 
         compare = get_compare(item)
-        tolerance = compare.kwargs.get('tolerance', 2)
+        tolerance = compare.kwargs.get('tolerance', self.default_tolerance)
 
         ext = self._file_extension(item)
 
@@ -602,7 +676,10 @@ class ImageComparison:
             # Use hash library name of current test as results hash library name
             self.results_hash_library_name = Path(compare.kwargs.get("hash_library", "")).name
 
-        hash_library_filename = self.hash_library or compare.kwargs.get('hash_library', None)
+        # Order of precedence for hash library: CLI, kwargs, INI (for backwards compatibility)
+        hash_library_filename = compare.kwargs.get("hash_library", None) or self.hash_library
+        if self._hash_library_from_cli:  # for backwards compatibility
+            hash_library_filename = self.hash_library
         hash_library_filename = (Path(item.fspath).parent / hash_library_filename).absolute()
 
         if not Path(hash_library_filename).exists():
@@ -683,9 +760,9 @@ class ImageComparison:
             from matplotlib.testing.decorators import ImageComparisonTest as MplImageComparisonTest
             remove_ticks_and_titles = MplImageComparisonTest.remove_text
 
-        style = compare.kwargs.get('style', 'classic')
+        style = compare.kwargs.get('style', self.default_style)
         remove_text = compare.kwargs.get('remove_text', False)
-        backend = compare.kwargs.get('backend', 'agg')
+        backend = compare.kwargs.get('backend', self.default_backend)
 
         ext = self._file_extension(item)
 
