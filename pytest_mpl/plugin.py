@@ -472,16 +472,15 @@ class ImageComparison:
                 self.logger.info(f'Downloading {base_url + filename} failed: {repr(e)}')
             else:
                 break
-        else:
-            raise Exception("Could not download baseline image from any of the "
-                            "available URLs")
+        else:  # Could not download baseline image from any of the available URLs
+            return
         result_dir = Path(tempfile.mkdtemp())
         filename = result_dir / 'downloaded'
         with open(str(filename), 'wb') as tmpfile:
             tmpfile.write(content)
         return Path(filename)
 
-    def obtain_baseline_image(self, item, target_dir):
+    def obtain_baseline_image(self, item):
         """
         Copy the baseline image to our working directory.
 
@@ -545,8 +544,6 @@ class ImageComparison:
 
         ext = self._file_extension(item)
 
-        baseline_image_ref = self.obtain_baseline_image(item, result_dir)
-
         test_image = (result_dir / f"result.{ext}").absolute()
         self.save_figure(item, fig, test_image)
 
@@ -555,11 +552,20 @@ class ImageComparison:
         else:
             summary['result_image'] = (result_dir / f"result_{ext}.png").relative_to(self.results_dir).as_posix()
 
-        if not os.path.exists(baseline_image_ref):
+        baseline_image_ref = self.obtain_baseline_image(item)
+
+        baseline_missing = None
+        if baseline_image_ref is None:
+            baseline_missing = ("Could not download the baseline image from "
+                                "any of the available URLs.\n")
+        elif not os.path.exists(baseline_image_ref):
+            baseline_missing = ("Image file not found for comparison test in: \n\t"
+                                f"{self.get_baseline_directory(item)}\n")
+
+        if baseline_missing:
             summary['status'] = 'failed'
             summary['image_status'] = 'missing'
-            error_message = ("Image file not found for comparison test in: \n\t"
-                             f"{self.get_baseline_directory(item)}\n"
+            error_message = (baseline_missing +
                              "(This is expected for new tests.)\n"
                              "Generated Image: \n\t"
                              f"{test_image}")
@@ -728,6 +734,7 @@ class ImageComparison:
                 baseline_comparison = self.compare_image_to_baseline(item, fig, result_dir,
                                                                      summary=baseline_summary)
             except Exception as baseline_error:  # Append to test error later
+                summary['image_status'] = 'diff'  # (not necessarily diff, but makes user aware)
                 baseline_comparison = str(baseline_error)
             else:  # Update main summary
                 for k in ['image_status', 'baseline_image', 'diff_image',
@@ -768,25 +775,14 @@ class ImageComparison:
 
         with plt.style.context(style, after_reset=True), switch_backend(backend):
 
-            # Run test and get figure object
-            wrap_figure_interceptor(self, item)
-            yield
             test_name = generate_test_name(item)
-            if test_name not in self.return_value:
-                # Test function did not complete successfully
-                return
-            fig = self.return_value[test_name]
 
-            if remove_text:
-                remove_ticks_and_titles(fig)
-
-            result_dir = self.make_test_results_dir(item)
-
+            # Store fallback summary in case of exceptions
             summary = {
-                'status': None,
+                'status': 'failed',
                 'image_status': None,
                 'hash_status': None,
-                'status_msg': None,
+                'status_msg': 'An exception was raised while testing the figure.',
                 'baseline_image': None,
                 'diff_image': None,
                 'rms': None,
@@ -795,6 +791,24 @@ class ImageComparison:
                 'baseline_hash': None,
                 'result_hash': None,
             }
+            self._test_results[test_name] = summary
+
+            # Run test and get figure object
+            wrap_figure_interceptor(self, item)
+            yield
+            if test_name not in self.return_value:
+                # Test function did not complete successfully
+                summary['status'] = 'failed'
+                summary['status_msg'] = ('Test function raised an exception '
+                                         'before returning a figure.')
+                self._test_results[test_name] = summary
+                return
+            fig = self.return_value[test_name]
+
+            if remove_text:
+                remove_ticks_and_titles(fig)
+
+            result_dir = self.make_test_results_dir(item)
 
             # What we do now depends on whether we are generating the
             # reference images or simply running the test.
