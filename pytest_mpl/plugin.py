@@ -63,6 +63,11 @@ VECTOR_IMAGE_FORMATS = ['eps', 'pdf', 'svg']
 ALL_IMAGE_FORMATS = RASTER_IMAGE_FORMATS + VECTOR_IMAGE_FORMATS
 
 
+def _get_item_dir(item):
+    # .path is available starting from pytest 7, .fspath is for older versions.
+    return getattr(item, "path", Path(item.fspath)).parent
+
+
 def _hash_file(in_stream):
     """
     Hashes an already opened file.
@@ -445,11 +450,11 @@ class ImageComparison:
         baseline_dir = compare.kwargs.get('baseline_dir', None)
         if baseline_dir is None:
             if self.baseline_dir is None:
-                baseline_dir = Path(item.fspath).parent / 'baseline'
+                baseline_dir = _get_item_dir(item) / 'baseline'
             else:
                 if self.baseline_relative_dir:
                     # baseline dir is relative to the current test
-                    baseline_dir = Path(item.fspath).parent / self.baseline_relative_dir
+                    baseline_dir = _get_item_dir(item) / self.baseline_relative_dir
                 else:
                     # baseline dir is relative to where pytest was run
                     baseline_dir = self.baseline_dir
@@ -457,7 +462,7 @@ class ImageComparison:
         baseline_remote = (isinstance(baseline_dir, str) and  # noqa
                            baseline_dir.startswith(('http://', 'https://')))
         if not baseline_remote:
-            return Path(item.fspath).parent / baseline_dir
+            return _get_item_dir(item) / baseline_dir
 
         return baseline_dir
 
@@ -686,7 +691,7 @@ class ImageComparison:
         hash_library_filename = compare.kwargs.get("hash_library", None) or self.hash_library
         if self._hash_library_from_cli:  # for backwards compatibility
             hash_library_filename = self.hash_library
-        hash_library_filename = (Path(item.fspath).parent / hash_library_filename).absolute()
+        hash_library_filename = _get_item_dir(item) / hash_library_filename
 
         if not Path(hash_library_filename).exists():
             pytest.fail(f"Can't find hash library at path {hash_library_filename}")
