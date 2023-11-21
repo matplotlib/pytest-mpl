@@ -5,7 +5,7 @@ changelog:
     labels:
       - ignore-for-release-notes
     authors:
-      - pre-commit-ci[bot]
+      - pre-commit-ci
   categories:
     - title: Fixes
       labels:
