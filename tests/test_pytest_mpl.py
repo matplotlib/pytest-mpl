@@ -120,11 +120,10 @@ def test_fail():
 """
 
 
-def test_fails(tmpdir):
-
-    test_file = tmpdir.join('test.py').strpath
-    with open(test_file, 'w') as f:
-        f.write(TEST_FAILING)
+def test_fails(tmp_path):
+    test_file = tmp_path / "test.py"
+    test_file.write_text(TEST_FAILING)
+    test_file = str(test_file)
 
     # If we use --mpl, it should detect that the figure is wrong
     code = call_pytest(['--mpl', test_file])
@@ -147,16 +146,15 @@ def test_output_dir():
 """
 
 
-def test_output_dir(tmpdir):
-    test_file = tmpdir.join('test.py').strpath
-    with open(test_file, 'w') as f:
-        f.write(TEST_OUTPUT_DIR)
+def test_output_dir(tmp_path):
+    test_file = tmp_path / "test.py"
+    test_file.write_text(TEST_OUTPUT_DIR)
 
-    output_dir = tmpdir.join('test_output_dir')
+    output_dir = tmp_path / "test_output_dir"
 
     # When we run the test, we should get output images where we specify
     code = call_pytest([f'--mpl-results-path={output_dir}',
-                        '--mpl', test_file])
+                        '--mpl', str(test_file)])
 
     assert code != 0
     assert output_dir.exists()
@@ -175,13 +173,14 @@ def test_gen():
 """
 
 
-def test_generate(tmpdir):
+def test_generate(tmp_path):
 
-    test_file = tmpdir.join('test.py').strpath
-    with open(test_file, 'w') as f:
-        f.write(TEST_GENERATE)
+    test_file = tmp_path / "test.py"
+    test_file.write_text(TEST_GENERATE)
+    test_file = str(test_file)
 
-    gen_dir = tmpdir.mkdir('spam').mkdir('egg').strpath
+    gen_dir = tmp_path / "spam" / "egg"
+    gen_dir.mkdir(parents=True)
 
     # If we don't generate, the test will fail
     assert_pytest_fails_with(['--mpl', test_file], 'Image file not found for comparison test')
@@ -301,11 +300,10 @@ def test_hash_fails():
 """
 
 
-def test_hash_fails(tmpdir):
-
-    test_file = tmpdir.join('test.py').strpath
-    with open(test_file, 'w', encoding='ascii') as f:
-        f.write(TEST_FAILING_HASH)
+def test_hash_fails(tmp_path):
+    test_file = tmp_path / "test.py"
+    test_file.write_text(TEST_FAILING_HASH, encoding="ascii")
+    test_file = str(test_file)
 
     # If we use --mpl, it should detect that the figure is wrong
     output = assert_pytest_fails_with(['--mpl', test_file], "doesn't match hash FAIL in library")
@@ -340,11 +338,11 @@ def test_hash_fail_hybrid():
 
 
 @pytest.mark.skipif(ftv != '261', reason="Incorrect freetype version for hash check")
-def test_hash_fail_hybrid(tmpdir):
+def test_hash_fail_hybrid(tmp_path):
 
-    test_file = tmpdir.join('test.py').strpath
-    with open(test_file, 'w', encoding='ascii') as f:
-        f.write(TEST_FAILING_HYBRID)
+    test_file = tmp_path / "test.py"
+    test_file.write_text(TEST_FAILING_HYBRID, encoding="ascii")
+    test_file = str(test_file)
 
     # Assert that image comparison runs and fails
     output = assert_pytest_fails_with(['--mpl', test_file,
@@ -382,18 +380,18 @@ def test_hash_fails():
 
 
 @pytest.mark.skipif(ftv != '261', reason="Incorrect freetype version for hash check")
-def test_hash_fail_new_hashes(tmpdir):
+def test_hash_fail_new_hashes(tmp_path):
     # Check that the hash comparison fails even if a new hash file is requested
-    test_file = tmpdir.join('test.py').strpath
-    with open(test_file, 'w', encoding='ascii') as f:
-        f.write(TEST_FAILING_NEW_HASH)
+    test_file = tmp_path / "test.py"
+    test_file.write_text(TEST_FAILING_NEW_HASH, encoding="ascii")
+    test_file = str(test_file)
 
     # Assert that image comparison runs and fails
     assert_pytest_fails_with(['--mpl', test_file,
                               f'--mpl-hash-library={fail_hash_library}'],
                              "doesn't match hash FAIL in library")
 
-    hash_file = tmpdir.join('new_hashes.json').strpath
+    hash_file = tmp_path / "new_hashes.json"
     # Assert that image comparison runs and fails
     assert_pytest_fails_with(['--mpl', test_file,
                               f'--mpl-hash-library={fail_hash_library}',
@@ -413,11 +411,10 @@ def test_hash_missing():
 """
 
 
-def test_hash_missing(tmpdir):
-
-    test_file = tmpdir.join('test.py').strpath
-    with open(test_file, 'w') as f:
-        f.write(TEST_MISSING_HASH)
+def test_hash_missing(tmp_path):
+    test_file = tmp_path / "test.py"
+    test_file.write_text(TEST_MISSING_HASH)
+    test_file = str(test_file)
 
     # Assert fails if hash library missing
     assert_pytest_fails_with(['--mpl', test_file, '--mpl-hash-library=/not/a/path'],
@@ -450,31 +447,26 @@ def test_unmodified(): return plot()
 
 
 @pytest.mark.skipif(not hash_library.exists(), reason="No hash library for this mpl version")
-def test_results_always(tmpdir):
+def test_results_always(tmp_path):
+    test_file = tmp_path / "test.py"
+    test_file.write_text(TEST_RESULTS_ALWAYS)
+    results_path = tmp_path / "results"
+    results_path.mkdir()
 
-    test_file = tmpdir.join('test.py').strpath
-    with open(test_file, 'w') as f:
-        f.write(TEST_RESULTS_ALWAYS)
-    results_path = tmpdir.mkdir('results')
-
-    code = call_pytest(['--mpl', test_file, '--mpl-results-always',
+    code = call_pytest(['--mpl', str(test_file), '--mpl-results-always',
                         rf'--mpl-hash-library={hash_library}',
                         rf'--mpl-baseline-path={baseline_dir_abs}',
                         '--mpl-generate-summary=html,json,basic-html',
-                        rf'--mpl-results-path={results_path.strpath}'])
+                        rf'--mpl-results-path={results_path}'])
     assert code == 0  # hashes correct, so all should pass
 
     # assert files for interactive HTML exist
-    assert results_path.join('fig_comparison.html').exists()
-    assert results_path.join('styles.css').exists()
-    assert results_path.join('extra.js').exists()
+    assert (results_path / "fig_comparison.html").exists()
+    assert (results_path / "styles.css").exists()
+    assert (results_path / "extra.js").exists()
 
-    comparison_file = results_path.join('fig_comparison_basic.html')
-    with open(comparison_file, 'r') as f:
-        html = f.read()
-
-    json_file = results_path.join('results.json')
-    with open(json_file, 'r') as f:
+    html = (results_path / "fig_comparison_basic.html").read_text()
+    with (results_path / "results.json").open("r") as f:
         json_results = json.load(f)
 
     # each test, and which images should exist
@@ -495,7 +487,7 @@ def test_results_always(tmpdir):
 
         for image_type in ['baseline', 'result-failed-diff', 'result']:
             image = f'{test_name}/{image_type}.png'
-            image_exists = results_path.join(*image.split('/')).exists()
+            image_exists = (results_path / image).exists()
             json_image_key = f"{image_type.split('-')[-1]}_image"
             if image_type in exists:  # assert image so pytest prints it on error
                 assert image and image_exists
@@ -554,11 +546,11 @@ class TestClassWithTestCase(TestCase):
     TEST_FAILING_CLASS_SETUP_METHOD,
     TEST_FAILING_UNITTEST_TESTCASE,
 ])
-def test_class_fail(code, tmpdir):
+def test_class_fail(code, tmp_path):
 
-    test_file = tmpdir.join('test.py').strpath
-    with open(test_file, 'w') as f:
-        f.write(code)
+    test_file = tmp_path / "test.py"
+    test_file.write_text(code)
+    test_file = str(test_file)
 
     # Assert fails if hash library missing
     assert_pytest_fails_with(['--mpl', test_file, '--mpl-hash-library=/not/a/path'],
