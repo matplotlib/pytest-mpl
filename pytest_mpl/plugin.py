@@ -41,6 +41,7 @@ from pathlib import Path
 from urllib.request import urlopen
 
 import pytest
+from packaging.version import Version
 
 from pytest_mpl.summary.html import generate_summary_basic_html, generate_summary_html
 
@@ -56,6 +57,8 @@ SHAPE_MISMATCH_ERROR = """Error: Image dimensions did not match.
   Actual shape: {actual_shape}
     {actual_path}"""
 
+PYTEST_LT_7 = Version(pytest.__version__) < Version("7.0.0")
+
 # The following are the subsets of formats supported by the Matplotlib image
 # comparison machinery
 RASTER_IMAGE_FORMATS = ['png']
@@ -64,8 +67,8 @@ ALL_IMAGE_FORMATS = RASTER_IMAGE_FORMATS + VECTOR_IMAGE_FORMATS
 
 
 def _get_item_dir(item):
-    # .path is available starting from pytest 7, .fspath is for older versions.
-    return getattr(item, "path", Path(item.fspath)).parent
+    path = Path(item.fspath) if PYTEST_LT_7 else item.path
+    return path.parent
 
 
 def _hash_file(in_stream):
