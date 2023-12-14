@@ -1,19 +1,9 @@
 {
-  "test_pytest_mpl.test_succeeds": "cd01b7a39330033b18d54b507635236214cae5e24f9e09d84b56462a9ac81052",
-  "test_pytest_mpl.test_succeeds_remote": "cd01b7a39330033b18d54b507635236214cae5e24f9e09d84b56462a9ac81052",
-  "test_pytest_mpl.test_succeeds_faulty_mirror": "cd01b7a39330033b18d54b507635236214cae5e24f9e09d84b56462a9ac81052",
-  "test_pytest_mpl.test_dpi": "cc21ba84cc41dfcf77f46f5543affed721df2384958fa0adc4e5e60470852781",
-  "test_pytest_mpl.test_tolerance": "ab176e655d3dca536ce74f7447d4eb8b7f70649a81a4055e5ce77c1f53c3a46f",
-  "test_pytest_mpl.test_base_style": "92497fd88fc46bf7a99b1afd32e7fb73fa06fa1ceaee7bcc443324e45c6b4d91",
-  "test_pytest_mpl.test_remove_text": "9c284d7bcbbb1d6c1362b417859e4ce842b573a2fe32c7ceaafcf328a1eb7057",
-  "test_pytest_mpl.test_parametrized[5]": "04c998af2d7932ca4a851d610e8a020d94a2f623d1301dbe9b59fe6efd28a5f7",
-  "test_pytest_mpl.test_parametrized[50]": "937d986ab6b209e7d48eb30cc30e9db62c93bbc4c86768e276a5b454e63bca93",
-  "test_pytest_mpl.test_parametrized[500]": "e39ed724b0762b8736879801e32dc0c1525afd03c0567a43b119435aaa608498",
-  "test_pytest_mpl.test_hash_succeeds": "4e1157a93733cdb327f1741afdb0525f4d0e3f12e60b54f72c93db9f9c9ae27f",
-  "test.test_modified": "6e2e4ba7b77caf62df24f6b92d6fc51ab1b837bf98039750334f65c0a6c5d898",
-  "test.test_new": "6e2e4ba7b77caf62df24f6b92d6fc51ab1b837bf98039750334f65c0a6c5d898",
-  "test.test_unmodified": "6e2e4ba7b77caf62df24f6b92d6fc51ab1b837bf98039750334f65c0a6c5d898",
-  "test_formats.test_format_eps": "f8a0fbb33dcd473ef5cfdd69317db6eb58d64a7f5f3b5072e0de69aa9e201224",
-  "test_formats.test_format_pdf": "8963ba9209080091c0961553bdf195cdcd0f2ba29081a122f9aad8e94c444aff",
-  "test_formats.test_format_png": "d577a3c8c7550413d8d50bc26a68f3e8d9c35d4763c52cbcc15df4f61c8406b2"
+  "test_pytest_mpl.test_hash_succeeds": "ffbe386e7bbd8c720a44d2775dfe207b6dcca9304d845b557071a72b8c31ce04",
+  "test.test_modified": "025d344bc9667222abc27f2d746618bce9da8ae44fa9afa1220ac83f230b4e4e",
+  "test.test_new": "025d344bc9667222abc27f2d746618bce9da8ae44fa9afa1220ac83f230b4e4e",
+  "test.test_unmodified": "025d344bc9667222abc27f2d746618bce9da8ae44fa9afa1220ac83f230b4e4e",
+  "test_formats.test_format_eps": "4a605a2cd24101b9292151f5ab6d6846ba1b9c856cfda2bee6a142380e257b04",
+  "test_formats.test_format_pdf": "34a9eb10372b35c0bd26472e8571a91031c055ab47cc3682ebc0c5e47c2b6cbd",
+  "test_formats.test_format_png": "e73d228183ddfdced366191399cdecef9685d1248b852162f179750fc7b8b904"
 }

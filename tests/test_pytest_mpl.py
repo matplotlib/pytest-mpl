@@ -280,7 +280,7 @@ class TestClassWithTestCase(TestCase):
 # hashlib
 
 @pytest.mark.skipif(not hash_library.exists(), reason="No hash library for this mpl version")
-@pytest.mark.mpl_image_compare(hash_library=hash_library)
+@pytest.mark.mpl_image_compare(hash_library=hash_library, deterministic=True)
 def test_hash_succeeds():
     fig = plt.figure()
     ax = fig.add_subplot(1, 1, 1)
@@ -291,7 +291,7 @@ def test_hash_succeeds():
 TEST_FAILING_HASH = rf"""
 import pytest
 import matplotlib.pyplot as plt
-@pytest.mark.mpl_image_compare(hash_library=r"{fail_hash_library}")
+@pytest.mark.mpl_image_compare(hash_library=r"{fail_hash_library}", deterministic=True)
 def test_hash_fails():
     fig = plt.figure()
     ax = fig.add_subplot(1,1,1)
@@ -328,7 +328,7 @@ TEST_FAILING_HYBRID = rf"""
 import pytest
 import matplotlib.pyplot as plt
 @pytest.mark.mpl_image_compare(hash_library=r"{fail_hash_library}",
-                               tolerance=2)
+                               tolerance=2, deterministic=True)
 def test_hash_fail_hybrid():
     fig = plt.figure()
     ax = fig.add_subplot(1,1,1)
@@ -437,11 +437,11 @@ def plot():
     ax = fig.add_subplot(1,1,1)
     ax.plot([1,2,2])
     return fig
-@pytest.mark.mpl_image_compare
+@pytest.mark.mpl_image_compare(deterministic=True)
 def test_modified(): return plot()
-@pytest.mark.mpl_image_compare
+@pytest.mark.mpl_image_compare(deterministic=True)
 def test_new(): return plot()
-@pytest.mark.mpl_image_compare
+@pytest.mark.mpl_image_compare(deterministic=True)
 def test_unmodified(): return plot()
 """
 
@@ -668,6 +668,7 @@ def test_user_function_raises(pytester, runpytest_args):
 @pytest.mark.parametrize('use_hash_library', (False, True))
 @pytest.mark.parametrize('passes', (False, True))
 @pytest.mark.parametrize("file_format", ['eps', 'pdf', 'png', 'svg'])
+@pytest.mark.skipif(not hash_library.exists(), reason="No hash library for this mpl version")
 def test_formats(pytester, use_hash_library, passes, file_format):
     """
     Note that we don't test all possible formats as some do not compress well
@@ -683,9 +684,6 @@ def test_formats(pytester, use_hash_library, passes, file_format):
             pytest.skip('PDF hashes are only deterministic in Matplotlib 2.1 and above')
         elif file_format == 'eps' and MPL_VERSION < Version('2.1'):
             pytest.skip('EPS hashes are only deterministic in Matplotlib 2.1 and above')
-
-        if MPL_VERSION >= Version('3.4'):
-            pytest.skip('No hash library in test suite for Matplotlib >= 3.4')
 
     if use_hash_library and not sys.platform.startswith('linux'):
         pytest.skip('Hashes for vector graphics are only provided in the hash library for Linux')

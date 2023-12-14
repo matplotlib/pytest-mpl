@@ -22,29 +22,29 @@ jobs:
           - ghostscript
           - inkscape
       envs: |
-        # Test the oldest and newest configuration on Mac and Windows
-        - macos: py36-test-mpl20
-        - macos: py310-test-mpl36
-        - windows: py36-test-mpl20
-        - windows: py310-test-mpl36
-        # Test all configurations on Linux
+        # Test oldest NEP 29 configurations
+        - linux: py39-test-mpl33
+        - macos: py39-test-mpl33
+        - windows: py39-test-mpl33
+        # Test oldest non-NEP 29 configurations
         - linux: py36-test-mpl20
           runs-on: ubuntu-20.04
-        - linux: py36-test-mpl21
-          runs-on: ubuntu-20.04
-        - linux: py36-test-mpl22
-          runs-on: ubuntu-20.04
-        - linux: py37-test-mpl30
-        - linux: py37-test-mpl31
-        - linux: py37-test-mpl32
-        - linux: py38-test-mpl33
-        - linux: py39-test-mpl34
+        - macos: py36-test-mpl20
+        - windows: py36-test-mpl20
+        # Test newest configurations
+        - linux: py312-test-mpl38
+        - macos: py312-test-mpl38
+        - windows: py312-test-mpl38
+        # Test intermediate NEP 29 configurations on Linux
+        - linux: py39-test-mpl38
+        - linux: py310-test-mpl38
         - linux: py310-test-mpl35
-        - linux: py310-test-mpl36
+        - linux: py311-test-mpl36
+        - linux: py311-test-mpl37
         # Test different versions of pytest
-        - linux: py310-test-mpl36-pytestdev
-        - linux: py310-test-mpl36-pytest62
-        - linux: py38-test-mpl36-pytest54
+        - linux: py312-test-mpldev-pytestdev
+        - linux: py39-test-mpl33-pytest62
+        - linux: py38-test-mpl31-pytest54
       coverage: 'codecov'
 
   publish:
