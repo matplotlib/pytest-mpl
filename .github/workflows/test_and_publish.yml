@@ -42,7 +42,8 @@ jobs:
         - linux: py311-test-mpl36
         - linux: py311-test-mpl37
         # Test different versions of pytest
-        - linux: py312-test-mpldev-pytestdev
+        # Skip pytestdev until hook wrapper issue is fixed
+        # - linux: py312-test-mpldev-pytestdev
         - linux: py39-test-mpl33-pytest62
         - linux: py38-test-mpl31-pytest54
       coverage: 'codecov'
