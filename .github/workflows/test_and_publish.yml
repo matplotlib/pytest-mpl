@@ -54,5 +54,7 @@ jobs:
     uses: OpenAstronomy/github-actions-workflows/.github/workflows/publish_pure_python.yml@v1
     with:
       test_command: pytest $GITHUB_WORKSPACE/tests; pytest --mpl $GITHUB_WORKSPACE/tests
+      # Remove python-version when python-dateutil >2.8.2
+      python-version: "3.11"
     secrets:
       pypi_token: ${{ secrets.pypi_password }}
