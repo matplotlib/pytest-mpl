@@ -250,8 +250,8 @@ If the RMS difference is greater than the tolerance, the test will fail.
 Whether to make metadata deterministic
 --------------------------------------
 | **kwarg**: ``deterministic=<bool>``
-| **CLI**: ---
-| **INI**: ---
+| **CLI**: ``--mpl-deterministic`` or ``--mpl-no-deterministic``
+| **INI**: ``mpl-deterministic = <bool>``
 | Default: ``True`` (PNG: ``False``)
 
 Whether to make the image file metadata deterministic.
@@ -269,6 +269,11 @@ Supported formats for deterministic metadata are ``"eps"``, ``"pdf"``, ``"png"``
 By default, ``pytest-mpl`` will save and compare figures in PNG format.
 However, it is possible to set the format to use by setting, e.g., ``savefig_kwargs={"format": "pdf"}`` when configuring the :ref:`savefig_kwargs configuration option <savefig-kwargs>`.
 Note that Ghostscript is required to be installed for comparing PDF and EPS figures, while Inkscape is required for SVG comparison.
+
+.. note::
+
+    A future major release of ``pytest-mpl`` will generate deterministic PNG files by default.
+    It is recommended to explicitly set this configuration option to avoid hashes changing.
 
 Whether to remove titles and axis tick labels
 ---------------------------------------------
