@@ -24,6 +24,7 @@ def test_config(pytester, ini, cli, kwarg, success_expected):
     pytester.makeini(
         f"""
         [pytest]
+        mpl-deterministic: true
         {ini}
         """
     )
