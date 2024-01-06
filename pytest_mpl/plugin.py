@@ -58,6 +58,9 @@ SHAPE_MISMATCH_ERROR = """Error: Image dimensions did not match.
     {actual_path}"""
 
 PYTEST_LT_7 = Version(pytest.__version__) < Version("7.0.0")
+PYTEST_GE_8_0 = any([_pytest_version.is_devrelease,
+                     _pytest_version.is_prerelease,
+                     _pytest_version >= Version('8.0')])
 
 # The following are the subsets of formats supported by the Matplotlib image
 # comparison machinery
@@ -128,11 +131,19 @@ def wrap_figure_interceptor(plugin, item):
         item.obj = figure_interceptor(plugin, item.obj)
 
 
-def pytest_report_header(config, startdir):
-    import matplotlib
-    import matplotlib.ft2font
-    return ["Matplotlib: {0}".format(matplotlib.__version__),
-            "Freetype: {0}".format(matplotlib.ft2font.__freetype_version__)]
+if PYTEST_GE_8_0:
+    def pytest_report_header(config, start_path):
+        import matplotlib
+        import matplotlib.ft2font
+        return ["Matplotlib: {0}".format(matplotlib.__version__),
+                "Freetype: {0}".format(matplotlib.ft2font.__freetype_version__)]
+
+else:
+    def pytest_report_header(config, startdir):
+        import matplotlib
+        import matplotlib.ft2font
+        return ["Matplotlib: {0}".format(matplotlib.__version__),
+                "Freetype: {0}".format(matplotlib.ft2font.__freetype_version__)]
 
 
 def pytest_addoption(parser):
