@@ -57,11 +57,7 @@ SHAPE_MISMATCH_ERROR = """Error: Image dimensions did not match.
   Actual shape: {actual_shape}
     {actual_path}"""
 
-_pytest_version = Version(pytest.__version__)
-PYTEST_LT_7 = _pytest_version < Version("7.0.0")
-PYTEST_GE_8_0 = any([_pytest_version.is_devrelease,
-                     _pytest_version.is_prerelease,
-                     _pytest_version >= Version('8.0')])
+PYTEST_LT_7 = Version(pytest.__version__) < Version("7.0.0")
 
 # The following are the subsets of formats supported by the Matplotlib image
 # comparison machinery
