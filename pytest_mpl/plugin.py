@@ -132,19 +132,11 @@ def wrap_figure_interceptor(plugin, item):
         item.obj = figure_interceptor(plugin, item.obj)
 
 
-if PYTEST_GE_8_0:
-    def pytest_report_header(config, start_path):
-        import matplotlib
-        import matplotlib.ft2font
-        return ["Matplotlib: {0}".format(matplotlib.__version__),
-                "Freetype: {0}".format(matplotlib.ft2font.__freetype_version__)]
-
-else:
-    def pytest_report_header(config, startdir):
-        import matplotlib
-        import matplotlib.ft2font
-        return ["Matplotlib: {0}".format(matplotlib.__version__),
-                "Freetype: {0}".format(matplotlib.ft2font.__freetype_version__)]
+def pytest_report_header():
+    import matplotlib
+    import matplotlib.ft2font
+    return ["Matplotlib: {0}".format(matplotlib.__version__),
+            "Freetype: {0}".format(matplotlib.ft2font.__freetype_version__)]
 
 
 def pytest_addoption(parser):
@@ -815,67 +807,76 @@ class ImageComparison:
 
             # Run test and get figure object
             wrap_figure_interceptor(self, item)
-            yield
-            if test_name not in self.return_value:
-                # Test function did not complete successfully
-                summary['status'] = 'failed'
-                summary['status_msg'] = ('Test function raised an exception '
-                                         'before returning a figure.')
-                self._test_results[test_name] = summary
-                return
-            fig = self.return_value[test_name]
 
-            if remove_text:
-                remove_ticks_and_titles(fig)
+            # See https://github.com/pytest-dev/pytest/issues/11714
+            result = yield
+            try:
+                if test_name not in self.return_value:
+                    # Test function did not complete successfully
+                    summary['status'] = 'failed'
+                    summary['status_msg'] = ('Test function raised an exception '
+                                             'before returning a figure.')
+                    self._test_results[test_name] = summary
+                    return
+                fig = self.return_value[test_name]
 
-            result_dir = self.make_test_results_dir(item)
+                if remove_text:
+                    remove_ticks_and_titles(fig)
 
-            # What we do now depends on whether we are generating the
-            # reference images or simply running the test.
-            if self.generate_dir is not None:
-                summary['status'] = 'skipped'
-                summary['image_status'] = 'generated'
-                summary['status_msg'] = 'Skipped test, since generating image.'
-                generate_image = self.generate_baseline_image(item, fig)
-                if self.results_always:  # Make baseline image available in HTML
-                    result_image = (result_dir / f"baseline.{ext}").absolute()
-                    shutil.copy(generate_image, result_image)
-                    summary['baseline_image'] = \
-                        result_image.relative_to(self.results_dir).as_posix()
+                result_dir = self.make_test_results_dir(item)
 
-            if self.generate_hash_library is not None:
-                summary['hash_status'] = 'generated'
-                image_hash = self.generate_image_hash(item, fig)
-                self._generated_hash_library[test_name] = image_hash
-                summary['baseline_hash'] = image_hash
+                # What we do now depends on whether we are generating the
+                # reference images or simply running the test.
+                if self.generate_dir is not None:
+                    summary['status'] = 'skipped'
+                    summary['image_status'] = 'generated'
+                    summary['status_msg'] = 'Skipped test, since generating image.'
+                    generate_image = self.generate_baseline_image(item, fig)
+                    if self.results_always:  # Make baseline image available in HTML
+                        result_image = (result_dir / f"baseline.{ext}").absolute()
+                        shutil.copy(generate_image, result_image)
+                        summary['baseline_image'] = \
+                            result_image.relative_to(self.results_dir).as_posix()
 
-            # Only test figures if not generating images
-            if self.generate_dir is None:
-                # Compare to hash library
-                if self.hash_library or compare.kwargs.get('hash_library', None):
-                    msg = self.compare_image_to_hash_library(item, fig, result_dir, summary=summary)
+                if self.generate_hash_library is not None:
+                    summary['hash_status'] = 'generated'
+                    image_hash = self.generate_image_hash(item, fig)
+                    self._generated_hash_library[test_name] = image_hash
+                    summary['baseline_hash'] = image_hash
 
-                # Compare against a baseline if specified
-                else:
-                    msg = self.compare_image_to_baseline(item, fig, result_dir, summary=summary)
+                # Only test figures if not generating images
+                if self.generate_dir is None:
+                    # Compare to hash library
+                    if self.hash_library or compare.kwargs.get('hash_library', None):
+                        msg = self.compare_image_to_hash_library(item, fig, result_dir, summary=summary)
+
+                    # Compare against a baseline if specified
+                    else:
+                        msg = self.compare_image_to_baseline(item, fig, result_dir, summary=summary)
+
+                    close_mpl_figure(fig)
+
+                    if msg is None:
+                        if not self.results_always:
+                            shutil.rmtree(result_dir)
+                            for image_type in ['baseline_image', 'diff_image', 'result_image']:
+                                summary[image_type] = None  # image no longer exists
+                    else:
+                        self._test_results[test_name] = summary
+                        pytest.fail(msg, pytrace=False)
 
                 close_mpl_figure(fig)
 
-                if msg is None:
-                    if not self.results_always:
-                        shutil.rmtree(result_dir)
-                        for image_type in ['baseline_image', 'diff_image', 'result_image']:
-                            summary[image_type] = None  # image no longer exists
+                self._test_results[test_name] = summary
+
+                if summary['status'] == 'skipped':
+                    pytest.skip(summary['status_msg'])
+            except BaseException as e:
+                if hasattr(result, "force_exception"):  # pluggy>=1.2.0
+                    result.force_exception(e)
                 else:
-                    self._test_results[test_name] = summary
-                    pytest.fail(msg, pytrace=False)
-
-            close_mpl_figure(fig)
-
-            self._test_results[test_name] = summary
-
-            if summary['status'] == 'skipped':
-                pytest.skip(summary['status_msg'])
+                    result._result = None
+                    result._excinfo = (type(e), e, e.__traceback__)
 
     def generate_summary_json(self):
         json_file = self.results_dir / 'results.json'
