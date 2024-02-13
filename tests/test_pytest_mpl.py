@@ -9,7 +9,7 @@ import matplotlib
 import matplotlib.ft2font
 import matplotlib.pyplot as plt
 import pytest
-from matplotlib.testing.compare import converter
+from helpers import skip_if_format_unsupported
 from packaging.version import Version
 
 MPL_VERSION = Version(matplotlib.__version__)
@@ -668,31 +668,14 @@ def test_user_function_raises(pytester, runpytest_args):
 @pytest.mark.parametrize('use_hash_library', (False, True))
 @pytest.mark.parametrize('passes', (False, True))
 @pytest.mark.parametrize("file_format", ['eps', 'pdf', 'png', 'svg'])
-@pytest.mark.skipif(not hash_library.exists(), reason="No hash library for this mpl version")
 def test_formats(pytester, use_hash_library, passes, file_format):
     """
     Note that we don't test all possible formats as some do not compress well
     and would bloat the baseline directory.
     """
-
-    if file_format == 'svg' and MPL_VERSION < Version('3.3'):
-        pytest.skip('SVG comparison is only supported in Matplotlib 3.3 and above')
-
-    if use_hash_library:
-
-        if file_format == 'pdf' and MPL_VERSION < Version('2.1'):
-            pytest.skip('PDF hashes are only deterministic in Matplotlib 2.1 and above')
-        elif file_format == 'eps' and MPL_VERSION < Version('2.1'):
-            pytest.skip('EPS hashes are only deterministic in Matplotlib 2.1 and above')
-
-    if use_hash_library and not sys.platform.startswith('linux'):
-        pytest.skip('Hashes for vector graphics are only provided in the hash library for Linux')
-
-    if file_format != 'png' and file_format not in converter:
-        if file_format == 'svg':
-            pytest.skip('Comparing SVG files requires inkscape to be installed')
-        else:
-            pytest.skip('Comparing EPS and PDF files requires ghostscript to be installed')
+    skip_if_format_unsupported(file_format, using_hashes=use_hash_library)
+    if use_hash_library and not hash_library.exists():
+        pytest.skip("No hash library for this mpl version")
 
     pytester.makepyfile(
         f"""

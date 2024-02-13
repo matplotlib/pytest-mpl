@@ -203,6 +203,13 @@ def pytest_addoption(parser):
     group.addoption(f"--{option}", help=msg, action="store")
     parser.addini(option, help=msg)
 
+    msg = "whether to make the image file metadata deterministic"
+    option_true = "mpl-deterministic"
+    option_false = "mpl-no-deterministic"
+    group.addoption(f"--{option_true}", help=msg, action="store_true")
+    group.addoption(f"--{option_false}", help=msg, action="store_true")
+    parser.addini(option_true, help=msg, type="bool", default=None)
+
     msg = "default backend to use for tests, unless specified in the mpl_image_compare decorator"
     option = "mpl-default-backend"
     group.addoption(f"--{option}", help=msg, action="store")
@@ -244,6 +251,21 @@ def pytest_configure(config):
                 default_tolerance = int(default_tolerance)
             else:
                 default_tolerance = float(default_tolerance)
+
+        deterministic_ini = config.getini("mpl-deterministic")
+        deterministic_flag_true = config.getoption("--mpl-deterministic")
+        deterministic_flag_false = config.getoption("--mpl-no-deterministic")
+        if deterministic_flag_true and deterministic_flag_false:
+            raise ValueError("Only one of `--mpl-deterministic` and `--mpl-no-deterministic` can be set.")
+        if deterministic_flag_true:
+            deterministic = True
+        elif deterministic_flag_false:
+            deterministic = False
+        elif isinstance(deterministic_ini, bool):
+            deterministic = deterministic_ini
+        else:
+            deterministic = None
+
         default_style = get_cli_or_ini("mpl-default-style", DEFAULT_STYLE)
         default_backend = get_cli_or_ini("mpl-default-backend", DEFAULT_BACKEND)
 
@@ -279,6 +301,7 @@ def pytest_configure(config):
             use_full_test_name=use_full_test_name,
             default_style=default_style,
             default_tolerance=default_tolerance,
+            deterministic=deterministic,
             default_backend=default_backend,
             _hash_library_from_cli=_hash_library_from_cli,
         )
@@ -341,6 +364,7 @@ class ImageComparison:
         use_full_test_name=False,
         default_style=DEFAULT_STYLE,
         default_tolerance=DEFAULT_TOLERANCE,
+        deterministic=None,
         default_backend=DEFAULT_BACKEND,
         _hash_library_from_cli=False,  # for backwards compatibility
     ):
@@ -367,6 +391,7 @@ class ImageComparison:
 
         self.default_style = default_style
         self.default_tolerance = default_tolerance
+        self.deterministic = deterministic
         self.default_backend = default_backend
 
         # Generate the containing dir for all test results
@@ -639,11 +664,44 @@ class ImageComparison:
             filename = str(filename)
         compare = get_compare(item)
         savefig_kwargs = compare.kwargs.get('savefig_kwargs', {})
-        deterministic = compare.kwargs.get('deterministic', False)
+        deterministic = compare.kwargs.get('deterministic', self.deterministic)
 
         original_source_date_epoch = os.environ.get('SOURCE_DATE_EPOCH', None)
 
         extra_rcparams = {}
+
+        ext = self._file_extension(item)
+
+        if deterministic is None:
+
+            # The deterministic option should only matter for hash-based tests,
+            # so we first check if a hash library is being used
+
+            if self.hash_library or compare.kwargs.get('hash_library', None):
+
+                if ext == 'png':
+                    if 'metadata' not in savefig_kwargs or 'Software' not in savefig_kwargs['metadata']:
+                        warnings.warn("deterministic option not set (currently defaulting to False), "
+                                      "in future this will default to True to give consistent "
+                                      "hashes across Matplotlib versions. To suppress this warning, "
+                                      "set deterministic to True if you are happy with the future "
+                                      "behavior or to False if you want to preserve the old behavior.",
+                                      FutureWarning)
+                    else:
+                        # Set to False but in practice because Software is set to a constant value
+                        # by the caller, the output will be deterministic (we don't want to change
+                        # Software to None if the caller set it to e.g. 'test')
+                        deterministic = False
+                else:
+                    deterministic = True
+
+            else:
+
+                # We can just default to True since it shouldn't matter and in
+                # case generated images are somehow used in future to compute
+                # hashes
+
+                deterministic = True
 
         if deterministic:
 
@@ -653,8 +711,6 @@ class ImageComparison:
 
             if 'metadata' not in savefig_kwargs:
                 savefig_kwargs['metadata'] = {}
-
-            ext = self._file_extension(item)
 
             if ext == 'png':
                 extra_metadata = {"Software": None}
