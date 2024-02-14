@@ -1,3 +1,46 @@
+## v0.17.0 - 2024-02-14
+
+<!-- Release notes generated using configuration in .github/release.yml at main -->
+### What's Changed
+
+#### Fixes
+
+* Improve Logging Configuration: don't modify root logger by @theOehrly in https://github.com/matplotlib/pytest-mpl/pull/182
+* Improve error reporting when test raises an exception by @ConorMacBride in https://github.com/matplotlib/pytest-mpl/pull/193
+* MNT: Compat with pytest 8.1 by @pllim in https://github.com/matplotlib/pytest-mpl/pull/219
+
+#### Exciting New Features 🎉
+
+* Added support for EPS, PDF, and SVG image comparison by @astrofrog in https://github.com/matplotlib/pytest-mpl/pull/194
+* Started implementing support for deterministic figure output by @astrofrog in https://github.com/matplotlib/pytest-mpl/pull/196
+* Add missing CLI and INI options for a consistent API by @astrofrog in https://github.com/matplotlib/pytest-mpl/pull/181
+* Avoid using `py.path` by @eerovaher in https://github.com/matplotlib/pytest-mpl/pull/207
+* Allow using `-p no:legacypath` with `pytest` >= 7 by @eerovaher in https://github.com/matplotlib/pytest-mpl/pull/213
+
+#### Other Changes
+
+* Add initial Sphinx docs by @ConorMacBride in https://github.com/matplotlib/pytest-mpl/pull/174
+* Add documentation on avoiding `PytestReturnNotNoneWarning` by @ConorMacBride in https://github.com/matplotlib/pytest-mpl/pull/185
+* Add RTD config by @ConorMacBride in https://github.com/matplotlib/pytest-mpl/pull/195
+* Migrate docs from `README.rst` to website by @ConorMacBride in https://github.com/matplotlib/pytest-mpl/pull/199
+* Set deterministic to True for vector graphics and warn about change to True in future for PNG by @astrofrog in https://github.com/matplotlib/pytest-mpl/pull/197
+
+#### Infrastructure Changes
+
+* Verify class-based testing configurations produce the expected results by @ConorMacBride in https://github.com/matplotlib/pytest-mpl/pull/175
+* Update testing and CI for Matplotlib v3.6 by @ConorMacBride in https://github.com/matplotlib/pytest-mpl/pull/184
+* Upgrade for tox 4 by @ConorMacBride in https://github.com/matplotlib/pytest-mpl/pull/191
+* Upgrade CI package versions by @ConorMacBride in https://github.com/matplotlib/pytest-mpl/pull/215
+* Test wheel with 3.11 until `python-dateutil` is updated for 3.12 by @ConorMacBride in https://github.com/matplotlib/pytest-mpl/pull/217
+* Fix unclosed test files by @ConorMacBride in https://github.com/matplotlib/pytest-mpl/pull/222
+
+### New Contributors
+
+* @theOehrly made their first contribution in https://github.com/matplotlib/pytest-mpl/pull/182
+* @eerovaher made their first contribution in https://github.com/matplotlib/pytest-mpl/pull/207
+
+**Full Changelog**: https://github.com/matplotlib/pytest-mpl/compare/v0.16.1...v0.17.0
+
 ## v0.16.1 - 2022-07-23
 
 <!-- Release notes generated using configuration in .github/release.yml at main -->
@@ -21,7 +64,9 @@
 - Add support for classes with pytest 7 by @ConorMacBride in https://github.com/matplotlib/pytest-mpl/pull/164
 - Note that this change necessitated a minor breaking change for figure tests within classes only, and the following will need to be done:
 - - Hash library test names will need to be regenerated/updated to include the class name.
+  
 - - If the undocumented `mpl-use-full-test-name` ini option is enabled, the the baseline images will need to be regenerated, or have their filename updated to include the class name.
+  
 
 ### Other Changes
 
