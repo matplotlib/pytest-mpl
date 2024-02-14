@@ -9,11 +9,11 @@ TEST_NAME = "test_base_style"
 @pytest.fixture(scope="module")
 def baseline_image(tmp_path_factory):
     path = Path(__file__).parent / "baseline" / "2.0.x" / f"{TEST_NAME}.png"
-    image = Image.open(path)
-    draw = ImageDraw.Draw(image)
-    draw.rectangle(((0, 0), (100, 100)), fill="red")
-    output = tmp_path_factory.mktemp("data") / f"{TEST_NAME}.png"
-    image.save(output)
+    with Image.open(path) as image:
+        draw = ImageDraw.Draw(image)
+        draw.rectangle(((0, 0), (100, 100)), fill="red")
+        output = tmp_path_factory.mktemp("data") / f"{TEST_NAME}.png"
+        image.save(output)
     return output
 
 
