@@ -113,7 +113,8 @@ def test_config(pytester, file_format, ini, cli, kwarg, success_expected):
                 assert key_in_file
 
     else:  # "eps" or "png"
-        actual_metadata = Image.open(str(baseline_image)).info
+        with Image.open(str(baseline_image)) as image:
+            actual_metadata = image.info
         for k, expected in deterministic_metadata.items():
             actual = actual_metadata.get(k, None)
             if success_expected:  # metadata keys should not be in the file
