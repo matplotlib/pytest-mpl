@@ -668,14 +668,15 @@ def test_user_function_raises(pytester, runpytest_args):
 @pytest.mark.parametrize('use_hash_library', (False, True))
 @pytest.mark.parametrize('passes', (False, True))
 @pytest.mark.parametrize("file_format", ['eps', 'pdf', 'png', 'svg'])
-def test_formats(pytester, use_hash_library, passes, file_format):
+def test_formats(pytester, tmp_path, use_hash_library, passes, file_format):
     """
     Note that we don't test all possible formats as some do not compress well
     and would bloat the baseline directory.
     """
     skip_if_format_unsupported(file_format, using_hashes=use_hash_library)
-    if use_hash_library and not hash_library.exists():
-        pytest.skip("No hash library for this mpl version")
+
+    tmp_hash_library = tmp_path / f"hash_library_{file_format}.json"
+    tmp_hash_library.write_text("{}")
 
     pytester.makepyfile(
         f"""
@@ -683,7 +684,7 @@ def test_formats(pytester, use_hash_library, passes, file_format):
         import pytest
         import matplotlib.pyplot as plt
         @pytest.mark.mpl_image_compare(baseline_dir=r"{baseline_dir_abs}",
-                                       {f'hash_library=r"{hash_library}",' if use_hash_library else ''}
+                                       {f'hash_library=r"{tmp_hash_library}",' if use_hash_library else ''}
                                        tolerance={DEFAULT_TOLERANCE},
                                        deterministic=True,
                                        savefig_kwargs={{'format': '{file_format}'}})
@@ -694,6 +695,17 @@ def test_formats(pytester, use_hash_library, passes, file_format):
             return fig
         """
     )
+
+    if use_hash_library:
+        pytester.runpytest(f'--mpl-generate-hash-library={tmp_hash_library.as_posix()}', '-rs')
+        hash_data = json.loads(tmp_hash_library.read_text())
+        assert len(hash_data[f"test_formats.test_format_{file_format}"]) == 64
+        if not passes:
+            hash_data[f"test_formats.test_format_{file_format}"] = (
+                    "d1ff" + hash_data[f"test_formats.test_format_{file_format}"][4:]
+            )
+            tmp_hash_library.write_text(json.dumps(hash_data))
+
     result = pytester.runpytest('--mpl', '-rs')
     if passes:
         result.assert_outcomes(passed=1)
