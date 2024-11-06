@@ -702,7 +702,7 @@ def test_formats(pytester, tmp_path, use_hash_library, passes, file_format):
         assert len(hash_data[f"test_formats.test_format_{file_format}"]) == 64
         if not passes:
             hash_data[f"test_formats.test_format_{file_format}"] = (
-                    "d1ff" + hash_data[f"test_formats.test_format_{file_format}"][4:]
+                "d1ff" + hash_data[f"test_formats.test_format_{file_format}"][4:]
             )
             tmp_hash_library.write_text(json.dumps(hash_data))
 
