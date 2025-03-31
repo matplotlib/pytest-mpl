@@ -31,17 +31,20 @@ jobs:
         - macos: py311-test-mpl37
         - windows: py311-test-mpl37
         # Test newest configurations
-        - linux: py313-test-mpl310
-        - macos: py313-test-mpl310
-        - windows: py313-test-mpl310
+        #
+        # TODO: mpl310 gives different hashes on different operating systems
+        # when that's fixed, these should be bumped to mpl310
+        #
+        - linux: py313-test-mpl39
+        - macos: py313-test-mpl39
+        - windows: py313-test-mpl39
         # Test intermediate NEP 29 configurations on Linux
         - linux: py39-test-mpl38
         - linux: py310-test-mpl37
         - linux: py310-test-mpl38
         - linux: py311-test-mpl37
-        - linux: py311-test-mpl310
+        - linux: py311-test-mpl39
         - linux: py312-test-mpl39
-        - linux: py312-test-mpl310
         # Test different versions of pytest
         - linux: py312-test-mpldev-pytestdev
         - linux: py39-test-mpl39-pytest62
