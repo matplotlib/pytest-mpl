@@ -44,8 +44,8 @@ jobs:
         - linux: py312-test-mpl310
         # Test different versions of pytest
         - linux: py312-test-mpldev-pytestdev
-        - linux: py39-test-mpl33-pytest62
-        - linux: py39-test-mpl31-pytest54
+        - linux: py39-test-mpl310-pytest62
+        - linux: py39-test-mpl37-pytest54
       coverage: "codecov"
 
   publish:
