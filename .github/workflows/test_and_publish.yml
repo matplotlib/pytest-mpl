@@ -31,9 +31,9 @@ jobs:
         - macos: py311-test-mpl37
         - windows: py311-test-mpl37
         # Test newest configurations
-        - linux: py312-test-mpl38
-        - macos: py312-test-mpl38
-        - windows: py312-test-mpl38
+        - linux: py313-test-mpl310
+        - macos: py313-test-mpl310
+        - windows: py313-test-mpl310
         # Test intermediate NEP 29 configurations on Linux
         - linux: py39-test-mpl38
         - linux: py310-test-mpl38
