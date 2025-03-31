@@ -5,10 +5,10 @@ on:
     branches:
       - main
     tags:
-      - 'v*'
-      - '!*dev*'
-      - '!*pre*'
-      - '!*post*'
+      - "v*"
+      - "!*dev*"
+      - "!*pre*"
+      - "!*post*"
   pull_request:
   # Allow manual runs through the web UI
   workflow_dispatch:
@@ -49,7 +49,7 @@ jobs:
         - linux: py312-test-mpldev-pytestdev
         - linux: py39-test-mpl33-pytest62
         - linux: py38-test-mpl31-pytest54
-      coverage: 'codecov'
+      coverage: "codecov"
 
   publish:
     if: github.event_name != 'pull_request'
@@ -57,7 +57,5 @@ jobs:
     uses: OpenAstronomy/github-actions-workflows/.github/workflows/publish_pure_python.yml@v1
     with:
       test_command: pytest $GITHUB_WORKSPACE/tests; pytest --mpl $GITHUB_WORKSPACE/tests
-      # Remove python-version when python-dateutil >2.8.2
-      python-version: "3.11"
     secrets:
       pypi_token: ${{ secrets.pypi_password }}
