@@ -27,9 +27,9 @@ jobs:
           - inkscape
       envs: |
         # Test oldest NEP 29 configurations
-        - linux: py39-test-mpl33
-        - macos: py39-test-mpl33
-        - windows: py39-test-mpl33
+        - linux: py311-test-mpl37
+        - macos: py311-test-mpl37
+        - windows: py311-test-mpl37
         # Test oldest non-NEP 29 configurations
         - linux: py39-test-mpl20
           runs-on: ubuntu-20.04

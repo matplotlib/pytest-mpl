@@ -53,7 +53,6 @@ def test_warning(pytester):
         ("true", "", False, False),
     ],
 )
-@pytest.mark.skipif(MPL_VERSION < Version("3.3.0"), reason="Test unsupported: Default metadata is different in MPL<3.3")
 def test_config(pytester, file_format, ini, cli, kwarg, success_expected):
     skip_if_format_unsupported(file_format, using_hashes=True)
 
