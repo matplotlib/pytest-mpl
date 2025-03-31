@@ -36,10 +36,12 @@ jobs:
         - windows: py313-test-mpl310
         # Test intermediate NEP 29 configurations on Linux
         - linux: py39-test-mpl38
+        - linux: py310-test-mpl37
         - linux: py310-test-mpl38
-        - linux: py310-test-mpl35
-        - linux: py311-test-mpl36
         - linux: py311-test-mpl37
+        - linux: py311-test-mpl310
+        - linux: py312-test-mpl39
+        - linux: py312-test-mpl310
         # Test different versions of pytest
         - linux: py312-test-mpldev-pytestdev
         - linux: py39-test-mpl33-pytest62
