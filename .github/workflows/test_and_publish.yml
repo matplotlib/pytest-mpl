@@ -31,10 +31,10 @@ jobs:
         - macos: py39-test-mpl33
         - windows: py39-test-mpl33
         # Test oldest non-NEP 29 configurations
-        - linux: py36-test-mpl20
+        - linux: py39-test-mpl20
           runs-on: ubuntu-20.04
-        - macos: py36-test-mpl20
-        - windows: py36-test-mpl20
+        - macos: py39-test-mpl20
+        - windows: py39-test-mpl20
         # Test newest configurations
         - linux: py312-test-mpl38
         - macos: py312-test-mpl38
@@ -48,7 +48,7 @@ jobs:
         # Test different versions of pytest
         - linux: py312-test-mpldev-pytestdev
         - linux: py39-test-mpl33-pytest62
-        - linux: py38-test-mpl31-pytest54
+        - linux: py39-test-mpl31-pytest54
       coverage: "codecov"
 
   publish:
