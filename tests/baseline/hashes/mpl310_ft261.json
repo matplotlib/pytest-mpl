@@ -1,8 +1,8 @@
 {
   "test_pytest_mpl.test_hash_succeeds": "e73d228183ddfdced366191399cdecef9685d1248b852162f179750fc7b8b904",
-  "test.test_modified": "025d344bc9667222abc27f2d746618bce9da8ae44fa9afa1220ac83f230b4e4e",
-  "test.test_new": "025d344bc9667222abc27f2d746618bce9da8ae44fa9afa1220ac83f230b4e4e",
-  "test.test_unmodified": "025d344bc9667222abc27f2d746618bce9da8ae44fa9afa1220ac83f230b4e4e",
+  "test.test_modified": "2d3f2990aa6bc127d154c39ec4480a56e95e6245de31280c049b760ac1d120f0",
+  "test.test_new": "2d3f2990aa6bc127d154c39ec4480a56e95e6245de31280c049b760ac1d120f0",
+  "test.test_unmodified": "2d3f2990aa6bc127d154c39ec4480a56e95e6245de31280c049b760ac1d120f0",
   "test_formats.test_format_eps": "f730e67270aeeb2a0bedee168d7c421b952cbf486ea371987cc4cea503a7d7ff",
   "test_formats.test_format_pdf": "492152532625c1c4ea404854b75923c5dae0c253873b3715edba29d93b326d07",
   "test_formats.test_format_png": "e73d228183ddfdced366191399cdecef9685d1248b852162f179750fc7b8b904",
