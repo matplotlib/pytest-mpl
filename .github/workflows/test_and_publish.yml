@@ -27,24 +27,26 @@ jobs:
           - inkscape
       envs: |
         # Test oldest SPEC 0 configurations
-        - linux: py311-test-mpl37
-        - macos: py311-test-mpl37
-        - windows: py311-test-mpl37
-        # Test newest configurations
-        - linux: py313-test-mpl39
-        - macos: py313-test-mpl39
-        - windows: py313-test-mpl39
-        # Test intermediate SPEC 0 configurations on Linux
-        - linux: py312-test-mpl37
         - linux: py311-test-mpl38
-        - linux: py313-test-mpl38
+        - macos: py311-test-mpl38
+        - windows: py311-test-mpl38
+        # Test newest configurations
+        - linux: py313-test-mpl310
+        - macos: py313-test-mpl310
+        - windows: py313-test-mpl310
+        # Test intermediate SPEC 0 configurations on Linux
+        - linux: py311-test-mpl39
         - linux: py312-test-mpl39
+        - linux: py311-test-mpl310
+        - linux: py312-test-mpl310
         # Test non-SPEC 0 configurations
         - linux: py313-test-mpldev-pytestdev
         - linux: py311-test-mpl37-pytest74
         - linux: py39-test-mpl33-pytest62
-        - linux: py37-test-mpl22-pytest54
-          runs-on: ubuntu-22.04
+        # Test oldest non-SPEC 0 configurations
+        - linux: py39-test-mpl33
+        - macos: py39-test-mpl33
+        - windows: py39-test-mpl33
       coverage: 'codecov'
 
   publish:
