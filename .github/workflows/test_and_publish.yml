@@ -26,29 +26,27 @@ jobs:
           - ghostscript
           - inkscape
       envs: |
-        # Test oldest NEP 29 configurations
+        # Test oldest SPEC 0 configurations
+        - linux: py311-test-mpl38
+        - macos: py311-test-mpl38
+        - windows: py311-test-mpl38
+        # Test newest configurations
+        - linux: py313-test-mpl310
+        - macos: py313-test-mpl310
+        - windows: py313-test-mpl310
+        # Test intermediate SPEC 0 configurations on Linux
+        - linux: py311-test-mpl39
+        - linux: py312-test-mpl39
+        - linux: py311-test-mpl310
+        - linux: py312-test-mpl310
+        # Test non-SPEC 0 configurations
+        - linux: py313-test-mpldev-pytestdev
+        - linux: py311-test-mpl37-pytest74
+        - linux: py39-test-mpl33-pytest62
+        # Test oldest non-SPEC 0 configurations
         - linux: py39-test-mpl33
         - macos: py39-test-mpl33
         - windows: py39-test-mpl33
-        # Test oldest non-NEP 29 configurations
-        - linux: py36-test-mpl20
-          runs-on: ubuntu-20.04
-        - macos: py36-test-mpl20
-        - windows: py36-test-mpl20
-        # Test newest configurations
-        - linux: py312-test-mpl38
-        - macos: py312-test-mpl38
-        - windows: py312-test-mpl38
-        # Test intermediate NEP 29 configurations on Linux
-        - linux: py39-test-mpl38
-        - linux: py310-test-mpl38
-        - linux: py310-test-mpl35
-        - linux: py311-test-mpl36
-        - linux: py311-test-mpl37
-        # Test different versions of pytest
-        - linux: py312-test-mpldev-pytestdev
-        - linux: py39-test-mpl33-pytest62
-        - linux: py38-test-mpl31-pytest54
       coverage: 'codecov'
 
   publish:
@@ -57,7 +55,5 @@ jobs:
     uses: OpenAstronomy/github-actions-workflows/.github/workflows/publish_pure_python.yml@v1
     with:
       test_command: pytest $GITHUB_WORKSPACE/tests; pytest --mpl $GITHUB_WORKSPACE/tests
-      # Remove python-version when python-dateutil >2.8.2
-      python-version: "3.11"
     secrets:
       pypi_token: ${{ secrets.pypi_password }}

@@ -411,22 +411,24 @@ class ImageComparison:
         self._test_stats = None
         self.return_value = {}
 
+    def get_logger(self):
         # configure a separate logger for this pluggin which is independent
         # of the options that are configured for pytest or for the code that
         # is tested; turn debug prints on only if "-vv" or more passed
-        level = logging.DEBUG if config.option.verbose > 1 else logging.INFO
-        if config.option.log_cli_format is not None:
-            fmt = config.option.log_cli_format
+        level = logging.DEBUG if self.config.option.verbose > 1 else logging.INFO
+        if self.config.option.log_cli_format is not None:
+            fmt = self.config.option.log_cli_format
         else:
             # use pytest's default fmt
             fmt = "%(levelname)-8s %(name)s:%(filename)s:%(lineno)d %(message)s"
         formatter = logging.Formatter(fmt)
         handler = logging.StreamHandler()
         handler.setFormatter(formatter)
-        self.logger = logging.getLogger('pytest-mpl')
-        self.logger.propagate = False
-        self.logger.setLevel(level)
-        self.logger.addHandler(handler)
+        logger = logging.getLogger('pytest-mpl')
+        logger.propagate = False
+        logger.setLevel(level)
+        logger.addHandler(handler)
+        return logger
 
     def _file_extension(self, item):
         compare = get_compare(item)
@@ -502,7 +504,7 @@ class ImageComparison:
                 u = urlopen(base_url + filename)
                 content = u.read()
             except Exception as e:
-                self.logger.info(f'Downloading {base_url + filename} failed: {repr(e)}')
+                self.get_logger().info(f'Downloading {base_url + filename} failed: {repr(e)}')
             else:
                 break
         else:  # Could not download baseline image from any of the available URLs

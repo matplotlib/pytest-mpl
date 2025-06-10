@@ -1,4 +1,3 @@
-import sys
 from pathlib import Path
 
 import matplotlib
@@ -20,14 +19,10 @@ def skip_if_format_unsupported(file_format, using_hashes=False):
         pytest.skip('SVG comparison is only supported in Matplotlib 3.3 and above')
 
     if using_hashes:
-
         if file_format == 'pdf' and MPL_VERSION < Version('2.1'):
             pytest.skip('PDF hashes are only deterministic in Matplotlib 2.1 and above')
         elif file_format == 'eps' and MPL_VERSION < Version('2.1'):
             pytest.skip('EPS hashes are only deterministic in Matplotlib 2.1 and above')
-
-    if using_hashes and not sys.platform.startswith('linux'):
-        pytest.skip('Hashes for vector graphics are only provided in the hash library for Linux')
 
     if file_format != 'png' and file_format not in converter:
         if file_format == 'svg':

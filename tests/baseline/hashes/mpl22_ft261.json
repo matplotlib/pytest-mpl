@@ -1,9 +1,0 @@
-{
-  "test_pytest_mpl.test_hash_succeeds": "e80557c8784fb920fb79b03b26dc072649a98811f00a8c212df8761e4351acde",
-  "test.test_modified": "80e0ee6df7cf7d9d9407395a25af30beb8763e98820a7be972764899246d2cd7",
-  "test.test_new": "80e0ee6df7cf7d9d9407395a25af30beb8763e98820a7be972764899246d2cd7",
-  "test.test_unmodified": "80e0ee6df7cf7d9d9407395a25af30beb8763e98820a7be972764899246d2cd7",
-  "test_formats.test_format_eps": "f8a0fbb33dcd473ef5cfdd69317db6eb58d64a7f5f3b5072e0de69aa9e201224",
-  "test_formats.test_format_pdf": "8963ba9209080091c0961553bdf195cdcd0f2ba29081a122f9aad8e94c444aff",
-  "test_formats.test_format_png": "d577a3c8c7550413d8d50bc26a68f3e8d9c35d4763c52cbcc15df4f61c8406b2"
-}
