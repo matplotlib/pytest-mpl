@@ -1,4 +1,3 @@
-import os
 import re
 import json
 from pathlib import Path
@@ -7,6 +6,8 @@ from PIL import Image, ImageDraw
 
 __all__ = ['diff_summary', 'assert_existence', 'patch_summary', 'apply_regex',
            'remove_specific_hashes', 'transform_hashes', 'transform_images']
+
+MIN_EXPECTED_ITEMS = 20  # Rough minimum number of items in a summary to be valid
 
 
 class MatchError(Exception):
@@ -39,14 +40,25 @@ def diff_summary(baseline, result, baseline_hash_library=None, result_hash_libra
         # Load "correct" baseline hashes
         with open(baseline_hash_library, 'r') as f:
             baseline_hash_library = json.load(f)
+        if len(baseline_hash_library.keys()) < MIN_EXPECTED_ITEMS:
+            raise ValueError(f"baseline_hash_library only has {len(baseline_hash_library.keys())} items")
     else:
         baseline_hash_library = {}
     if result_hash_library and result_hash_library.exists():
         # Load "correct" result hashes
         with open(result_hash_library, 'r') as f:
             result_hash_library = json.load(f)
+        if len(result_hash_library.keys()) < MIN_EXPECTED_ITEMS:
+            raise ValueError(f"result_hash_library only has {len(result_hash_library.keys())} items")
     else:
         result_hash_library = {}
+
+    b = baseline.get("a", baseline)
+    if len(b.keys()) < MIN_EXPECTED_ITEMS:
+        raise ValueError(f"baseline only has {len(b.keys())} items {b}")
+    r = result.get("a", result)
+    if len(r.keys()) < MIN_EXPECTED_ITEMS:
+        raise ValueError(f"result only has {len(r.keys())} items {r}")
 
     # Get test names
     baseline_tests = set(baseline.keys())
