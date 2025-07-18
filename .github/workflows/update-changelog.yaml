@@ -3,6 +3,8 @@
 # the git repo of the changes.
 
 name: "Update Changelog"
+permissions:
+  contents: read
 
 on:
   release:
