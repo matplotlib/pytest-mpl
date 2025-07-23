@@ -3,6 +3,8 @@
 # the git repo of the changes.
 
 name: "Update Changelog"
+permissions:
+  contents: write
 
 on:
   release:
@@ -17,16 +19,17 @@ jobs:
         uses: actions/checkout@v2
         with:
           ref: main
+          persist-credentials: true
 
       - name: Update Changelog
-        uses: stefanzweifel/changelog-updater-action@v1
+        uses: stefanzweifel/changelog-updater-action@a938690fad7edf25368f37e43a1ed1b34303eb36 # v1
         with:
           release-notes: ${{ github.event.release.body }}
           latest-version: ${{ github.event.release.name }}
           path-to-changelog: CHANGES.md
 
       - name: Commit updated CHANGELOG
-        uses: stefanzweifel/git-auto-commit-action@v4
+        uses: stefanzweifel/git-auto-commit-action@3ea6ae190baf489ba007f7c92608f33ce20ef04a # v4
         with:
           branch: main
           commit_message: Update CHANGELOG
