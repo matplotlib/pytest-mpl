@@ -4,3 +4,7 @@ updates:
     directory: "/"      # Location of your workflow files
     schedule:
       interval: "monthly"  # Options: daily, weekly, monthly
+    groups:
+      actions:
+        patterns:
+          - "*"
