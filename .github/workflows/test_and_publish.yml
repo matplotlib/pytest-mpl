@@ -47,7 +47,7 @@ jobs:
         - linux: py39-test-mpl33-pytest62
         # Test oldest non-SPEC 0 configurations
         - linux: py39-test-mpl33
-        - macos: py39-test-mpl33
+        - macos: py39-test-mpl35
         - windows: py39-test-mpl33
       coverage: 'codecov'
 
