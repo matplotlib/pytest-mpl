@@ -1008,12 +1008,13 @@ class ImageComparison:
                     json.dump(result_hashes, fp, indent=2)
 
         if self.generate_summary:
+            if is_xdist_worker:
+                self.generate_summary_json()
+                return
             kwargs = {}
             if 'json' in self.generate_summary:
                 summary = self.generate_summary_json()
                 print(f"A JSON report can be found at: {summary}")
-            if is_xdist_worker:
-                return
             if result_hash_library.exists():  # link to it in the HTML
                 kwargs["hash_library"] = result_hash_library.name
             if 'html' in self.generate_summary:

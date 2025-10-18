@@ -47,6 +47,17 @@ REGEX_STRS = [
 ]
 
 
+def xdist_args(n_workers):
+    try:
+        import xdist
+        if n_workers is None:
+            return ["-p", "no:xdist"]
+        else:
+            return ["-n", str(n_workers)]
+    except ImportError:
+        return []
+
+
 def run_subtest(baseline_summary_name, tmp_path, args, summaries=None, xfail=True,
                 has_result_hashes=False, generating_hashes=False, testing_hashes=False, n_xdist_workers=None,
                 update_baseline=UPDATE_BASELINE, update_summary=UPDATE_SUMMARY):
@@ -112,14 +123,7 @@ def run_subtest(baseline_summary_name, tmp_path, args, summaries=None, xfail=Tru
         shutil.copy(expected_result_hash_library, baseline_hash_library)
         transform_hashes(baseline_hash_library)
 
-    try:
-        import xdist
-        if n_xdist_workers is None:
-            pytest_args += ["-p", "no:xdist"]
-        else:
-            pytest_args += ["-n", str(n_xdist_workers)]
-    except ImportError:
-        pass
+    pytest_args.extend(xdist_args(n_xdist_workers))
 
     # Run the test and record exit status
     status = subprocess.call(pytest_args + mpl_args + args)
@@ -363,3 +367,19 @@ def test_html_run_generate_hashes_only(tmp_path):
 # Run a hybrid mode test last so if generating hash libraries, it includes all the hashes.
 def test_hybrid(tmp_path):
     run_subtest('test_hybrid', tmp_path, [HASH_LIBRARY_FLAG, BASELINE_IMAGES_FLAG_ABS], testing_hashes=True)
+
+
+@pytest.mark.parametrize("num_workers", [None, 0, 1, 2])
+def test_html_no_json(tmp_path, num_workers):
+    # Previous tests require JSON summary to be generated to function correctly.
+    # This test ensures HTML summary generation works without JSON summary.
+    results_path = tmp_path / 'results'
+    results_path.mkdir()
+    mpl_args = ['--mpl', rf'--mpl-results-path={results_path.as_posix()}',
+                '--mpl-generate-summary=html', *xdist_args(num_workers)]
+    subprocess.call([sys.executable, '-m', 'pytest', str(TEST_FILE), *mpl_args])
+    assert not (tmp_path / 'results' / 'results.json').exists()
+    html_path = tmp_path / 'results' / 'fig_comparison.html'
+    assert html_path.exists()
+    assert html_path.stat().st_size > 200_000
+    assert "Baseline image differs" in html_path.read_text()
