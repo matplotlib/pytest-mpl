@@ -977,19 +977,12 @@ class ImageComparison:
         Save out the hash library at the end of the run.
         """
         config = session.config
-        try:
-            import xdist
-            is_xdist_controller = xdist.is_xdist_controller(session)
-            is_xdist_worker = xdist.is_xdist_worker(session)
-        except ImportError:
-            is_xdist_controller = False
-            is_xdist_worker = False
-        except Exception as e:
-            if "xdist" not in session.config.option:
-                is_xdist_controller = False
-                is_xdist_worker = False
-            else:
-                raise e
+        is_xdist_worker = hasattr(config, "workerinput")
+        is_xdist_controller = (
+                config.pluginmanager.hasplugin("xdist")
+                and not is_xdist_worker
+                and getattr(config.option, "dist", "") != "no"
+        )
 
         if is_xdist_controller:  # Merge results from workers
             uid = config.pytest_mpl_uid
