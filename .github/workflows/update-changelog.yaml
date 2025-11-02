@@ -29,7 +29,7 @@ jobs:
           path-to-changelog: CHANGES.md
 
       - name: Commit updated CHANGELOG
-        uses: stefanzweifel/git-auto-commit-action@778341af668090896ca464160c2def5d1d1a3eb0 # v4
+        uses: stefanzweifel/git-auto-commit-action@28e16e81777b558cc906c8750092100bbb34c5e3 # v4
         with:
           branch: main
           commit_message: Update CHANGELOG
