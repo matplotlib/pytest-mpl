@@ -47,8 +47,19 @@ REGEX_STRS = [
 ]
 
 
+def xdist_args(n_workers):
+    try:
+        import xdist
+        if n_workers is None:
+            return ["-p", "no:xdist"]
+        else:
+            return ["-n", str(n_workers)]
+    except ImportError:
+        return []
+
+
 def run_subtest(baseline_summary_name, tmp_path, args, summaries=None, xfail=True,
-                has_result_hashes=False, generating_hashes=False, testing_hashes=False,
+                has_result_hashes=False, generating_hashes=False, testing_hashes=False, n_xdist_workers=None,
                 update_baseline=UPDATE_BASELINE, update_summary=UPDATE_SUMMARY):
     """ Run pytest (within pytest) and check JSON summary report.
 
@@ -72,6 +83,9 @@ def run_subtest(baseline_summary_name, tmp_path, args, summaries=None, xfail=Tru
         both of `--mpl-hash-library` and `hash_library=` were not.
     testing_hashes : bool, optional, default=False
         Whether the subtest is comparing hashes and therefore needs baseline hashes generated.
+    n_xdist_workers : str or int, optional, default=None
+        Number of xdist workers to use, or "auto" to use all available cores.
+        None will disable xdist. If pytest-xdist is not installed, this will be ignored.
     """
     if update_baseline and update_summary:
         raise ValueError("Cannot enable both `update_baseline` and `update_summary`.")
@@ -108,6 +122,8 @@ def run_subtest(baseline_summary_name, tmp_path, args, summaries=None, xfail=Tru
         subprocess.call(pytest_args + hash_gen_args)
         shutil.copy(expected_result_hash_library, baseline_hash_library)
         transform_hashes(baseline_hash_library)
+
+    pytest_args.extend(xdist_args(n_xdist_workers))
 
     # Run the test and record exit status
     status = subprocess.call(pytest_args + mpl_args + args)
@@ -201,23 +217,50 @@ def test_html(tmp_path):
     run_subtest('test_results_always', tmp_path,
                 [HASH_LIBRARY_FLAG, BASELINE_IMAGES_FLAG_ABS], summaries=['html'],
                 has_result_hashes=True)
-    assert (tmp_path / 'results' / 'fig_comparison.html').exists()
+    html_path = tmp_path / 'results' / 'fig_comparison.html'
+    assert html_path.exists()
+    assert html_path.stat().st_size > 200_000
+    assert "Baseline image differs" in html_path.read_text()
     assert (tmp_path / 'results' / 'extra.js').exists()
     assert (tmp_path / 'results' / 'styles.css').exists()
+
+
+@pytest.mark.parametrize("num_workers", [None, 0, 1, 2])
+def test_html_xdist(request, tmp_path, num_workers):
+    if not request.config.pluginmanager.hasplugin("xdist"):
+        pytest.skip("Skipping: pytest-xdist is not installed")
+    run_subtest('test_results_always', tmp_path,
+                [HASH_LIBRARY_FLAG, BASELINE_IMAGES_FLAG_ABS], summaries=['html'],
+                has_result_hashes=True, n_xdist_workers=num_workers)
+    html_path = tmp_path / 'results' / 'fig_comparison.html'
+    assert html_path.exists()
+    assert html_path.stat().st_size > 200_000
+    assert "Baseline image differs" in html_path.read_text()
+    assert (tmp_path / 'results' / 'extra.js').exists()
+    assert (tmp_path / 'results' / 'styles.css').exists()
+    if num_workers is not None:
+        assert len(list((tmp_path / 'results').glob('generated-hashes-xdist-*-*.json'))) == 0
+        assert len(list((tmp_path / 'results').glob('results-xdist-*-*.json'))) == num_workers
 
 
 def test_html_hashes_only(tmp_path):
     run_subtest('test_html_hashes_only', tmp_path,
                 [HASH_LIBRARY_FLAG, *HASH_COMPARISON_MODE],
                 summaries=['html'], has_result_hashes=True)
-    assert (tmp_path / 'results' / 'fig_comparison.html').exists()
+    html_path = tmp_path / 'results' / 'fig_comparison.html'
+    assert html_path.exists()
+    assert html_path.stat().st_size > 100_000
+    assert "Baseline hash differs" in html_path.read_text()
     assert (tmp_path / 'results' / 'extra.js').exists()
     assert (tmp_path / 'results' / 'styles.css').exists()
 
 
 def test_html_images_only(tmp_path):
     run_subtest('test_html_images_only', tmp_path, [*IMAGE_COMPARISON_MODE], summaries=['html'])
-    assert (tmp_path / 'results' / 'fig_comparison.html').exists()
+    html_path = tmp_path / 'results' / 'fig_comparison.html'
+    assert html_path.exists()
+    assert html_path.stat().st_size > 200_000
+    assert "Baseline image differs" in html_path.read_text()
     assert (tmp_path / 'results' / 'extra.js').exists()
     assert (tmp_path / 'results' / 'styles.css').exists()
 
@@ -226,7 +269,10 @@ def test_basic_html(tmp_path):
     run_subtest('test_results_always', tmp_path,
                 [HASH_LIBRARY_FLAG, *BASELINE_IMAGES_FLAG_REL], summaries=['basic-html'],
                 has_result_hashes=True)
-    assert (tmp_path / 'results' / 'fig_comparison_basic.html').exists()
+    html_path = tmp_path / 'results' / 'fig_comparison_basic.html'
+    assert html_path.exists()
+    assert html_path.stat().st_size > 20_000
+    assert "hash comparison, although" in html_path.read_text()
 
 
 def test_generate(tmp_path):
@@ -257,7 +303,31 @@ def test_html_generate(tmp_path):
                  rf'--mpl-generate-hash-library={tmp_path / "test_hashes.json"}'],
                 summaries=['html'], xfail=False, has_result_hashes="test_hashes.json",
                 generating_hashes=True)
-    assert (tmp_path / 'results' / 'fig_comparison.html').exists()
+    html_path = tmp_path / 'results' / 'fig_comparison.html'
+    assert html_path.exists()
+    assert html_path.stat().st_size > 100_000
+    assert "Baseline image was generated" in html_path.read_text()
+
+
+@pytest.mark.parametrize("num_workers", [None, 0, 1, 2])
+def test_html_generate_xdist(request, tmp_path, num_workers):
+    # generating hashes and images; no testing
+    if not request.config.pluginmanager.hasplugin("xdist"):
+        pytest.skip("Skipping: pytest-xdist is not installed")
+    run_subtest('test_html_generate', tmp_path,
+                [rf'--mpl-generate-path={tmp_path}',
+                 rf'--mpl-generate-hash-library={tmp_path / "test_hashes.json"}'],
+                summaries=['html'], xfail=False, has_result_hashes="test_hashes.json",
+                generating_hashes=True, n_xdist_workers=num_workers)
+    html_path = tmp_path / 'results' / 'fig_comparison.html'
+    assert html_path.exists()
+    assert html_path.stat().st_size > 100_000
+    assert "Baseline image was generated" in html_path.read_text()
+    assert (tmp_path / 'results' / 'extra.js').exists()
+    assert (tmp_path / 'results' / 'styles.css').exists()
+    if num_workers is not None:
+        assert len(list((tmp_path / 'results').glob('generated-hashes-xdist-*-*.json'))) == num_workers
+        assert len(list((tmp_path / 'results').glob('results-xdist-*-*.json'))) == num_workers
 
 
 def test_html_generate_images_only(tmp_path):
@@ -265,7 +335,10 @@ def test_html_generate_images_only(tmp_path):
     run_subtest('test_html_generate_images_only', tmp_path,
                 [rf'--mpl-generate-path={tmp_path}', *IMAGE_COMPARISON_MODE],
                 summaries=['html'], xfail=False)
-    assert (tmp_path / 'results' / 'fig_comparison.html').exists()
+    html_path = tmp_path / 'results' / 'fig_comparison.html'
+    assert html_path.exists()
+    assert html_path.stat().st_size > 100_000
+    assert "Baseline image was generated" in html_path.read_text()
 
 
 def test_html_generate_hashes_only(tmp_path):
@@ -273,7 +346,10 @@ def test_html_generate_hashes_only(tmp_path):
     run_subtest('test_html_generate_hashes_only', tmp_path,
                 [rf'--mpl-generate-hash-library={tmp_path / "test_hashes.json"}'],
                 summaries=['html'], has_result_hashes="test_hashes.json", generating_hashes=True)
-    assert (tmp_path / 'results' / 'fig_comparison.html').exists()
+    html_path = tmp_path / 'results' / 'fig_comparison.html'
+    assert html_path.exists()
+    assert html_path.stat().st_size > 200_000
+    assert "Baseline hash was generated" in html_path.read_text()
 
 
 def test_html_run_generate_hashes_only(tmp_path):
@@ -282,9 +358,28 @@ def test_html_run_generate_hashes_only(tmp_path):
                 [rf'--mpl-generate-hash-library={tmp_path / "test_hashes.json"}',
                  HASH_LIBRARY_FLAG, *HASH_COMPARISON_MODE],
                 summaries=['html'], has_result_hashes="test_hashes.json")
-    assert (tmp_path / 'results' / 'fig_comparison.html').exists()
+    html_path = tmp_path / 'results' / 'fig_comparison.html'
+    assert html_path.exists()
+    assert html_path.stat().st_size > 100_000
+    assert "Baseline hash differs" in html_path.read_text()
 
 
 # Run a hybrid mode test last so if generating hash libraries, it includes all the hashes.
 def test_hybrid(tmp_path):
     run_subtest('test_hybrid', tmp_path, [HASH_LIBRARY_FLAG, BASELINE_IMAGES_FLAG_ABS], testing_hashes=True)
+
+
+@pytest.mark.parametrize("num_workers", [None, 0, 1, 2])
+def test_html_no_json(tmp_path, num_workers):
+    # Previous tests require JSON summary to be generated to function correctly.
+    # This test ensures HTML summary generation works without JSON summary.
+    results_path = tmp_path / 'results'
+    results_path.mkdir()
+    mpl_args = ['--mpl', rf'--mpl-results-path={results_path.as_posix()}',
+                '--mpl-generate-summary=html', *xdist_args(num_workers)]
+    subprocess.call([sys.executable, '-m', 'pytest', str(TEST_FILE), *mpl_args])
+    assert not (tmp_path / 'results' / 'results.json').exists()
+    html_path = tmp_path / 'results' / 'fig_comparison.html'
+    assert html_path.exists()
+    assert html_path.stat().st_size > 200_000
+    assert "Baseline image differs" in html_path.read_text()
