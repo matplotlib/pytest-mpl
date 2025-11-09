@@ -29,7 +29,6 @@ requires-python = ">=3.9"
 dependencies = [
     "pytest",
     "matplotlib",
-    "importlib_resources;python_version<'3.8'",
     "packaging",
     "Jinja2",
     "Pillow",
