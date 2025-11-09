@@ -15,7 +15,7 @@ license-files = [
     "LICENSE",
 ]
 classifiers = [
-    "Development Status :: 4 - Beta",
+    "Development Status :: 5 - Production/Stable",
     "Framework :: Pytest",
     "Intended Audience :: Developers",
     "Topic :: Software Development :: Testing",
@@ -27,11 +27,11 @@ classifiers = [
 description = "pytest plugin to help with testing figures output from Matplotlib"
 requires-python = ">=3.9"
 dependencies = [
-    "pytest",
-    "matplotlib",
-    "packaging",
-    "Jinja2",
-    "Pillow",
+    "pytest>=5.4.0",
+    "matplotlib>=3.3.3",
+    "packaging>=22.0.0",
+    "Jinja2>=2.10.2",
+    "Pillow>=8.1.1",
 ]
 dynamic = [
     "version",
@@ -49,12 +49,12 @@ pytest_mpl = "pytest_mpl.plugin"
 
 [project.optional-dependencies]
 test = [
-    "pytest-cov",
+    "pytest-cov>=6.0.0",
 ]
 docs = [
-    "sphinx",
+    "sphinx>=7.0.0",
     "mpl_sphinx_theme>=3.9.0",
-    "sphinx_design",
+    "sphinx_design>=0.6.0",
     "matplotlib==3.9.*",
 ]
 
