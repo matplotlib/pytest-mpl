@@ -1,5 +1,89 @@
 [build-system]
-requires = ["setuptools>=30.3.0",
-            "setuptools_scm",
-            "wheel"]
-build-backend = 'setuptools.build_meta'
+requires = [
+    "setuptools>=80",
+    "setuptools-scm[simple]>=8",
+]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pytest-mpl"
+authors = [
+    { name = "Thomas Robitaille", email = "thomas.robitaille@gmail.com" },
+]
+license = "BSD-2-Clause"
+license-files = [
+    "LICENSE",
+]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Framework :: Pytest",
+    "Intended Audience :: Developers",
+    "Topic :: Software Development :: Testing",
+    "Topic :: Scientific/Engineering :: Visualization",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+]
+description = "pytest plugin to help with testing figures output from Matplotlib"
+requires-python = ">=3.9"
+dependencies = [
+    "pytest>=5.4.0",
+    "matplotlib>=3.3.3",
+    "packaging>=22.0.0",
+    "Jinja2>=2.10.2",
+    "Pillow>=8.1.1",
+]
+dynamic = [
+    "version",
+]
+
+[project.readme]
+file = "README.rst"
+content-type = "text/x-rst"
+
+[project.urls]
+Homepage = "https://github.com/matplotlib/pytest-mpl"
+
+[project.entry-points.pytest11]
+pytest_mpl = "pytest_mpl.plugin"
+
+[project.optional-dependencies]
+test = [
+    "pytest-cov>=6.0.0",
+]
+docs = [
+    "sphinx>=7.0.0",
+    "mpl_sphinx_theme>=3.9.0",
+    "sphinx_design>=0.6.0",
+    "matplotlib==3.9.*",
+]
+
+[tool.setuptools]
+zip-safe = true
+include-package-data = true
+
+[tool.setuptools.packages.find]
+namespaces = false
+
+[tool.pytest.ini_options]
+testpaths = [
+    "tests",
+]
+norecursedirs = [
+    "tests/subtests/subtest",
+]
+filterwarnings = [
+    "error",
+    "ignore:distutils Version classes are deprecated",
+    "ignore:the imp module is deprecated in favour of importlib",
+    "ignore:The NumPy module was reloaded",
+]
+
+[tool.isort]
+balanced_wrapping = true
+length_sort = false
+length_sort_sections = [
+    "stdlib",
+]
+line_length = 100
+
