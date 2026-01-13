@@ -25,10 +25,10 @@ classifiers = [
     "Operating System :: OS Independent",
 ]
 description = "pytest plugin to help with testing figures output from Matplotlib"
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 dependencies = [
-    "pytest>=5.4.0",
-    "matplotlib>=3.3.3",
+    "pytest>=6.2.5",
+    "matplotlib>=3.5.3",
     "packaging>=22.0.0",
     "Jinja2>=2.10.2",
     "Pillow>=8.1.1",
@@ -55,7 +55,7 @@ docs = [
     "sphinx>=7.0.0",
     "mpl_sphinx_theme>=3.9.0",
     "sphinx_design>=0.6.0",
-    "matplotlib==3.9.*",
+    "matplotlib==3.10.*",
 ]
 
 [tool.setuptools]
@@ -86,4 +86,3 @@ length_sort_sections = [
     "stdlib",
 ]
 line_length = 100
-
