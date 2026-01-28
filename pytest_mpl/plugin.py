@@ -222,7 +222,6 @@ class XdistPlugin:
         node.workerinput["pytest_mpl_uid"] = node.config.pytest_mpl_uid
         node.workerinput["pytest_mpl_results_dir"] = node.config.pytest_mpl_results_dir
 
-
 def pytest_configure(config):
 
     config.addinivalue_line(
@@ -230,14 +229,20 @@ def pytest_configure(config):
         "mpl_image_compare: Compares matplotlib figures against a baseline image",
     )
 
-    if (
-        config.getoption("--mpl")
-        or config.getoption("--mpl-generate-path") is not None
-        or config.getoption("--mpl-generate-hash-library") is not None
-    ):
+    generate_requested = any(
+        config.getoption(opt) is not None
+        for opt in (
+            "--mpl-generate-path",
+            "--mpl-generate-hash-library",
+            "--mpl-generate-summary",
+        )
+    )
+
+    if generate_requested or config.getoption("--mpl"):
 
         def get_cli_or_ini(name, default=None):
             return config.getoption(f"--{name}") or config.getini(name) or default
+
 
         generate_dir = config.getoption("--mpl-generate-path")
         generate_hash_lib = config.getoption("--mpl-generate-hash-library")
