@@ -472,3 +472,37 @@ def test_formats(pytester, tmp_path, use_hash_library, passes, file_format):
         result.assert_outcomes(passed=1)
     else:
         result.assert_outcomes(failed=1)
+
+
+def test_hash_method_phash(pytester, tmp_path):
+    imagehash = pytest.importorskip("imagehash")
+    try:
+        from PIL import Image
+        imagehash.phash(Image.new("L", (8, 8)))
+    except Exception as exc:
+        pytest.skip(f"imagehash.phash not available: {exc}")
+
+    tmp_hash_library = tmp_path / "hash_library_phash.json"
+    tmp_hash_library.write_text("{}")
+
+    pytester.makepyfile(
+        f"""
+        import pytest
+        import matplotlib.pyplot as plt
+
+        @pytest.mark.mpl_image_compare(baseline_dir=r"{baseline_dir_abs}",
+                                       hash_library=r"{tmp_hash_library}",
+                                       hash_method="phash",
+                                       deterministic=True,
+                                       savefig_kwargs={{'format': 'png'}})
+        def test_format_phash():
+            fig = plt.figure()
+            ax = fig.add_subplot(1, 1, 1)
+            ax.plot([1, 2, 3])
+            return fig
+        """
+    )
+
+    pytester.runpytest(f'--mpl-generate-hash-library={tmp_hash_library.as_posix()}', '-rs')
+    hash_data = json.loads(tmp_hash_library.read_text())
+    assert len(hash_data["test_hash_method_phash.test_format_phash"]) == 16

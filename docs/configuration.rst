@@ -207,6 +207,20 @@ If its directory does not exist, it will be created along with any missing paren
 Configuring this option disables baseline image comparison.
 If you want to enable both hash and baseline image comparison, which we call :doc:`"hybrid mode" <hybrid_mode>`, you must explicitly set the :ref:`baseline directory configuration option <baseline-dir>`.
 
+Hash method used for hash comparison
+------------------------------------
+| **kwarg**: ``hash_method=<name>``
+| **CLI**: ``--mpl-hash-method=<name>``
+| **INI**: ``mpl-hash-method = <name>``
+| Default: ``sha256``
+
+The hash method to use when generating and comparing hashes. Supported methods are
+``sha256``, ``ahash``, ``phash``, ``phash_simple``, ``dhash``, ``dhash_vertical``,
+``whash``, ``colorhash``, and ``crop_resistant_hash``.
+
+Non-``sha256`` methods require raster formats (``png``) and depend on the
+``ImageHash`` package. ``phash`` may require extra optional dependencies (e.g. SciPy).
+
 .. _controlling-sensitivity:
 
 Controlling the sensitivity of the comparison
