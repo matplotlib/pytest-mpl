@@ -142,7 +142,8 @@ Also see the :doc:`configuration guide <configuration>` for more information on 
 Hash comparison mode
 ^^^^^^^^^^^^^^^^^^^^
 
-Instead of comparing to baseline images, you can instead compare against a JSON library of SHA-256 hashes of the baseline image files.
+Instead of comparing to baseline images, you can instead compare against a JSON library of hashes of the baseline image files.
+By default these are SHA-256 hashes, but you can configure alternative hash methods.
 Pros and cons of this mode are:
 
 - :octicon:`diff-added;1em;sd-text-success` Easy to configure

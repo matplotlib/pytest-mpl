@@ -51,6 +51,17 @@ DEFAULT_TOLERANCE = 2
 DEFAULT_BACKEND = "agg"
 
 SUPPORTED_FORMATS = {"html", "json", "basic-html"}
+SUPPORTED_HASH_METHODS = {
+    "sha256",
+    "ahash",
+    "phash",
+    "phash_simple",
+    "dhash",
+    "dhash_vertical",
+    "whash",
+    "colorhash",
+    "crop_resistant_hash",
+}
 
 SHAPE_MISMATCH_ERROR = """Error: Image dimensions did not match.
   Expected shape: {expected_shape}
@@ -81,6 +92,58 @@ def _hash_file(in_stream):
     hasher = hashlib.sha256()
     hasher.update(buf)
     return hasher.hexdigest()
+
+
+def _normalize_hash_method(hash_method):
+    if hash_method is None:
+        return "sha256"
+    method = str(hash_method).lower()
+    if method not in SUPPORTED_HASH_METHODS:
+        raise ValueError(
+            f"Unsupported hash method '{hash_method}'. "
+            f"Supported methods are: {sorted(SUPPORTED_HASH_METHODS)}."
+        )
+    return method
+
+
+def _compute_imagehash(hash_method, in_stream):
+    try:
+        import imagehash
+    except ImportError as exc:
+        raise ImportError(
+            "Hash method requires the 'ImageHash' package. "
+            "Install pytest-mpl with the 'hashes' extra or add ImageHash to your dependencies."
+        ) from exc
+
+    in_stream.seek(0)
+    try:
+        from PIL import Image
+    except ImportError as exc:
+        raise ImportError(
+            "Hash method requires Pillow to load image data."
+        ) from exc
+
+    image = Image.open(in_stream)
+
+    methods = {
+        "ahash": imagehash.average_hash,
+        "phash": imagehash.phash,
+        "phash_simple": imagehash.phash_simple,
+        "dhash": imagehash.dhash,
+        "dhash_vertical": imagehash.dhash_vertical,
+        "whash": imagehash.whash,
+        "colorhash": imagehash.colorhash,
+        "crop_resistant_hash": imagehash.crop_resistant_hash,
+    }
+    if hash_method not in methods:
+        raise ValueError(f"Unsupported imagehash method '{hash_method}'.")
+
+    try:
+        return str(methods[hash_method](image))
+    except ImportError as exc:
+        raise ImportError(
+            f"Hash method '{hash_method}' requires extra optional dependencies."
+        ) from exc
 
 
 def pathify(path):
@@ -163,6 +226,11 @@ def pytest_addoption(parser):
 
     msg = "json library of image hashes, relative to location where py.test is run"
     option = "mpl-hash-library"
+    group.addoption(f"--{option}", help=msg, action="store")
+    parser.addini(option, help=msg)
+
+    msg = "hash method to use for hash comparison and generation"
+    option = "mpl-hash-method"
     group.addoption(f"--{option}", help=msg, action="store")
     parser.addini(option, help=msg)
 
@@ -251,6 +319,7 @@ def pytest_configure(config):
 
         hash_library = get_cli_or_ini("mpl-hash-library")
         _hash_library_from_cli = bool(config.getoption("--mpl-hash-library"))  # for backwards compatibility
+        hash_method = _normalize_hash_method(get_cli_or_ini("mpl-hash-method", "sha256"))
 
         default_tolerance = get_cli_or_ini("mpl-default-tolerance", DEFAULT_TOLERANCE)
         if isinstance(default_tolerance, str):
@@ -310,6 +379,7 @@ def pytest_configure(config):
             baseline_relative_dir=baseline_relative_dir,
             generate_dir=generate_dir,
             hash_library=hash_library,
+            hash_method=hash_method,
             generate_hash_library=generate_hash_lib,
             generate_summary=generate_summary,
             results_always=results_always,
@@ -372,6 +442,7 @@ class ImageComparison:
         baseline_relative_dir=None,
         generate_dir=None,
         hash_library=None,
+        hash_method="sha256",
         generate_hash_library=None,
         generate_summary=None,
         results_always=False,
@@ -388,6 +459,7 @@ class ImageComparison:
         self.generate_dir = path_is_not_none(generate_dir)
         self.results_dir = None
         self.hash_library = path_is_not_none(hash_library)
+        self.hash_method = _normalize_hash_method(hash_method)
         self._hash_library_from_cli = _hash_library_from_cli  # for backwards compatibility
         self.generate_hash_library = path_is_not_none(generate_hash_library)
         if generate_summary:
@@ -569,13 +641,24 @@ class ImageComparison:
 
     def generate_image_hash(self, item, fig):
         """
-        For a `matplotlib.figure.Figure`, returns the SHA256 hash as a hexadecimal
+        For a `matplotlib.figure.Figure`, returns the hash as a hexadecimal
         string.
         """
+        compare = get_compare(item)
+        hash_method = _normalize_hash_method(compare.kwargs.get('hash_method', self.hash_method))
+        ext = self._file_extension(item)
+        if hash_method != "sha256" and ext not in RASTER_IMAGE_FORMATS:
+            raise ValueError(
+                f"Hash method '{hash_method}' only supports raster formats {RASTER_IMAGE_FORMATS}. "
+                f"Got format '{ext}'."
+            )
 
         imgdata = io.BytesIO()
         self.save_figure(item, fig, imgdata)
-        out = _hash_file(imgdata)
+        if hash_method == "sha256":
+            out = _hash_file(imgdata)
+        else:
+            out = _compute_imagehash(hash_method, imgdata)
         imgdata.close()
 
         close_mpl_figure(fig)

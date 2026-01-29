@@ -7,6 +7,8 @@ Hash Comparison Mode
 This how-to guide will show you how to use the hash comparison mode of ``pytest-mpl``.
 
 In this mode, the hash of the image is compared to the hash of the baseline image.
+By default, ``pytest-mpl`` uses ``sha256``, but you can configure alternative hash
+methods (e.g. perceptual hashes) via ``hash_method`` or ``--mpl-hash-method``.
 Only the hash value of the baseline image, rather than the full image, needs to be stored in the repository.
 This means that the repository size is reduced, and the images can be regenerated if necessary.
 This approach does however make it more difficult to visually inspect any changes to the images.
