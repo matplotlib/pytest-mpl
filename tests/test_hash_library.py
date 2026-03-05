@@ -136,5 +136,3 @@ def test_config(pytester, ini, cli, kwarg, success_expected):
         result.assert_outcomes(passed=1)
     else:
         result.assert_outcomes(failed=1)
-
-
