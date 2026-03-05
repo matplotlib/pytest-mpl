@@ -82,6 +82,24 @@ This is what the basic HTML summary looks like for the same test as above:
 
 :summary:`test_basic_html`
 
+Skipping hash comparison for specific tests
+============================================
+
+In some cases, certain tests may produce images that are not deterministic across platforms or environments.
+For these tests, you can use ``skip_hash=True`` to disable hash comparison and fall back to baseline image comparison with a tolerance:
+
+.. code-block:: python
+
+    @pytest.mark.mpl_image_compare(skip_hash=True, tolerance=10)
+    def test_plot_with_platform_differences():
+        # This test will use baseline image comparison instead of hash comparison
+        fig, ax = plt.subplots()
+        ax.plot([1, 2, 3])
+        return fig
+
+This allows you to use hash comparison for most tests (for speed and reliability), while allowing a few tests to use tolerance-based image comparison.
+See the :ref:`skip_hash configuration option <skip-hash>` for more details.
+
 Continue reading
 ================
 

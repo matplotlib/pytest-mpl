@@ -207,6 +207,30 @@ If its directory does not exist, it will be created along with any missing paren
 Configuring this option disables baseline image comparison.
 If you want to enable both hash and baseline image comparison, which we call :doc:`"hybrid mode" <hybrid_mode>`, you must explicitly set the :ref:`baseline directory configuration option <baseline-dir>`.
 
+.. _skip-hash:
+
+Skip hash comparison for specific tests
+---------------------------------------
+| **kwarg**: ``skip_hash=<bool>``
+| **CLI**: ---
+| **INI**: ---
+| Default: ``False``
+
+When a global hash library is configured (via CLI or INI), you can disable hash comparison for specific tests by setting ``skip_hash=True``.
+This is useful for tests that have non-deterministic output where exact hash matching is not possible, but baseline image comparison with a tolerance is acceptable.
+
+When ``skip_hash=True`` is set, the test will use baseline image comparison instead of hash comparison, even if a hash library is configured globally.
+
+.. code:: python
+
+    @pytest.mark.mpl_image_compare(skip_hash=True, tolerance=10)
+    def test_plot_with_tolerance():
+        # This test will use baseline image comparison with tolerance,
+        # skipping hash comparison even if --mpl-hash-library is set
+        ...
+
+This option is particularly useful in :doc:`"hybrid mode" <hybrid_mode>` when most tests should use hash comparison for speed and reliability, but a few tests need tolerance-based image comparison due to platform-specific rendering differences.
+
 .. _controlling-sensitivity:
 
 Controlling the sensitivity of the comparison
