@@ -696,9 +696,9 @@ class ImageComparison:
             # The deterministic option should only matter for hash-based tests,
             # so we first check if a hash library is being used (and not skipped)
             skip_hash = compare.kwargs.get('skip_hash', False)
-            using_hash_library = (self.hash_library or compare.kwargs.get('hash_library', None)) and not skip_hash
+            use_hash_library = (self.hash_library or compare.kwargs.get('hash_library', None)) and not skip_hash
 
-            if using_hash_library:
+            if use_hash_library:
 
                 if ext == 'png':
                     if 'metadata' not in savefig_kwargs or 'Software' not in savefig_kwargs['metadata']:
