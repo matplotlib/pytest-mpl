@@ -54,6 +54,43 @@ def test_skip_hash(pytester):
     result.assert_outcomes(passed=1)
 
 
+def test_skip_hash_not_generated(pytester):
+    """Test that skip_hash=True tests are not included in generated hash library."""
+    path = pytester_path(pytester)
+    hash_library = path / "hash_library.json"
+
+    pytester.makepyfile(
+        """
+        import matplotlib.pyplot as plt
+        import pytest
+
+        @pytest.mark.mpl_image_compare()
+        def test_normal():
+            fig = plt.figure()
+            ax = fig.add_subplot(1, 1, 1)
+            ax.plot([1, 2, 3])
+            return fig
+
+        @pytest.mark.mpl_image_compare(skip_hash=True)
+        def test_skip():
+            fig = plt.figure()
+            ax = fig.add_subplot(1, 1, 1)
+            ax.plot([3, 2, 1])
+            return fig
+        """
+    )
+    pytester.runpytest(f"--mpl-generate-hash-library={hash_library}")
+
+    # Check generated hash library
+    with open(hash_library) as fp:
+        hashes = json.load(fp)
+
+    # test_normal should be in the hash library
+    assert "test_skip_hash_not_generated.test_normal" in hashes
+    # test_skip should NOT be in the hash library
+    assert "test_skip_hash_not_generated.test_skip" not in hashes
+
+
 @pytest.mark.parametrize(
     "ini, cli, kwarg, success_expected",
     [

@@ -912,10 +912,14 @@ class ImageComparison:
                             result_image.relative_to(self.results_dir).as_posix()
 
                 if self.generate_hash_library is not None:
-                    summary['hash_status'] = 'generated'
-                    image_hash = self.generate_image_hash(item, fig)
-                    self._generated_hash_library[test_name] = image_hash
-                    summary['baseline_hash'] = image_hash
+                    skip_hash = compare.kwargs.get('skip_hash', False)
+                    if skip_hash:
+                        summary['hash_status'] = 'skipped'
+                    else:
+                        summary['hash_status'] = 'generated'
+                        image_hash = self.generate_image_hash(item, fig)
+                        self._generated_hash_library[test_name] = image_hash
+                        summary['baseline_hash'] = image_hash
 
                 # Only test figures if not generating images
                 if self.generate_dir is None:
