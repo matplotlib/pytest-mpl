@@ -694,9 +694,11 @@ class ImageComparison:
         if deterministic is None:
 
             # The deterministic option should only matter for hash-based tests,
-            # so we first check if a hash library is being used
+            # so we first check if a hash library is being used (and not skipped)
+            skip_hash = compare.kwargs.get('skip_hash', False)
+            use_hash_library = (self.hash_library or compare.kwargs.get('hash_library', None)) and not skip_hash
 
-            if self.hash_library or compare.kwargs.get('hash_library', None):
+            if use_hash_library:
 
                 if ext == 'png':
                     if 'metadata' not in savefig_kwargs or 'Software' not in savefig_kwargs['metadata']:
@@ -910,15 +912,21 @@ class ImageComparison:
                             result_image.relative_to(self.results_dir).as_posix()
 
                 if self.generate_hash_library is not None:
-                    summary['hash_status'] = 'generated'
-                    image_hash = self.generate_image_hash(item, fig)
-                    self._generated_hash_library[test_name] = image_hash
-                    summary['baseline_hash'] = image_hash
+                    skip_hash = compare.kwargs.get('skip_hash', False)
+                    if skip_hash:
+                        summary['hash_status'] = 'skipped'
+                    else:
+                        summary['hash_status'] = 'generated'
+                        image_hash = self.generate_image_hash(item, fig)
+                        self._generated_hash_library[test_name] = image_hash
+                        summary['baseline_hash'] = image_hash
 
                 # Only test figures if not generating images
                 if self.generate_dir is None:
-                    # Compare to hash library
-                    if self.hash_library or compare.kwargs.get('hash_library', None):
+                    # Compare to hash library (skip_hash=True disables for this test)
+                    skip_hash = compare.kwargs.get('skip_hash', False)
+                    use_hash_library = (self.hash_library or compare.kwargs.get('hash_library', None)) and not skip_hash
+                    if use_hash_library:
                         msg = self.compare_image_to_hash_library(item, fig, result_dir, summary=summary)
 
                     # Compare against a baseline if specified
