@@ -1,3 +1,20 @@
+## v0.19.0 - 2026-03-25
+
+<!-- Release notes generated using configuration in .github/release.yml at main -->
+### What's Changed
+
+#### Exciting New Features 🎉
+
+* Add skip_hash=True/False option to allow hash comparison to be skipped for specific tests by @astrofrog in https://github.com/matplotlib/pytest-mpl/pull/260
+
+#### Other Changes
+
+* Bump actions/checkout from 5 to 6 in the actions group by @dependabot[bot] in https://github.com/matplotlib/pytest-mpl/pull/254
+* Bump stefanzweifel/git-auto-commit-action from 7.0.0 to 7.1.0 in the actions group by @dependabot[bot] in https://github.com/matplotlib/pytest-mpl/pull/255
+* Update minimum Python and dependency versions for package and tests by @ConorMacBride in https://github.com/matplotlib/pytest-mpl/pull/256
+
+**Full Changelog**: https://github.com/matplotlib/pytest-mpl/compare/v0.18.0...v0.19.0
+
 ## v0.18.0 - 2025-11-15
 
 <!-- Release notes generated using configuration in .github/release.yml at main -->
