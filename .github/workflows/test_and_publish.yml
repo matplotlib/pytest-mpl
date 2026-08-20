@@ -21,7 +21,9 @@ concurrency:
 
 jobs:
   test:
-    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@v2
+    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@v3
+    permissions:
+      id-token: write
     with:
       libraries: |
         apt:
@@ -48,12 +50,12 @@ jobs:
         - linux: py310-test-mpl35
         - macos: py310-test-mpl35
         - windows: py310-test-mpl35
-      coverage: 'codecov'
+      coverage: 'codecov-oidc'
 
   publish:
     if: github.event_name != 'pull_request'
     needs: [test]
-    uses: OpenAstronomy/github-actions-workflows/.github/workflows/publish_pure_python.yml@v2
+    uses: OpenAstronomy/github-actions-workflows/.github/workflows/publish_pure_python.yml@v3
     with:
       test_command: pytest $GITHUB_WORKSPACE/tests; pytest --mpl $GITHUB_WORKSPACE/tests
     secrets:
