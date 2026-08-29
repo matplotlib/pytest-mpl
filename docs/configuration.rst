@@ -401,7 +401,7 @@ Whether to save result images for passing tests
 | **kwarg**: ---
 | **CLI**: ``--mpl-results-always``
 | **INI**: ``mpl-results-always = <bool>``
-| Default: ``False`` (``True`` if generating a HTML summary)
+| Default: ``False`` (``True`` if generating an HTML summary)
 
 By default, result images are only saved for tests that fail.
 Enabling this option will force result images to be saved for all tests, even for tests that pass.
@@ -409,7 +409,7 @@ Enabling this option will force result images to be saved for all tests, even fo
 When this option is enabled, and some hash comparison tests are performed, a hash library containing all the result hashes will also be saved to the root of the results directory.
 The filename will be extracted from ``--mpl-generate-hash-library``, ``--mpl-hash-library``, or ``hash_library=`` in that order.
 
-This option is applied automatically when generating a HTML summary.
+This option is applied automatically when generating an HTML summary.
 
 .. rubric:: Relevance to "hybrid mode"
 
@@ -436,7 +436,7 @@ Multiple options can be specified comma-separated.
 The available options are:
 
 ``html``
-    Generate a HTML summary report showing the test result, log entry and generated result image.
+    Generate an HTML summary report showing the test result, log entry and generated result image.
     Results can be searched and filtered.
     When in the (default) image comparison mode, the baseline image, diff image and RMS difference (if any), and RMS tolerance of each test will also be shown.
     When in the hash comparison mode, the baseline hash and result hash will also be shown.
@@ -445,12 +445,12 @@ The available options are:
     Generate a JSON summary report.
     This format includes the same information as the HTML summary, but is more suitable for automated processing.
 ``basic-html``
-    Generate a HTML summary report with a simplified layout.
+    Generate an HTML summary report with a simplified layout.
     This format does not include any JavaScript or need internet access to load web resources.
 
 Summary reports can also be produced when generating baseline images and hash libraries.
 The summaries will be written to the :ref:`results directory <results-path>`.
-When generating a HTML summary, the ``--mpl-results-always`` option is automatically applied.
+When generating an HTML summary, the ``--mpl-results-always`` option is automatically applied.
 Therefore images for passing tests will also be shown.
 
 For examples of how the summary reports look in different operating modes, see:

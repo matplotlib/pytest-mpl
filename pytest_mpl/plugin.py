@@ -183,7 +183,7 @@ def pytest_addoption(parser):
 
     msg = (
         "Always compare to baseline images and save result images, even for passing tests. "
-        "This option is automatically applied when generating a HTML summary."
+        "This option is automatically applied when generating an HTML summary."
     )
     option = "mpl-results-always"
     group.addoption(f"--{option}", help=msg, action="store_true")
