@@ -27,7 +27,7 @@ Enable testing
 --------------
 | **kwarg**: ---
 | **CLI**: ``--mpl``
-| **INI**: ---
+| **INI**: ``addopts = --mpl``
 | Default: ``False``
 
 To enable image comparison testing, pass ``--mpl`` when running pytest.
@@ -46,7 +46,7 @@ Enable baseline image generation
 --------------------------------
 | **kwarg**: ---
 | **CLI**: ``--mpl-generate-path=<path>``
-| **INI**: ---
+| **INI**: ``addopts = --mpl-generate-path=<path>``
 | Default: ``None``
 
 Baseline images will be generated and saved to the specified directory path, relative to where pytest was run.
@@ -63,7 +63,7 @@ Enable baseline hash generation
 -------------------------------
 | **kwarg**: ---
 | **CLI**: ``--mpl-generate-hash-library=<path>``
-| **INI**: ---
+| **INI**: ``addopts = --mpl-generate-hash-library=<path>``
 | Default: ``None``
 
 Baseline hashes will be generated and saved to the specified JSON file path, relative to where pytest was run.
@@ -116,7 +116,7 @@ Whether ``--mpl-baseline-path`` should also be relative to the test file
 ------------------------------------------------------------------------
 | **kwarg**: ---
 | **CLI**: ``--mpl-baseline-relative``
-| **INI**: ---
+| **INI**: ``addopts = --mpl-baseline-relative``
 | Default: ``False``
 
 If this option is set, the baseline directory specified by ``--mpl-baseline-path`` will be interpreted as being relative to the test file.
