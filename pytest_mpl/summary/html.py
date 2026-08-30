@@ -214,7 +214,7 @@ def generate_summary_html(results, results_dir, hash_library=None):
 
     # Initialize Jinja
     env = Environment(
-        loader=PackageLoader("pytest_mpl.summary.html"),
+        loader=PackageLoader("pytest_mpl.summary", "templates"),
         autoescape=select_autoescape()
     )
 
@@ -254,7 +254,7 @@ def generate_summary_basic_html(results, results_dir, hash_library=None):
 
     # Initialize Jinja
     env = Environment(
-        loader=PackageLoader("pytest_mpl.summary.html"),
+        loader=PackageLoader("pytest_mpl.summary", "templates"),
         autoescape=select_autoescape()
     )
 
